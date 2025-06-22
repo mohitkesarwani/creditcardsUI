@@ -24,4 +24,10 @@ npm install
 npm run dev
 ```
 
+Run unit tests using Node's built-in runner:
+
+```bash
+npm test
+```
+
 The API should expose `/api/credit-cards` for card data.

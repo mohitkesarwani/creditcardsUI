@@ -1,14 +1,12 @@
 import React from 'react';
 import { useSelectedCards } from '../hooks/useSelectedCards';
+import { getMinimumAnnualFee } from '../utils.js';
 
 function Card({ card }) {
   const { selected, toggleCard } = useSelectedCards();
   const isSelected = selected.some((c) => c.id === card.id);
 
-  const annualFee = card.fees?.reduce((min, fee) => {
-    if (fee.amount === undefined) return min;
-    return Math.min(min, Number(fee.amount));
-  }, Infinity);
+  const annualFee = getMinimumAnnualFee(card);
 
   return (
     <div className="border rounded p-4 flex flex-col">

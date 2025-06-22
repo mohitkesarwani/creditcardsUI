@@ -1,6 +1,8 @@
 import React from 'react';
+import { getMinimumAnnualFee } from '../utils.js';
 
-function row(label, values) {
+
+function Row({ label, values }) {
   return (
     <tr>
       <th className="text-left border px-2 py-1 bg-gray-50">{label}</th>
@@ -32,38 +34,47 @@ function CompareTable({ cards }) {
         </tr>
       </thead>
       <tbody>
-        {row('Brand', cards.map((c) => c.brandName || c.brand))}
-        {row('Interest Free', cards.map((c) => c.feesAndPricing?.interestFreePeriod))}
-        {row('Interest Rate', cards.map((c) => c.feesAndPricing?.interestRates?.[0]?.rate))}
-        {row('Comparison Rate', cards.map((c) => c.lendingRates?.[0]?.comparisonRate))}
-        {row(
-          'Annual Fee',
-          cards.map((c) => {
-            const fee = c.fees?.reduce((min, f) => {
-              if (f.amount === undefined) return min;
-              return Math.min(min, Number(f.amount));
-            }, Infinity);
-            return fee !== Infinity ? fee : '';
-          })
-        )}
-        {row(
-          'Eligibility',
-          cards.map((c) =>
+        <Row label="Brand" values={cards.map((c) => c.brandName || c.brand)} />
+        <Row
+          label="Interest Free"
+          values={cards.map((c) => c.feesAndPricing?.interestFreePeriod)}
+        />
+        <Row
+          label="Interest Rate"
+          values={cards.map((c) => c.feesAndPricing?.interestRates?.[0]?.rate)}
+        />
+        <Row
+          label="Comparison Rate"
+          values={cards.map((c) => c.lendingRates?.[0]?.comparisonRate)}
+        />
+        <Row
+          label="Annual Fee"
+          values={cards.map((c) => {
+            const fee = getMinimumAnnualFee(c);
+            return fee ?? '';
+          })}
+        />
+        <Row
+          label="Eligibility"
+          values={cards.map((c) =>
             c.eligibility?.length
               ? `${c.eligibility[0].value}${c.eligibility[0].unit || ''}`
               : ''
-          )
-        )}
-        {row('Application', cards.map((c) => (
-          <a
-            href={c.applicationUri}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600"
-          >
-            Apply
-          </a>
-        )))}
+          )}
+        />
+        <Row
+          label="Application"
+          values={cards.map((c) => (
+            <a
+              href={c.applicationUri}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600"
+            >
+              Apply
+            </a>
+          ))}
+        />
       </tbody>
     </table>
   );
