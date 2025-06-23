@@ -5,3 +5,29 @@
 body {
   @apply font-sans;
 }
+
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg); }
+}
+
+.hero-orbit {
+  animation: orbit 20s linear infinite;
+  transform-origin: center;
+}
+.hero-orbit-reverse {
+  animation: orbit 20s linear infinite reverse;
+  transform-origin: center;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.feature-box {
+  @apply bg-white rounded-lg shadow-md flex items-start gap-4 p-6 transition transform;
+}
+.feature-box:hover {
+  @apply -translate-y-1 shadow-xl;
+}
