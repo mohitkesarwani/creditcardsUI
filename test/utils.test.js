@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { getMinimumAnnualFee, parseCurrency } from '../src/utils.js';
+import { getMinimumAnnualFee, parseCurrency, findFeeAmount } from '../src/utils.js';
 
 test('returns lowest numeric fee', () => {
   const card = { fees: [{ amount: '99' }, { amount: '50' }] };
@@ -29,4 +29,19 @@ test('prefers annual fee entry', () => {
 
 test('parseCurrency strips symbols', () => {
   assert.strictEqual(parseCurrency('$50'), 50);
+});
+
+test('details.fees override in getMinimumAnnualFee', () => {
+  const card = {
+    fees: [{ name: 'Annual Fee', amount: '$99' }],
+    details: { fees: [{ name: 'Annual Fee', amount: '$49' }] },
+  };
+  assert.strictEqual(getMinimumAnnualFee(card), 49);
+});
+
+test('findFeeAmount locates fee by name', () => {
+  const card = {
+    details: { fees: [{ name: 'International Purchase Fee', amount: '2.95%' }] },
+  };
+  assert.strictEqual(findFeeAmount(card, 'international purchase'), '2.95%');
 });
