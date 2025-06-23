@@ -12,3 +12,13 @@ export const fetchCreditCards = async () => {
     throw err;
   }
 };
+
+export const fetchCreditCard = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/credit-cards/${id}`);
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching credit card:', err);
+    throw err;
+  }
+};

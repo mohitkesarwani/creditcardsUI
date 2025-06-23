@@ -3,13 +3,17 @@ import { getMinimumAnnualFee } from '../utils.js';
 
 
 function Row({ label, values }) {
+  const first = values[0];
+  const diffs = values.map((v) => v !== first);
+  const anyDiff = diffs.some(Boolean);
   return (
     <tr>
-      <th className="text-left border px-2 py-1 bg-gray-50">
-        {label}
-      </th>
+      <th className="text-left border px-2 py-1 bg-gray-50">{label}</th>
       {values.map((v, i) => (
-        <td key={i} className="border px-2 py-1 text-center">
+        <td
+          key={i}
+          className={`border px-2 py-1 text-center ${anyDiff && diffs[i] ? 'bg-yellow-100' : ''}`}
+        >
           {v || '-'}
         </td>
       ))}
