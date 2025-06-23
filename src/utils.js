@@ -1,11 +1,38 @@
+export function parseCurrency(value) {
+  if (value === undefined || value === null) return null;
+  const num = parseFloat(String(value).replace(/[^0-9.-]/g, ''));
+  return Number.isNaN(num) ? null : num;
+}
+
+export function formatMoney(value) {
+  const num = parseCurrency(value);
+  if (num === null) return value;
+  const fixed = num.toFixed(2);
+  return '$' + fixed.replace(/\.00$/, '');
+}
+
 export function getMinimumAnnualFee(card) {
-  const fee = card.fees?.reduce((min, f) => {
-    if (f.amount === undefined) return min;
-    const amount = Number(f.amount);
-    if (Number.isNaN(amount)) return min;
-    return Math.min(min, amount);
-  }, Infinity);
-  return fee === Infinity ? null : fee;
+  const fees = card.fees || [];
+
+  // Prefer fees explicitly labeled as annual
+  const annuals = fees
+    .filter((f) => /annual/i.test(f.name || ''))
+    .map((f) => parseCurrency(f.amount))
+    .filter((n) => n !== null);
+
+  if (annuals.length) {
+    return Math.min(...annuals);
+  }
+
+  const numeric = fees
+    .map((f) => parseCurrency(f.amount))
+    .filter((n) => n !== null);
+
+  if (numeric.length) {
+    return Math.min(...numeric);
+  }
+
+  return card.annualFee ? parseCurrency(card.annualFee) : null;
 }
 
 export function formatCategory(category) {

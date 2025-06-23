@@ -6,11 +6,30 @@ import {
   getFeatureTags,
   getTagColor,
   formatCategory,
+  formatMoney,
+  formatPercent,
 } from '../utils.js';
 
 function Card({ card }) {
   const { selected, toggleCard } = useSelectedCards();
   const isSelected = selected.some((c) => c.id === card.id);
+
+  const formatValue = (label, value) => {
+    if (value === null || value === undefined || value === '') return value;
+    if (typeof value === 'string' && (/\$/i.test(value) || /%/.test(value))) {
+      return value;
+    }
+    const num = parseFloat(value);
+    if (!Number.isNaN(num)) {
+      if (/fee|payment|amount|cash|advance/i.test(label)) {
+        return formatMoney(num);
+      }
+      if (num >= 0 && num <= 1) {
+        return formatPercent(num);
+      }
+    }
+    return value;
+  };
 
   const annualFee = getMinimumAnnualFee(card);
   const interestRate = card.feesAndPricing?.interestRates?.[0]?.rate;
@@ -73,12 +92,14 @@ function Card({ card }) {
       <div className="text-sm space-y-1 mb-2">
         {interestRate && (
           <p>
-            <span className="font-bold">Interest Rate:</span> {interestRate}
+            <span className="font-bold">Interest Rate:</span>{' '}
+            {formatValue('interest rate', interestRate)}
           </p>
         )}
         {comparisonRate && (
           <p>
-            <span className="font-bold">Comparison Rate:</span> {comparisonRate}
+            <span className="font-bold">Comparison Rate:</span>{' '}
+            {formatValue('comparison rate', comparisonRate)}
           </p>
         )}
         {interestFree && (
@@ -88,7 +109,8 @@ function Card({ card }) {
         )}
         {annualFee !== null && (
           <p>
-            <span className="font-bold">Annual Fee:</span> {annualFee}
+            <span className="font-bold">Annual Fee:</span>{' '}
+            {formatValue('annual fee', annualFee)}
           </p>
         )}
         {card.productCategory && (
