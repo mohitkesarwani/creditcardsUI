@@ -26,10 +26,19 @@ body {
 }
 
 .feature-box {
-  @apply bg-white rounded-lg shadow-md flex items-start gap-4 p-6 transition transform;
+  @apply bg-gradient-to-r from-brand-start to-brand-end p-px rounded-lg transition transform;
+}
+.feature-inner {
+  @apply bg-white rounded-lg shadow-md flex items-start gap-4 p-6;
+}
+.feature-box:hover .feature-inner {
+  @apply shadow-xl;
+}
+.icon-wrap {
+  @apply p-3 rounded-full bg-gradient-to-r from-brand-start to-brand-end text-white shadow;
 }
 .feature-box:hover {
-  @apply -translate-y-1 shadow-xl;
+  @apply -translate-y-1;
 }
 
 @keyframes fade-in {

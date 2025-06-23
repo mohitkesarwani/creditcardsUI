@@ -5,6 +5,7 @@ import {
   getMinimumAnnualFee,
   getFeatureTags,
   getTagColor,
+  formatCategory,
 } from '../utils.js';
 
 function Card({ card }) {
@@ -92,7 +93,7 @@ function Card({ card }) {
         )}
         {card.productCategory && (
           <p>
-            <span className="font-bold">Rewards Type:</span> {card.productCategory}
+            <span className="font-bold">Rewards Type:</span> {formatCategory(card.productCategory)}
           </p>
         )}
       </div>
