@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import { getMinimumAnnualFee } from '../utils.js';
 
@@ -37,6 +38,12 @@ function Card({ card }) {
       >
         Apply Now
       </a>
+      <Link
+        to={`/cards/${card.id}`}
+        className="text-blue-600 text-sm mt-1"
+      >
+        Details
+      </Link>
     </div>
   );
 }
