@@ -9,6 +9,7 @@ import {
   formatCategory,
   formatMoney,
   formatPercent,
+  findFeeAmount,
 } from '../utils.js';
 
 function Card({ card }) {
@@ -32,7 +33,7 @@ function Card({ card }) {
     return value;
   };
 
-  const annualFee = getMinimumAnnualFee(card);
+  const annualFee = findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
   const interestRate = card.feesAndPricing?.interestRates?.[0]?.rate;
   const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
   const interestFree = card.feesAndPricing?.interestFreePeriod;
@@ -154,12 +155,14 @@ function Card({ card }) {
         ))}
       </div>
       <p className="text-sm mb-1">{card.description}</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-center mb-2">
+      <div className="flex flex-wrap justify-center gap-2 text-xs mb-2">
         {sellingPoints.map((p) => (
-          <div key={p} className="flex flex-col items-center">
-            {FEATURE_ICONS[p]}
-            <span className="mt-1">{p}</span>
-          </div>
+          <span
+            key={p}
+            className="flex items-center gap-1 border rounded px-2 py-1 bg-gray-50"
+          >
+            {FEATURE_ICONS[p]} {p}
+          </span>
         ))}
       </div>
       <div className="text-sm space-y-1 mb-2">

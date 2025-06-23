@@ -12,7 +12,7 @@ export function formatMoney(value) {
 }
 
 export function getMinimumAnnualFee(card) {
-  const fees = card.fees || [];
+  const fees = card.details?.fees || card.fees || [];
 
   // Prefer fees explicitly labeled as annual
   const annuals = fees
@@ -33,6 +33,15 @@ export function getMinimumAnnualFee(card) {
   }
 
   return card.annualFee ? parseCurrency(card.annualFee) : null;
+}
+
+export function findFeeAmount(card, label) {
+  if (!label) return null;
+  const fees = card.details?.fees || card.fees || [];
+  const entry = fees.find(
+    (f) => f.name && f.name.toLowerCase().includes(label.toLowerCase())
+  );
+  return entry ? entry.amount : null;
 }
 
 export function formatCategory(category) {
