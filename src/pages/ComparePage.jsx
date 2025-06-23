@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import CompareTable from '../components/CompareTable';
 import { useNavigate } from 'react-router-dom';
+import Disclaimers from '../components/Disclaimers';
 
 function ComparePage() {
   const { selected } = useSelectedCards();
@@ -24,6 +25,7 @@ function ComparePage() {
   return (
     <div className="p-4 overflow-auto">
       <CompareTable cards={selected} />
+      <Disclaimers className="mt-4" />
     </div>
   );
 }

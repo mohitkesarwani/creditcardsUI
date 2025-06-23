@@ -6,6 +6,7 @@ import {
   getFeatureTags,
   getTagColor,
 } from '../utils.js';
+import Disclaimers from '../components/Disclaimers';
 
 function CardDetailPage() {
   const { id } = useParams();
@@ -67,6 +68,7 @@ function CardDetailPage() {
           >
             Apply Now
           </a>
+          <Disclaimers className="mt-4" />
         </div>
 
         <section className="mb-6 border-b pb-4">

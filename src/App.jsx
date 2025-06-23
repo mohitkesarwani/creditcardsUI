@@ -3,8 +3,10 @@ import LandingPage from './pages/LandingPage';
 import CardsPage from './pages/CardsPage';
 import CardDetailPage from './pages/CardDetailPage';
 import ComparePage from './pages/ComparePage';
+import HowWeMakeMoneyPage from './pages/HowWeMakeMoneyPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -15,7 +17,9 @@ function App() {
         <Route path="/cards" element={<CardsPage />} />
         <Route path="/cards/:id" element={<CardDetailPage />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/how-we-make-money" element={<HowWeMakeMoneyPage />} />
       </Routes>
+      <Footer />
     </SelectedCardsProvider>
   );
 }

@@ -5,6 +5,7 @@ import AdvancedFilters from '../components/AdvancedFilters';
 import { getMinimumAnnualFee } from '../utils.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
+import Disclaimers from '../components/Disclaimers';
 
 function CardsPage() {
   const [cards, setCards] = useState([]);
@@ -137,6 +138,7 @@ function CardsPage() {
         <div className="md:flex-1 mt-4 md:mt-0">
           <CardGrid cards={filtered.slice(0, visibleCount)} />
           <div ref={loadMoreRef} className="h-10" />
+          <Disclaimers className="mt-4" />
         </div>
       </div>
     </div>
