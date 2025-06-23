@@ -102,3 +102,51 @@ export function categorizeFeatures(features = []) {
   return groups;
 }
 
+/**
+ * Derive up to `max` selling points from card metadata and description.
+ * Looks for common phrases that market the card's benefits.
+ */
+export function getSellingPoints(card, max = 4) {
+  if (!card) return [];
+  const collected = [];
+  const textParts = [card.description];
+  if (Array.isArray(card.features)) {
+    textParts.push(
+      card.features
+        .map((f) => `${f.featureType || ''} ${f.additionalValue || ''}`)
+        .join(' ')
+    );
+  }
+  const text = textParts.join(' ').toLowerCase();
+
+  const checks = [
+    { regex: /0%[^]*balance transfer/, label: 'Balance Transfer Offer' },
+    { regex: /complimentary[^]*travel insurance/, label: 'Travel Insurance' },
+    { regex: /(no|\$0)\s*annual fee/, label: 'No Annual Fee' },
+    { regex: /low[^]*interest rate/, label: 'Low Interest Rate' },
+    { regex: /55[^]*interest free/, label: '55 Days Interest Free' },
+    {
+      regex:
+        /no[^]*international[^]*purchase fees|no[^]*foreign transaction fees/,
+      label: 'No Foreign Transaction Fees',
+    },
+    { regex: /cash\s*back|cashback/, label: 'Cashback' },
+    { regex: /bonus[^]*points/, label: 'Bonus Points' },
+    { regex: /lounge access|airport lounge/, label: 'Lounge Access' },
+    { regex: /reward/, label: 'Rewards' },
+  ];
+
+  for (const { regex, label } of checks) {
+    if (regex.test(text) && !collected.includes(label)) {
+      collected.push(label);
+      if (collected.length >= max) break;
+    }
+  }
+
+  if (!collected.length) {
+    collected.push('Credit Card');
+  }
+
+  return collected.slice(0, max);
+}
+
