@@ -48,10 +48,12 @@ function CardsPage() {
           const t = f.toLowerCase();
           const inFeatures = c.features?.some(
             (feat) =>
-              feat.featureType?.toLowerCase().includes(t) ||
-              feat.additionalValue?.toLowerCase().includes(t)
+              (feat.featureType && feat.featureType.toLowerCase().includes(t)) ||
+              (feat.additionalValue &&
+                feat.additionalValue.toLowerCase().includes(t))
           );
-          const inCategory = c.productCategory?.toLowerCase().includes(t);
+            const inCategory =
+              c.productCategory && c.productCategory.toLowerCase().includes(t);
           return inFeatures || inCategory;
         })
       );
@@ -60,11 +62,12 @@ function CardsPage() {
     if (filters.type) {
       const t = filters.type.toLowerCase();
       result = result.filter((c) => {
-        const inCategory = c.productCategory?.toLowerCase().includes(t);
+        const inCategory =
+          c.productCategory && c.productCategory.toLowerCase().includes(t);
         const inFeatures = c.features?.some(
           (feat) =>
-            feat.featureType?.toLowerCase().includes(t) ||
-            feat.additionalValue?.toLowerCase().includes(t)
+            (feat.featureType && feat.featureType.toLowerCase().includes(t)) ||
+            (feat.additionalValue && feat.additionalValue.toLowerCase().includes(t))
         );
         return inCategory || inFeatures;
       });

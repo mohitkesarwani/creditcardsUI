@@ -36,9 +36,10 @@ function Card({ card }) {
   const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
   const interestFree = card.feesAndPricing?.interestFreePeriod;
   const tags = getFeatureTags(card);
-  const featuredBadge = card.productCategory?.toLowerCase().includes('reward')
+  const category = card.productCategory || '';
+  const featuredBadge = category.toLowerCase().includes('reward')
     ? 'Top Reward'
-    : card.productCategory?.toLowerCase().includes('travel')
+    : category.toLowerCase().includes('travel')
     ? 'Best for Travel'
     : null;
 
