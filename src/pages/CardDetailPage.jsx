@@ -72,7 +72,6 @@ function CardDetailPage() {
           >
             Apply Now
           </a>
-          <Disclaimers className="mt-4" />
         </div>
 
         <section className="mb-6 border-b pb-4">
@@ -195,6 +194,7 @@ function CardDetailPage() {
 
         <h3 className="font-bold text-lg mb-2">User Reviews</h3>
         <p className="italic text-sm">Coming soon...</p>
+        <Disclaimers className="mt-8" />
       </div>
     </div>
   );

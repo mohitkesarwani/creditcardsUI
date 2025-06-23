@@ -146,7 +146,7 @@ function CardsPage() {
           <div className="md:flex-1 mt-4 md:mt-0">
             <CardGrid cards={filtered.slice(0, visibleCount)} />
             <div ref={loadMoreRef} className="h-10" />
-            <Disclaimers className="mt-4" />
+            <Disclaimers className="mt-8" />
           </div>
         </div>
       </div>
