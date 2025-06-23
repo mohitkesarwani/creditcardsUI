@@ -8,9 +8,12 @@ function Header() {
         <img src="/radar.svg" alt="RewardRadar logo" className="w-8 h-8" />
         <span className="text-xl font-bold text-brand-end">RewardRadar</span>
       </Link>
-      <nav>
+      <nav className="flex gap-4">
         <Link to="/cards" className="text-brand-start font-semibold">
           Browse Cards
+        </Link>
+        <Link to="/loans-deposits" className="text-brand-start font-semibold">
+          Home Loans &amp; Deposits
         </Link>
       </nav>
     </header>
