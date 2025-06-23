@@ -16,14 +16,24 @@ function Card({ card }) {
   const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
   const interestFree = card.feesAndPricing?.interestFreePeriod;
   const tags = getFeatureTags(card);
+  const featuredBadge = card.productCategory?.toLowerCase().includes('reward')
+    ? 'Top Reward'
+    : card.productCategory?.toLowerCase().includes('travel')
+    ? 'Best for Travel'
+    : null;
 
   return (
-    <div className="border rounded p-4 flex flex-col">
+    <div className="border rounded p-4 flex flex-col relative">
       <img
         src={card.cardArt?.[0]?.imageUri}
         alt={card.brandName || card.brand}
         className="w-full h-32 object-contain mb-2"
       />
+      {featuredBadge && (
+        <span className="absolute top-2 left-2 text-xs text-white px-2 py-0.5 rounded-full bg-gradient-to-r from-brand-start to-brand-end animate-bounce">
+          {featuredBadge}
+        </span>
+      )}
       <h3 className="font-bold mb-1">{card.name}</h3>
       <div className="flex flex-wrap gap-1 mb-2">
         {tags.map((t) => (
@@ -39,22 +49,27 @@ function Card({ card }) {
       <div className="text-sm space-y-1 mb-2">
         {interestRate && (
           <p>
-            <span className="font-semibold">Interest Rate:</span> {interestRate}
+            <span className="font-bold">Interest Rate:</span> {interestRate}
           </p>
         )}
         {comparisonRate && (
           <p>
-            <span className="font-semibold">Comparison Rate:</span> {comparisonRate}
+            <span className="font-bold">Comparison Rate:</span> {comparisonRate}
           </p>
         )}
         {interestFree && (
           <p>
-            <span className="font-semibold">Interest Free:</span> {interestFree}
+            <span className="font-bold">Interest Free:</span> {interestFree}
           </p>
         )}
         {annualFee !== null && (
           <p>
-            <span className="font-semibold">Annual Fee:</span> {annualFee}
+            <span className="font-bold">Annual Fee:</span> {annualFee}
+          </p>
+        )}
+        {card.productCategory && (
+          <p>
+            <span className="font-bold">Rewards Type:</span> {card.productCategory}
           </p>
         )}
       </div>
