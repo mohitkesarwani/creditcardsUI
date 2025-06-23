@@ -1,11 +1,21 @@
 import React from 'react';
-import { getMinimumAnnualFee } from '../utils.js';
+import { getMinimumAnnualFee, formatPercent, formatMoney } from '../utils.js';
 
 
 function Row({ label, values }) {
   const first = values[0];
   const diffs = values.map((v) => v !== first);
   const anyDiff = diffs.some(Boolean);
+  const format = (val) => {
+    if (val === null || val === undefined || val === '') return '-';
+    if (typeof val === 'string' && (/\$/i.test(val) || /%/.test(val))) return val;
+    const num = parseFloat(val);
+    if (!Number.isNaN(num)) {
+      if (/fee|amount|payment|cash|advance/i.test(label)) return formatMoney(num);
+      if (num >= 0 && num <= 1) return formatPercent(num);
+    }
+    return val;
+  };
   return (
     <tr>
       <th className="text-left border px-2 py-1 bg-gray-50">{label}</th>
@@ -14,7 +24,7 @@ function Row({ label, values }) {
           key={i}
           className={`border px-2 py-1 text-center ${anyDiff && diffs[i] ? 'bg-yellow-100' : ''}`}
         >
-          {v || '-'}
+          {format(v)}
         </td>
       ))}
     </tr>

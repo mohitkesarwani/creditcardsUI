@@ -7,6 +7,7 @@ import {
   getTagColor,
   categorizeFeatures,
   formatPercent,
+  formatMoney,
 } from '../utils.js';
 import Disclaimers from '../components/Disclaimers';
 
@@ -81,13 +82,13 @@ function CardDetailPage() {
               {interestRate && (
                 <tr>
                   <th className="text-left pr-2">Interest Rate</th>
-                  <td>{interestRate}</td>
+                  <td>{formatPercent(interestRate)}</td>
                 </tr>
               )}
               {comparisonRate && (
                 <tr>
                   <th className="text-left pr-2">Comparison Rate</th>
-                  <td>{comparisonRate}</td>
+                  <td>{formatPercent(comparisonRate)}</td>
                 </tr>
               )}
               {interestFree && (
@@ -99,7 +100,7 @@ function CardDetailPage() {
               {annualFee !== null && (
                 <tr>
                   <th className="text-left pr-2">Annual Fee</th>
-                  <td>{annualFee}</td>
+                  <td>{formatMoney(annualFee)}</td>
                 </tr>
               )}
             </tbody>
