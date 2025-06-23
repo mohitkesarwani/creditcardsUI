@@ -22,14 +22,14 @@ function FeatureFilter({ active, setActive }) {
     <div className="mb-4">
       <h4 className="font-bold mb-2">Filter Features</h4>
       {FILTERS.map((f) => (
-        <label key={f} className="block text-sm">
+        <label key={f} className="flex items-center text-sm space-x-2 py-1">
           <input
             type="checkbox"
-            className="mr-1"
+            className="rounded text-brand-start focus:ring-brand-start"
             checked={active.includes(f)}
             onChange={() => toggle(f)}
           />
-          {f}
+          <span>{f}</span>
         </label>
       ))}
     </div>
