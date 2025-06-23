@@ -5,6 +5,8 @@ import {
   getMinimumAnnualFee,
   getFeatureTags,
   getTagColor,
+  categorizeFeatures,
+  formatPercent,
 } from '../utils.js';
 import Disclaimers from '../components/Disclaimers';
 
@@ -37,6 +39,7 @@ function CardDetailPage() {
   const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
   const interestFree = card.feesAndPricing?.interestFreePeriod;
   const tags = getFeatureTags(card);
+  const featureGroups = categorizeFeatures(card.features);
 
   return (
     <div className="p-4">
@@ -106,25 +109,39 @@ function CardDetailPage() {
         {card.features?.length > 0 && (
           <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Features</h3>
-            <ul className="list-disc ml-5 space-y-1">
-              {card.features.map((f, i) => (
-                <li key={i}>
-                  {f.featureType}
-                  {f.additionalValue ? ` - ${f.additionalValue}` : ''}
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-4">
+              {Object.entries(featureGroups).map(([cat, list]) =>
+                list.length ? (
+                  <div key={cat}>
+                    <h4 className="font-semibold mb-1 flex items-center gap-1">
+                      {cat}
+                    </h4>
+                    <ul className="list-disc ml-5 space-y-1">
+                      {list.map((f, i) => (
+                        <li key={i}>
+                          {f.featureType}
+                          {f.additionalValue ? ` - ${f.additionalValue}` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null
+              )}
+            </div>
           </section>
         )}
 
         {card.eligibility?.length > 0 && (
           <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Eligibility</h3>
-            <ul className="list-disc ml-5 space-y-1">
+            <ul className="space-y-1 ml-5">
               {card.eligibility.map((e, i) => (
-                <li key={i}>
-                  {e.value}
-                  {e.unit || ''}
+                <li key={i} className="flex gap-1">
+                  {e.type && <span className="font-semibold">{e.type}:</span>}
+                  <span>
+                    {e.value}
+                    {e.unit || ''}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -137,21 +154,15 @@ function CardDetailPage() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr>
-                  {Object.keys(card.lendingRates[0]).map((k) => (
-                    <th key={k} className="border px-2 py-1 text-left">
-                      {k}
-                    </th>
-                  ))}
+                  <th className="border px-2 py-1 text-left">Type</th>
+                  <th className="border px-2 py-1 text-left">Rate</th>
                 </tr>
               </thead>
               <tbody>
                 {card.lendingRates.map((rate, i) => (
-                  <tr key={i}>
-                    {Object.keys(card.lendingRates[0]).map((k) => (
-                      <td key={k} className="border px-2 py-1">
-                        {rate[k] || ''}
-                      </td>
-                    ))}
+                  <tr key={i} className={i % 2 ? 'bg-gray-50' : ''}>
+                    <td className="border px-2 py-1">{rate.rateType || '-'}</td>
+                    <td className="border px-2 py-1">{formatPercent(rate.rate)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -162,11 +173,22 @@ function CardDetailPage() {
         {card.fees?.length > 0 && (
           <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Fees</h3>
-            <ul className="list-disc ml-5 space-y-1">
-              {card.fees.map((f, i) => (
-                <li key={i}>{f.amount}</li>
-              ))}
-            </ul>
+            <table className="w-full text-sm">
+              <thead>
+                <tr>
+                  <th className="text-left pr-2">Fee</th>
+                  <th className="text-left">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {card.fees.map((f, i) => (
+                  <tr key={i} className={i % 2 ? 'bg-gray-50' : ''}>
+                    <td className="pr-2">{f.name || `Fee ${i + 1}`}</td>
+                    <td>{f.amount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
         )}
 

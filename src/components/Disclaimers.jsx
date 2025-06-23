@@ -10,10 +10,17 @@ export const disclaimers = [
 
 function Disclaimers({ className = '' }) {
   return (
-    <div className={`text-xs text-gray-600 space-y-2 ${className}`.trim()}>
-      {disclaimers.map((d, i) => (
-        <p key={i}>{d}</p>
-      ))}
+    <div
+      className={`bg-gray-50 border rounded-lg p-4 text-xs text-gray-700 space-y-2 ${className}`.trim()}
+    >
+      <div className="font-semibold flex items-center gap-1 mb-1">
+        <span>ⓘ</span> Important Information
+      </div>
+      <ul className="list-disc ml-4 space-y-1">
+        {disclaimers.map((d, i) => (
+          <li key={i}>{d}</li>
+        ))}
+      </ul>
     </div>
   );
 }

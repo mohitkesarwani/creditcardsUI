@@ -8,6 +8,12 @@ export function getMinimumAnnualFee(card) {
   return fee === Infinity ? null : fee;
 }
 
+export function formatCategory(category) {
+  if (!category) return category;
+  if (category === 'CRED_AND_CHRG_CARDS') return 'Credit Card';
+  return category;
+}
+
 /**
  * Extract up to `max` feature tags from a card object. Tags are derived from
  * featureType strings and the card's productCategory when present.
@@ -15,7 +21,7 @@ export function getMinimumAnnualFee(card) {
 export function getFeatureTags(card, max = 3) {
   const tags = new Set();
   if (card?.productCategory) {
-    tags.add(card.productCategory);
+    tags.add(formatCategory(card.productCategory));
   }
   card?.features?.forEach((f) => {
     if (!f.featureType) return;
@@ -41,5 +47,31 @@ const TAG_COLORS = {
 
 export function getTagColor(tag) {
   return TAG_COLORS[tag] || 'bg-gray-100 text-gray-800';
+}
+
+export function formatPercent(value) {
+  const num = parseFloat(value);
+  if (Number.isNaN(num)) return value;
+  const pct = num > 1 ? num : num * 100;
+  return pct.toFixed(2) + '%';
+}
+
+export function categorizeFeatures(features = []) {
+  const groups = {
+    Insurance: [],
+    'Digital Wallets': [],
+    Loyalty: [],
+    'Travel Benefits': [],
+    Other: [],
+  };
+  features.forEach((f) => {
+    const t = (f.featureType || '').toLowerCase();
+    if (t.includes('insurance') || t.includes('protection')) groups.Insurance.push(f);
+    else if (t.includes('wallet') || t.includes('apple') || t.includes('google') || t.includes('samsung')) groups['Digital Wallets'].push(f);
+    else if (t.includes('loyalty') || t.includes('reward') || t.includes('point')) groups.Loyalty.push(f);
+    else if (t.includes('travel') || t.includes('lounge') || t.includes('flight')) groups['Travel Benefits'].push(f);
+    else groups.Other.push(f);
+  });
+  return groups;
 }
 
