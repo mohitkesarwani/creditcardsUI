@@ -10,10 +10,10 @@ function LandingPage() {
         <AnimatedBackground />
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Track the Best Financial Products Instantly
+            Compare Credit Cards, Home Loans and Deposit Accounts
           </h1>
           <p className="mb-8 text-lg md:text-xl">
-            Use RewardRadar to compare credit cards, home loans, and deposit accounts that give you more.
+            Use RewardRadar to explore and compare products across cards, loans, and deposits. Find one that fits your needs.
           </p>
           <div className="flex gap-4 justify-center">
             <Link to="/cards" className="px-6 py-3 bg-white text-brand-start font-semibold rounded shadow">
@@ -23,10 +23,16 @@ function LandingPage() {
               Explore Rewards
             </a>
             <Link
-              to="/loans-deposits"
+              to="/home-loans"
               className="px-6 py-3 bg-transparent text-white font-semibold rounded border border-white hover:bg-white/10 transition"
             >
-              Explore Home Loans &amp; Deposits
+              Explore Home Loans
+            </Link>
+            <Link
+              to="/deposits"
+              className="px-6 py-3 bg-transparent text-white font-semibold rounded border border-white hover:bg-white/10 transition"
+            >
+              Explore Deposits
             </Link>
           </div>
         </div>
@@ -37,42 +43,42 @@ function LandingPage() {
           <Link
             to="/cards"
             className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '100px', animationDelay: '0s' }}
+            style={{ '--orbit-radius': '90px', animationDelay: '0s' }}
           >
             Travel
           </Link>
           <Link
             to="/cards"
             className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '100px', animationDelay: '-3.3s' }}
+            style={{ '--orbit-radius': '90px', animationDelay: '-3.3s' }}
           >
             Cashback
           </Link>
           <Link
             to="/cards"
             className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '100px', animationDelay: '-6.6s' }}
+            style={{ '--orbit-radius': '90px', animationDelay: '-6.6s' }}
           >
             Balance Transfer
           </Link>
           <Link
             to="/cards"
             className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '100px', animationDelay: '-9.9s' }}
+            style={{ '--orbit-radius': '90px', animationDelay: '-9.9s' }}
           >
             Business
           </Link>
           <Link
-            to="/loans-deposits"
+            to="/home-loans"
             className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '100px', animationDelay: '-13.2s' }}
+            style={{ '--orbit-radius': '130px', animationDelay: '-13.2s', animationDuration: '25s' }}
           >
             Home Loans
           </Link>
           <Link
-            to="/loans-deposits"
+            to="/deposits"
             className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '100px', animationDelay: '-16.5s' }}
+            style={{ '--orbit-radius': '130px', animationDelay: '-16.5s', animationDuration: '25s' }}
           >
             Deposits
           </Link>

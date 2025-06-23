@@ -12,8 +12,11 @@ function Header() {
         <Link to="/cards" className="text-brand-start font-semibold">
           Browse Cards
         </Link>
-        <Link to="/loans-deposits" className="text-brand-start font-semibold">
-          Home Loans &amp; Deposits
+        <Link to="/home-loans" className="text-brand-start font-semibold">
+          Compare Home Loans
+        </Link>
+        <Link to="/deposits" className="text-brand-start font-semibold">
+          Compare Deposits
         </Link>
       </nav>
     </header>
