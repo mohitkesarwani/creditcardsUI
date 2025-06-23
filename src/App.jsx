@@ -4,10 +4,12 @@ import CardsPage from './pages/CardsPage';
 import CardDetailPage from './pages/CardDetailPage';
 import ComparePage from './pages/ComparePage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
+import Header from './components/Header';
 
 function App() {
   return (
     <SelectedCardsProvider>
+      <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/cards" element={<CardsPage />} />
