@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import {
@@ -16,6 +17,7 @@ function Card({ card }) {
   const { selected, toggleCard } = useSelectedCards();
   const isSelected = selected.some((c) => c.id === card.id);
   const [showDetails, setShowDetails] = useState(false);
+  const navigate = useNavigate();
 
   const formatValue = (label, value) => {
     if (value === null || value === undefined || value === '') return value;
@@ -145,7 +147,8 @@ function Card({ card }) {
       <img
         src={card.cardArt?.[0]?.imageUri}
         alt={card.brandName || card.brand}
-        className="w-full h-32 object-contain mb-2"
+        className="w-full h-32 object-contain mb-2 cursor-pointer"
+        onClick={() => setShowDetails(true)}
       />
       {featuredBadge && (
         <span className="absolute top-2 left-2 text-xs text-white px-2 py-0.5 rounded-full bg-gradient-to-r from-brand-start to-brand-end animate-bounce">
@@ -212,7 +215,7 @@ function Card({ card }) {
           {isSelected ? 'Selected' : 'Compare'}
         </button>
         <button
-          onClick={() => setShowDetails(true)}
+          onClick={() => navigate(`/cards/${card.id}`)}
           className="border rounded px-2 py-1 text-sm text-center flex-1 bg-gray-50"
         >
           Details
