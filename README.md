@@ -36,3 +36,7 @@ When developing locally the UI expects the backend service to be running on
 `http://localhost:3000` (or whatever `PORT` is set to). The Vite dev server is
 configured to proxy `/api` requests to this backend, so start the API first then
 run `npm run dev` to see card data loaded from MongoDB on page load.
+
+You can override the backend URL by setting `VITE_API_BASE_URL` in your `.env`
+file. This value is used both for the dev proxy and in API calls. If omitted,
+`http://localhost:3000` is used by default.
