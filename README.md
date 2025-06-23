@@ -31,3 +31,8 @@ npm test
 ```
 
 The API should expose `/api/credit-cards` for card data.
+
+When developing locally the UI expects the backend service to be running on
+`http://localhost:3000` (or whatever `PORT` is set to). The Vite dev server is
+configured to proxy `/api` requests to this backend, so start the API first then
+run `npm run dev` to see card data loaded from MongoDB on page load.
