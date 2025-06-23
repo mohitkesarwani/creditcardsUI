@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import {
@@ -15,6 +15,7 @@ import {
 function Card({ card }) {
   const { selected, toggleCard } = useSelectedCards();
   const isSelected = selected.some((c) => c.id === card.id);
+  const [showMore, setShowMore] = useState(false);
 
   const formatValue = (label, value) => {
     if (value === null || value === undefined || value === '') return value;
@@ -23,8 +24,12 @@ function Card({ card }) {
     }
     const num = parseFloat(value);
     if (!Number.isNaN(num)) {
-      if (/fee|payment|amount|cash|advance/i.test(label)) {
+      const l = label.toLowerCase();
+      if (/fee|payment|amount|cash|advance/.test(l)) {
         return formatMoney(num);
+      }
+      if (/rate|interest|percent/.test(l)) {
+        return formatPercent(num);
       }
       if (num >= 0 && num <= 1) {
         return formatPercent(num);
@@ -37,6 +42,7 @@ function Card({ card }) {
   const interestRate = card.feesAndPricing?.interestRates?.[0]?.rate;
   const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
   const interestFree = card.feesAndPricing?.interestFreePeriod;
+  const latePaymentFee = findFeeAmount(card, 'late');
   const tags = getFeatureTags(card);
   const sellingPoints = getSellingPoints(card, 4);
   const category = card.productCategory || '';
@@ -154,8 +160,16 @@ function Card({ card }) {
           </span>
         ))}
       </div>
-      <p className="text-sm mb-1">{card.description}</p>
-      <div className="flex flex-wrap justify-center gap-2 text-xs mb-2">
+      <p className={`text-sm mb-1 ${showMore ? '' : 'line-clamp-2'}`}>{card.description}</p>
+      {card.description && card.description.length > 120 && (
+        <button
+          onClick={() => setShowMore(!showMore)}
+          className="text-xs text-blue-600 underline mb-1"
+        >
+          {showMore ? 'Show Less' : 'Read More'}
+        </button>
+      )}
+      <div className="grid grid-cols-2 gap-2 text-xs mb-2">
         {sellingPoints.map((p) => (
           <span
             key={p}
@@ -165,13 +179,11 @@ function Card({ card }) {
           </span>
         ))}
       </div>
-      <div className="text-sm space-y-1 mb-2">
-        {interestRate && (
-          <p>
-            <span className="font-bold">Interest Rate:</span>{' '}
-            {formatValue('interest rate', interestRate)}
-          </p>
-        )}
+      <div className="text-sm grid gap-1 mb-2">
+        <p>
+          <span className="font-bold">Interest Rate:</span>{' '}
+          {interestRate ? formatValue('interest rate', interestRate) : '0%'}
+        </p>
         {comparisonRate && (
           <p>
             <span className="font-bold">Comparison Rate:</span>{' '}
@@ -183,15 +195,18 @@ function Card({ card }) {
             <span className="font-bold">Interest Free:</span> {interestFree}
           </p>
         )}
-        {annualFee !== null && (
+        <p>
+          <span className="font-bold">Annual Fee:</span>{' '}
+          {annualFee !== null ? formatValue('annual fee', annualFee) : '$0'}
+        </p>
+        <p>
+          <span className="font-bold">Rewards Type:</span>{' '}
+          {card.productCategory ? formatCategory(card.productCategory) : 'None'}
+        </p>
+        {latePaymentFee && (
           <p>
-            <span className="font-bold">Annual Fee:</span>{' '}
-            {formatValue('annual fee', annualFee)}
-          </p>
-        )}
-        {card.productCategory && (
-          <p>
-            <span className="font-bold">Rewards Type:</span> {formatCategory(card.productCategory)}
+            <span className="font-bold">Late Payment Fee:</span>{' '}
+            {formatValue('late fee', latePaymentFee)}
           </p>
         )}
       </div>

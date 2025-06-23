@@ -28,7 +28,7 @@ function ComparePage() {
         Browse &amp; Compare Credit Cards
       </h1>
       <CompareTable cards={selected} />
-      <Disclaimers className="mt-4" />
+      <Disclaimers className="mt-8" />
     </div>
   );
 }

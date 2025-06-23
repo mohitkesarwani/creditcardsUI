@@ -10,9 +10,7 @@ export const disclaimers = [
 
 function Disclaimers({ className = '' }) {
   return (
-    <div
-      className={`bg-gray-50 border rounded-lg p-4 text-xs text-gray-700 space-y-2 ${className}`.trim()}
-    >
+    <div className={`disclaimer-box ${className}`.trim()}>
       <div className="font-semibold flex items-center gap-1 mb-1">
         <span>ⓘ</span> Important Information
       </div>
