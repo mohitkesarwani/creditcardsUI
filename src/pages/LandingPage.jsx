@@ -10,10 +10,10 @@ function LandingPage() {
         <AnimatedBackground />
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Track the Best Credit Card Rewards Instantly
+            Track the Best Financial Products Instantly
           </h1>
           <p className="mb-8 text-lg md:text-xl">
-            Use RewardRadar to compare, filter and apply for the credit cards that give you more.
+            Use RewardRadar to compare credit cards, home loans, and deposit accounts that give you more.
           </p>
           <div className="flex gap-4 justify-center">
             <Link to="/cards" className="px-6 py-3 bg-white text-brand-start font-semibold rounded shadow">
@@ -22,23 +22,59 @@ function LandingPage() {
             <a href="#features" className="px-6 py-3 bg-white/20 text-white font-semibold rounded border border-white">
               Explore Rewards
             </a>
+            <Link
+              to="/loans-deposits"
+              className="px-6 py-3 bg-transparent text-white font-semibold rounded border border-white hover:bg-white/10 transition"
+            >
+              Explore Home Loans &amp; Deposits
+            </Link>
           </div>
         </div>
         <div className="relative mt-12 w-64 h-64">
           <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-pulse" />
           <div className="absolute inset-6 rounded-full border border-white/30" />
           <div className="absolute inset-12 rounded-full border border-white/30" />
-          <Link to="/cards" className="absolute bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full top-4 left-1/2 -translate-x-1/2">
+          <Link
+            to="/cards"
+            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
+            style={{ '--orbit-radius': '100px', animationDelay: '0s' }}
+          >
             Travel
           </Link>
-          <Link to="/cards" className="absolute bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full top-1/2 right-4 -translate-y-1/2">
+          <Link
+            to="/cards"
+            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
+            style={{ '--orbit-radius': '100px', animationDelay: '-3.3s' }}
+          >
             Cashback
           </Link>
-          <Link to="/cards" className="absolute bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full bottom-4 left-1/2 -translate-x-1/2">
+          <Link
+            to="/cards"
+            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
+            style={{ '--orbit-radius': '100px', animationDelay: '-6.6s' }}
+          >
             Balance Transfer
           </Link>
-          <Link to="/cards" className="absolute bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full top-1/2 left-4 -translate-y-1/2">
+          <Link
+            to="/cards"
+            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
+            style={{ '--orbit-radius': '100px', animationDelay: '-9.9s' }}
+          >
             Business
+          </Link>
+          <Link
+            to="/loans-deposits"
+            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
+            style={{ '--orbit-radius': '100px', animationDelay: '-13.2s' }}
+          >
+            Home Loans
+          </Link>
+          <Link
+            to="/loans-deposits"
+            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
+            style={{ '--orbit-radius': '100px', animationDelay: '-16.5s' }}
+          >
+            Deposits
           </Link>
         </div>
         <HeroAnimation />
