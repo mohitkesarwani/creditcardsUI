@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { fetchCreditCards } from '../api/creditCards';
 import CardGrid from '../components/CardGrid';
 import AdvancedFilters from '../components/AdvancedFilters';
@@ -9,6 +9,8 @@ import { useSelectedCards } from '../hooks/useSelectedCards';
 function CardsPage() {
   const [cards, setCards] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(20);
+  const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({
     type: '',
     creditScore: '',
@@ -41,22 +43,30 @@ function CardsPage() {
 
     if (filters.features.length) {
       result = result.filter((c) =>
-        filters.features.every((f) =>
-          c.features?.some(
+        filters.features.every((f) => {
+          const t = f.toLowerCase();
+          const inFeatures = c.features?.some(
             (feat) =>
-              feat.featureType?.toLowerCase().includes(f.toLowerCase()) ||
-              feat.additionalValue?.toLowerCase().includes(f.toLowerCase())
-          )
-        )
+              feat.featureType?.toLowerCase().includes(t) ||
+              feat.additionalValue?.toLowerCase().includes(t)
+          );
+          const inCategory = c.productCategory?.toLowerCase().includes(t);
+          return inFeatures || inCategory;
+        })
       );
     }
 
     if (filters.type) {
-      result = result.filter((c) =>
-        c.features?.some((feat) =>
-          feat.featureType?.toLowerCase().includes(filters.type.toLowerCase())
-        )
-      );
+      const t = filters.type.toLowerCase();
+      result = result.filter((c) => {
+        const inCategory = c.productCategory?.toLowerCase().includes(t);
+        const inFeatures = c.features?.some(
+          (feat) =>
+            feat.featureType?.toLowerCase().includes(t) ||
+            feat.additionalValue?.toLowerCase().includes(t)
+        );
+        return inCategory || inFeatures;
+      });
     }
 
     if (filters.creditScore) {
@@ -90,13 +100,31 @@ function CardsPage() {
     setFiltered(result);
   }, [filters, cards]);
 
+  // reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(20);
+  }, [filtered]);
+
+  // infinite scroll observer
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setVisibleCount((c) => Math.min(c + 20, filtered.length));
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filtered]);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/4 md:pr-4">
+        <div className="md:w-1/4 md:pr-4 md:sticky md:top-4">
           <AdvancedFilters filters={filters} setFilters={setFilters} />
           <button
             disabled={!selected.length}
@@ -107,7 +135,8 @@ function CardsPage() {
           </button>
         </div>
         <div className="md:flex-1 mt-4 md:mt-0">
-          <CardGrid cards={filtered} />
+          <CardGrid cards={filtered.slice(0, visibleCount)} />
+          <div ref={loadMoreRef} className="h-10" />
         </div>
       </div>
     </div>

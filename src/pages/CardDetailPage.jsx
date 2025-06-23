@@ -69,7 +69,7 @@ function CardDetailPage() {
           </a>
         </div>
 
-        <section className="mb-6">
+        <section className="mb-6 border-b pb-4">
           <h3 className="font-bold text-lg mb-2">Fees &amp; Pricing</h3>
           <table className="w-full text-sm">
             <tbody>
@@ -102,7 +102,7 @@ function CardDetailPage() {
         </section>
 
         {card.features?.length > 0 && (
-          <section className="mb-6">
+          <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Features</h3>
             <ul className="list-disc ml-5 space-y-1">
               {card.features.map((f, i) => (
@@ -116,7 +116,7 @@ function CardDetailPage() {
         )}
 
         {card.eligibility?.length > 0 && (
-          <section className="mb-6">
+          <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Eligibility</h3>
             <ul className="list-disc ml-5 space-y-1">
               {card.eligibility.map((e, i) => (
@@ -130,7 +130,7 @@ function CardDetailPage() {
         )}
 
         {card.lendingRates?.length > 0 && (
-          <section className="mb-6">
+          <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Lending Rates</h3>
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -158,7 +158,7 @@ function CardDetailPage() {
         )}
 
         {card.fees?.length > 0 && (
-          <section className="mb-6">
+          <section className="mb-6 border-b pb-4">
             <h3 className="font-bold text-lg mb-2">Fees</h3>
             <ul className="list-disc ml-5 space-y-1">
               {card.fees.map((f, i) => (
