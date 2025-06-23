@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import {
   getMinimumAnnualFee,
@@ -15,7 +15,7 @@ import {
 function Card({ card }) {
   const { selected, toggleCard } = useSelectedCards();
   const isSelected = selected.some((c) => c.id === card.id);
-  const [showDesc, setShowDesc] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const formatValue = (label, value) => {
     if (value === null || value === undefined || value === '') return value;
@@ -137,17 +137,10 @@ function Card({ card }) {
     ),
   };
 
-  const handleClick = (e) => {
-    if (e.target.closest('button, a')) return;
-    setShowDesc((v) => !v);
-  };
 
   return (
     <div
       className="bg-white rounded-lg shadow transition transform hover:-translate-y-1 hover:shadow-lg p-4 flex flex-col relative fade-in"
-      onMouseEnter={() => setShowDesc(true)}
-      onMouseLeave={() => setShowDesc(false)}
-      onClick={handleClick}
     >
       <img
         src={card.cardArt?.[0]?.imageUri}
@@ -170,14 +163,6 @@ function Card({ card }) {
           </span>
         ))}
       </div>
-      <p className="text-sm mb-1 line-clamp-2">{card.description}</p>
-      {card.description && (
-        <div
-          className={`desc-dialog absolute left-0 right-0 bg-white rounded shadow-lg p-3 text-sm mt-2 z-10 transition-opacity duration-200 transform ${showDesc ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-2'}`}
-        >
-          {card.description}
-        </div>
-      )}
       <div className="grid grid-cols-2 gap-2 text-xs mb-2">
         {sellingPoints.map((p) => (
           <span
@@ -226,12 +211,12 @@ function Card({ card }) {
         >
           {isSelected ? 'Selected' : 'Compare'}
         </button>
-        <Link
-          to={`/cards/${card.id}`}
+        <button
+          onClick={() => setShowDetails(true)}
           className="border rounded px-2 py-1 text-sm text-center flex-1 bg-gray-50"
         >
           Details
-        </Link>
+        </button>
       </div>
       <a
         href={card.applicationUri}
@@ -245,6 +230,11 @@ function Card({ card }) {
         </svg>
         Apply Now
       </a>
+      <CardDetailsModal
+        open={showDetails}
+        onClose={() => setShowDetails(false)}
+        card={card}
+      />
     </div>
   );
 }

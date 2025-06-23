@@ -20,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
     "dotenv": "^16.4.5",
-    "mongoose": "^8.3.4"
+    "mongoose": "^8.3.4",
+    "framer-motion": "^10.12.16"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.1.0",
