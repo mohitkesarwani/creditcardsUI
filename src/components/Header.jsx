@@ -6,14 +6,7 @@ function Header() {
   return (
     <header className="flex items-center justify-between p-4 bg-white shadow">
       <Link to="/" className="flex items-center gap-2">
-        <img
-          src={logo}
-          alt="RewardRadar logo"
-          className="w-8 h-8"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
-        />
+        <img src={logo} alt="RewardRadar logo" className="w-8 h-8" />
         <span className="text-xl font-bold text-brand-end">RewardRadar</span>
       </Link>
       <nav>

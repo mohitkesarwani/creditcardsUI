@@ -123,22 +123,28 @@ function CardsPage() {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/4 md:pr-4 md:sticky md:top-4">
-          <AdvancedFilters filters={filters} setFilters={setFilters} />
-          <button
-            disabled={!selected.length}
-            onClick={() => navigate('/compare')}
-            className="mt-4 px-3 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-          >
-            Compare ({selected.length})
-          </button>
-        </div>
-        <div className="md:flex-1 mt-4 md:mt-0">
-          <CardGrid cards={filtered.slice(0, visibleCount)} />
-          <div ref={loadMoreRef} className="h-10" />
-          <Disclaimers className="mt-4" />
+    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen">
+      <div className="max-w-5xl mx-auto">
+        <header className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-brand-start mb-2">Browse &amp; Compare Credit Cards</h1>
+          <p className="text-gray-700">Use smart filters to find the best credit cards for rewards, cashback, travel, and more.</p>
+        </header>
+        <div className="flex flex-col md:flex-row">
+          <div className="md:w-1/4 md:pr-4 md:sticky md:top-4">
+            <AdvancedFilters filters={filters} setFilters={setFilters} />
+            <button
+              disabled={!selected.length}
+              onClick={() => navigate('/compare')}
+              className="mt-4 w-full px-3 py-2 rounded text-white bg-gradient-to-r from-brand-start to-brand-end disabled:opacity-50"
+            >
+              Compare ({selected.length})
+            </button>
+          </div>
+          <div className="md:flex-1 mt-4 md:mt-0">
+            <CardGrid cards={filtered.slice(0, visibleCount)} />
+            <div ref={loadMoreRef} className="h-10" />
+            <Disclaimers className="mt-4" />
+          </div>
         </div>
       </div>
     </div>
