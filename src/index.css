@@ -73,4 +73,6 @@ body {
   font-size: 0.95rem;
   color: #333;
   line-height: 1.6;
+  max-width: 40rem;
+  width: 100%;
 }
