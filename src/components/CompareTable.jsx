@@ -5,7 +5,9 @@ import { getMinimumAnnualFee } from '../utils.js';
 function Row({ label, values }) {
   return (
     <tr>
-      <th className="text-left border px-2 py-1 bg-gray-50">{label}</th>
+      <th className="text-left border px-2 py-1 bg-gray-50">
+        {label}
+      </th>
       {values.map((v, i) => (
         <td key={i} className="border px-2 py-1 text-center">
           {v || '-'}
