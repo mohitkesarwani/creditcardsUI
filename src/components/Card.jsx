@@ -207,16 +207,31 @@ function Card({ card }) {
           </p>
         )}
       </div>
-      <div className="mt-auto flex gap-2">
-        <button
-          onClick={() => toggleCard(card)}
-          className={`btn text-sm flex-1 ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
-        >
-          {isSelected ? 'Selected' : 'Compare'}
-        </button>
+      <div className="mt-auto flex flex-wrap items-center gap-2">
+        {isSelected ? (
+          <span className="flex items-center gap-1 text-xs bg-brand-start/10 text-brand-start px-2 py-1 rounded-full">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Selected
+          </span>
+        ) : (
+          <button
+            onClick={() => toggleCard(card)}
+            className="text-sm border border-brand-start text-brand-start rounded-md px-3 py-1 hover:bg-brand-start/10 transition flex-1"
+          >
+            Compare
+          </button>
+        )}
         <button
           onClick={() => navigate(`/credit-cards/${card.id}`)}
-          className="btn btn-secondary text-sm flex-1"
+          className="text-sm border border-brand-start text-brand-start rounded-md px-3 py-1 hover:bg-brand-start/10 transition flex-1"
         >
           Details
         </button>
@@ -225,7 +240,7 @@ function Card({ card }) {
         href={card.applicationUri}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 btn btn-primary w-full flex items-center justify-center gap-1"
+        className="mt-2 bg-brand-start hover:bg-brand-end text-white rounded-md px-4 py-2 text-sm font-semibold transition transform hover:scale-105 w-full flex items-center justify-center gap-1"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-8 8a1 1 0 01-.707.293H5a1 1 0 01-1-1v-4a1 1 0 01.293-.707l8-8z" />
