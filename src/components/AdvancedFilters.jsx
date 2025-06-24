@@ -11,8 +11,13 @@ function AdvancedFilters({ filters, setFilters }) {
   const setFeatures = (features) => update('features', features);
 
   return (
-    <div className="mb-4 space-y-4 bg-white/70 p-4 rounded shadow">
-      <h4 className="font-bold">Filters</h4>
+    <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md hover:shadow-lg transition">
+      <h4 className="font-bold flex items-center gap-1">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 12.414V19a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6.586L3.293 6.707A1 1 0 013 6V4z" />
+        </svg>
+        Filters
+      </h4>
       <label className="block text-sm">
         Card Type
         <select

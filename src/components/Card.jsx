@@ -142,7 +142,7 @@ function Card({ card }) {
 
   return (
     <div
-      className="bg-white rounded-lg shadow transition transform hover:-translate-y-1 hover:shadow-lg p-4 flex flex-col relative fade-in"
+      className="bg-white rounded-lg shadow transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 p-4 flex flex-col relative fade-in"
     >
       <img
         src={card.cardArt?.[0]?.imageUri}
@@ -210,13 +210,13 @@ function Card({ card }) {
       <div className="mt-auto flex gap-2">
         <button
           onClick={() => toggleCard(card)}
-          className={`rounded px-2 py-1 text-sm flex-1 ${isSelected ? 'bg-gradient-to-r from-brand-start to-brand-end text-white' : 'border'} `}
+          className={`btn text-sm flex-1 ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
         >
           {isSelected ? 'Selected' : 'Compare'}
         </button>
         <button
           onClick={() => navigate(`/credit-cards/${card.id}`)}
-          className="border rounded px-2 py-1 text-sm text-center flex-1 bg-gray-50"
+          className="btn btn-secondary text-sm flex-1"
         >
           Details
         </button>
@@ -225,7 +225,7 @@ function Card({ card }) {
         href={card.applicationUri}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 bg-gradient-to-r from-brand-start to-brand-end text-white text-sm rounded px-2 py-1 text-center flex items-center justify-center gap-1"
+        className="mt-2 btn btn-primary w-full flex items-center justify-center gap-1"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-8 8a1 1 0 01-.707.293H5a1 1 0 01-1-1v-4a1 1 0 01.293-.707l8-8z" />

@@ -75,6 +75,7 @@ body {
   line-height: 1.6;
   max-width: 40rem;
   width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .btn {
   @apply px-5 py-3 rounded-full font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-start focus:ring-offset-2;
