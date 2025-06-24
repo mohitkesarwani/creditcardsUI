@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import HeroInfographic from '../components/HeroInfographic';
 import HowItWorksSection from '../components/HowItWorksSection';
 import BenefitsSection from '../components/BenefitsSection';
@@ -10,15 +11,20 @@ function LandingPage() {
     <div>
       <section className="bg-gray-50 px-4 py-20 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900">
+          <motion.h1
+            className="text-5xl md:text-7xl font-bold mb-4 text-gray-900"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             Smarter Financial Decisions Start Here.
-          </h1>
+          </motion.h1>
           <p className="mb-8 text-lg text-gray-700">
             Compare credit cards, home loans, and deposits in one simple dashboard—tailored to your goals.
           </p>
           <HeroInfographic />
           <div className="mt-4">
-            <a href="#" className="inline-flex items-center gap-2 text-brand-start font-semibold hover:underline">
+            <a href="#how-it-works" className="inline-flex items-center gap-2 text-brand-start font-semibold hover:underline">
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z" />
               </svg>

@@ -85,3 +85,35 @@ body {
 .btn-secondary {
   @apply border border-brand-start text-brand-start hover:bg-brand-start hover:text-white;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes radar-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.radar-sweep {
+  transform-origin: center;
+  animation: radar-sweep 2s linear infinite;
+}
+
+.radar-pulse {
+  animation: radar-pulse 2s ease-in-out infinite;
+}
+
+@keyframes highlight {
+  from { box-shadow: 0 0 0 4px rgba(253, 224, 71, 0.6); }
+  to { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0); }
+}
+
+#how-it-works:target {
+  animation: highlight 2s ease-out;
+}

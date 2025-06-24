@@ -21,7 +21,7 @@ const benefits = [
     ),
   },
   {
-    title: 'Real-Time Rate Data',
+    title: 'Updated Daily \u2013 Based on Latest Available Rates (1-Day Lag)',
     icon: (
       <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 3v18h18" />
