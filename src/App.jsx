@@ -7,6 +7,7 @@ import HowWeMakeMoneyPage from './pages/HowWeMakeMoneyPage';
 import LoansDepositsPage from './pages/LoansDepositsPage';
 import HomeLoansPage from './pages/HomeLoansPage';
 import DepositsPage from './pages/DepositsPage';
+import MortgagesPage from './pages/MortgagesPage';
 import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 import TermsPage from './pages/TermsPage';
@@ -27,6 +28,7 @@ function App() {
         <Route path="/how-we-make-money" element={<HowWeMakeMoneyPage />} />
         <Route path="/loans-deposits" element={<LoansDepositsPage />} />
         <Route path="/home-loans" element={<HomeLoansPage />} />
+        <Route path="/mortgages" element={<MortgagesPage />} />
         <Route path="/deposits" element={<DepositsPage />} />
         <Route path="/faqs" element={<FaqPage />} />
         <Route path="/contact" element={<ContactPage />} />
