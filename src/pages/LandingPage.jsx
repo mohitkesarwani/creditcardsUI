@@ -23,14 +23,21 @@ function LandingPage() {
             Compare credit cards, home loans, and deposits in one simple dashboard—tailored to your goals.
           </p>
           <HeroInfographic />
-          <div className="mt-4">
-            <a href="#how-it-works" className="inline-flex items-center gap-2 text-brand-start font-semibold hover:underline">
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
+          <a
+            href="#how-it-works"
+            className="inline-flex items-center gap-2 text-brand-start font-semibold group mt-6"
+          >
+            <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-2">
               See How It Works
-            </a>
-          </div>
+            </span>
+            <svg
+              className="w-6 h-6 opacity-80 transition-transform duration-300 ease-in-out group-hover:opacity-100 group-hover:scale-110"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </a>
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
             <Link to="/credit-cards" className="btn btn-primary">Compare Credit Cards</Link>
             <Link to="/home-loans" className="btn btn-secondary">Compare Home Loans</Link>

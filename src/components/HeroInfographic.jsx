@@ -3,16 +3,26 @@ import { motion } from 'framer-motion';
 
 const steps = [
   {
-    label: 'Pick a product type',
+    label: 'Select a product type',
     icon: (
-      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-        <line x1="1" y1="10" x2="23" y2="10" />
-      </svg>
+      <div className="flex items-center gap-1">
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="1" y="4" width="10" height="7" rx="1" />
+          <line x1="1" y1="7" x2="11" y2="7" />
+        </svg>
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9l9-7 9 7v8a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V12H9v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        </svg>
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M3 5v6c0 1.5 4 3 9 3s9-1.5 9-3V5" />
+          <path d="M3 11v6c0 1.5 4 3 9 3s9-1.5 9-3v-6" />
+        </svg>
+      </div>
     ),
   },
   {
-    label: 'Set personal filters',
+    label: 'Set your preferences',
     icon: (
       <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="4" y1="21" x2="4" y2="14" />
@@ -25,59 +35,36 @@ const steps = [
     ),
   },
   {
-    label: 'See tailored matches',
+    label: 'Compare & choose',
     icon: (
       <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="7" width="8" height="13" rx="2" />
-        <rect x="14" y="3" width="8" height="17" rx="2" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Apply or save options',
-    icon: (
-      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 11l3 3L22 4" />
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        <rect x="3" y="5" width="7" height="13" rx="1" />
+        <rect x="14" y="5" width="7" height="13" rx="1" />
+        <path d="M9 16l2 2 4-4" />
       </svg>
     ),
   },
 ];
 
-const containerVariants = {
-  animate: {
-    transition: { staggerChildren: 0.6, repeat: Infinity, repeatDelay: 0.5 },
-  },
-};
-
-const itemVariants = {
-  animate: {
-    opacity: [0, 1, 1, 0],
-    y: [20, 0, 0, 20],
-    transition: { duration: 2 },
-  },
-};
-
 function HeroInfographic() {
   return (
-    <motion.div
-      className="flex flex-col sm:flex-row justify-center items-center gap-8 mt-8"
-      variants={containerVariants}
-      animate="animate"
-    >
-      {steps.map((step) => (
+    <div className="mt-8 flex flex-col sm:flex-row justify-center items-start gap-8 sm:gap-16">
+      {steps.map((step, i) => (
         <motion.div
           key={step.label}
-          variants={itemVariants}
           className="flex flex-col items-center text-center"
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.35, ease: 'easeInOut', delay: i * 0.1 }}
         >
-          <div className="p-4 bg-white rounded-full shadow mb-2 text-brand-start">
+          <div className="p-4 bg-white rounded-full shadow text-brand-start mb-2">
             {step.icon}
           </div>
           <p className="text-sm font-medium text-gray-700 w-32">{step.label}</p>
         </motion.div>
       ))}
-    </motion.div>
+    </div>
   );
 }
 
