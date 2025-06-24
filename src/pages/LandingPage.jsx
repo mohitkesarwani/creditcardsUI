@@ -1,89 +1,50 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import HeroAnimation from '../components/HeroAnimation';
-import AnimatedBackground from '../components/AnimatedBackground';
+// Landing page hero focuses on clear messaging without busy animation
 
 function LandingPage() {
   return (
     <div>
-      <section className="relative text-white bg-gradient-to-r from-brand-start to-brand-end px-4 py-16 flex flex-col items-center overflow-hidden">
-        <AnimatedBackground />
-        <div className="max-w-3xl text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Compare Credit Cards, Home Loans and Deposit Accounts
+      <section className="bg-gray-50 px-4 py-20">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
+            Compare and Choose the Right Financial Products for You
           </h1>
-          <p className="mb-8 text-lg md:text-xl">
-            Use RewardRadar to explore and compare products across cards, loans, and deposits. Find one that fits your needs.
+          <p className="mb-8 text-lg text-gray-700">
+            Find and compare credit cards, home loans, and deposit accounts based on your needs.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Link to="/cards" className="px-6 py-3 bg-white text-brand-start font-semibold rounded shadow">
-              Compare Now
-            </Link>
-            <a href="#features" className="px-6 py-3 bg-white/20 text-white font-semibold rounded border border-white">
-              Explore Rewards
-            </a>
-            <Link
-              to="/home-loans"
-              className="px-6 py-3 bg-transparent text-white font-semibold rounded border border-white hover:bg-white/10 transition"
-            >
-              Explore Home Loans
-            </Link>
-            <Link
-              to="/deposits"
-              className="px-6 py-3 bg-transparent text-white font-semibold rounded border border-white hover:bg-white/10 transition"
-            >
-              Explore Deposits
-            </Link>
+          <div className="flex flex-wrap gap-4">
+            <Link to="/credit-cards" className="btn btn-primary">Explore Credit Cards</Link>
+            <Link to="/home-loans" className="btn btn-secondary">Compare Home Loans</Link>
+            <Link to="/deposits" className="btn btn-secondary">Find Deposit Accounts</Link>
+          </div>
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
+              <h3 className="font-bold mb-2 flex items-center gap-2">
+                <span role="img" aria-label="Airplane">✈️</span> Travel
+              </h3>
+              <p className="text-sm text-gray-600">Reward programs and points</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
+              <h3 className="font-bold mb-2 flex items-center gap-2">
+                <span role="img" aria-label="Cash">💰</span> Cashback
+              </h3>
+              <p className="text-sm text-gray-600">Get value back on spending</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
+              <h3 className="font-bold mb-2 flex items-center gap-2">
+                <span role="img" aria-label="Home">🏠</span> Home Loans
+              </h3>
+              <p className="text-sm text-gray-600">Fixed and variable rate options</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
+              <h3 className="font-bold mb-2 flex items-center gap-2">
+                <span role="img" aria-label="Savings">💼</span> Deposits
+              </h3>
+              <p className="text-sm text-gray-600">High-interest savings and term deposits</p>
+            </div>
           </div>
         </div>
-        <div className="relative mt-12 w-64 h-64">
-          <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-pulse" />
-          <div className="absolute inset-6 rounded-full border border-white/30" />
-          <div className="absolute inset-12 rounded-full border border-white/30" />
-          <Link
-            to="/cards"
-            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '90px', animationDelay: '0s' }}
-          >
-            Travel
-          </Link>
-          <Link
-            to="/cards"
-            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '90px', animationDelay: '-3.3s' }}
-          >
-            Cashback
-          </Link>
-          <Link
-            to="/cards"
-            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '90px', animationDelay: '-6.6s' }}
-          >
-            Balance Transfer
-          </Link>
-          <Link
-            to="/cards"
-            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '90px', animationDelay: '-9.9s' }}
-          >
-            Business
-          </Link>
-          <Link
-            to="/home-loans"
-            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '130px', animationDelay: '-13.2s', animationDuration: '25s' }}
-          >
-            Home Loans
-          </Link>
-          <Link
-            to="/deposits"
-            className="absolute left-1/2 top-1/2 bg-white text-brand-start text-xs font-semibold px-2 py-1 rounded-full hero-orbit hover:opacity-80 hover:scale-105 transition"
-            style={{ '--orbit-radius': '130px', animationDelay: '-16.5s', animationDuration: '25s' }}
-          >
-            Deposits
-          </Link>
-        </div>
-        <HeroAnimation />
       </section>
 
       <section id="features" className="py-16 px-4 text-center">
@@ -97,7 +58,7 @@ function LandingPage() {
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
               </div>
-              <p className="text-left font-semibold">Scan &amp; Compare in Seconds</p>
+              <p className="text-left font-semibold">Quickly compare options</p>
             </div>
           </div>
 
@@ -116,7 +77,7 @@ function LandingPage() {
                   <line x1="17" y1="16" x2="23" y2="16" />
                 </svg>
               </div>
-              <p className="text-left font-semibold">Filter by What You Value</p>
+              <p className="text-left font-semibold">Filter by what matters to you</p>
             </div>
           </div>
 
@@ -127,7 +88,7 @@ function LandingPage() {
                   <path d="M10 9h4M8 13h8M5 17h14" />
                 </svg>
               </div>
-              <p className="text-left font-semibold">Side-by-Side Comparison</p>
+              <p className="text-left font-semibold">Side-by-side comparison</p>
             </div>
           </div>
 
@@ -138,7 +99,7 @@ function LandingPage() {
                   <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-3.5L6 21l1.5-7.5L2 9h7l3-7z" />
                 </svg>
               </div>
-              <p className="text-left font-semibold">No Sponsored Results</p>
+              <p className="text-left font-semibold">Independent information</p>
             </div>
           </div>
         </div>

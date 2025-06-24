@@ -44,7 +44,7 @@ function CardDetailPage() {
 
   return (
     <div className="p-4">
-      <Link to="/cards" className="text-blue-600 underline">&larr; Back</Link>
+      <Link to="/credit-cards" className="text-blue-600 underline">&larr; Back</Link>
       <div className="mt-4 max-w-3xl mx-auto">
         <div className="flex flex-col items-center text-center mb-6">
           <img

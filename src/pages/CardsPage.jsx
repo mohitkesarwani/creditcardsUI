@@ -130,7 +130,7 @@ function CardsPage() {
       <div className="max-w-5xl mx-auto">
         <header className="text-center mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-brand-start mb-2">Browse &amp; Compare Credit Cards</h1>
-          <p className="text-gray-700">Use smart filters to find the best credit cards for rewards, cashback, travel, and more.</p>
+          <p className="text-gray-700">Use smart filters to find credit cards suited to rewards, cashback, travel and more.</p>
         </header>
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/4 md:pr-4 md:sticky md:top-4">
