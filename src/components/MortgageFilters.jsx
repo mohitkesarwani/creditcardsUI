@@ -1,6 +1,8 @@
 import React from 'react';
+import RangeSlider from './RangeSlider';
+import { formatPercent } from '../utils.js';
 
-function MortgageFilters({ filters, setFilters, availableFeatures = [], availableEligibility = [] }) {
+function MortgageFilters({ filters, setFilters, availableFeatures = [], availableEligibility = [], rateBounds = [0,0] }) {
   const update = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
 
   const toggle = (key, val) => {
@@ -13,21 +15,24 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
     });
   };
 
-  const clear = () => setFilters({ rate: [0, 20], fees: [], features: [], eligibility: [] });
+  const clear = () => setFilters({ rate: rateBounds, fees: [], features: [], eligibility: [] });
 
   return (
     <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md" data-testid="mortgage-filters">
       <h4 className="font-bold">Filters</h4>
-      <label className="block text-sm">
-        Max Interest Rate
-        <input
-          type="number"
-          className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-brand-start focus:ring-brand-start"
-          value={filters.rate[1]}
-          onChange={e => update('rate', [filters.rate[0], e.target.value])}
-          data-testid="filter-rate"
+      <div>
+        <label className="block text-sm font-semibold mb-2">Interest Rate Range</label>
+        <RangeSlider
+          min={rateBounds[0]}
+          max={rateBounds[1]}
+          step={0.01}
+          value={filters.rate}
+          onChange={val => update('rate', val)}
         />
-      </label>
+        <div className="text-xs text-gray-600 mt-1">
+          Showing: {formatPercent(filters.rate[0])} – {formatPercent(filters.rate[1])}
+        </div>
+      </div>
       <div>
         <h5 className="font-semibold text-sm">Features</h5>
         {availableFeatures.map(f => (

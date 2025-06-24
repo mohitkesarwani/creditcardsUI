@@ -9,7 +9,8 @@ function MortgagesPage() {
   const [filtered, setFiltered] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
-  const [filters, setFilters] = useState({ rate: [0, 20], fees: [], features: [], eligibility: [] });
+  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], eligibility: [] });
+  const [rateBounds, setRateBounds] = useState([0, 0]);
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableEligibility, setAvailableEligibility] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -20,6 +21,15 @@ function MortgagesPage() {
         const data = await fetchMortgages();
         setMortgages(data);
         setFiltered(data);
+        const rates = data
+          .map(m => parseFloat(m.lendingRates?.[0]?.rate))
+          .filter(n => !Number.isNaN(n));
+        if (rates.length) {
+          const minRate = Math.min(...rates);
+          const maxRate = Math.max(...rates);
+          setRateBounds([minRate, maxRate]);
+          setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [] });
+        }
         setAvailableFeatures([
           ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
@@ -35,7 +45,8 @@ function MortgagesPage() {
     const handle = setTimeout(() => {
       let result = mortgages;
       result = result.filter(m => {
-        const rate = parseFloat(m.lendingRates?.[0]?.rate || 0);
+        const rate = parseFloat(m.lendingRates?.[0]?.rate);
+        if (Number.isNaN(rate)) return false;
         return rate >= filters.rate[0] && rate <= filters.rate[1];
       });
       if (filters.features.length) {
@@ -99,6 +110,7 @@ function MortgagesPage() {
               setFilters={setFilters}
               availableFeatures={availableFeatures}
               availableEligibility={availableEligibility}
+              rateBounds={rateBounds}
             />
             <button className="md:hidden mt-2 text-sm" onClick={() => setShowFilters(false)}>
               Close
