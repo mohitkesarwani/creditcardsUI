@@ -13,7 +13,7 @@ import {
   findFeeAmount,
 } from '../utils.js';
 
-function Card({ card }) {
+function Card({ card, selectedTags = [] }) {
   const { selected, toggleCard } = useSelectedCards();
   const isSelected = selected.some((c) => c.id === card.id);
   const [showDetails, setShowDetails] = useState(false);
@@ -45,7 +45,7 @@ function Card({ card }) {
   const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
   const interestFree = card.feesAndPricing?.interestFreePeriod;
   const latePaymentFee = findFeeAmount(card, 'late');
-  const tags = getFeatureTags(card);
+  const tags = card.tags || getFeatureTags(card);
   const sellingPoints = getSellingPoints(card, 4);
   const category = card.productCategory || '';
   const featuredBadge = category.toLowerCase().includes('reward')
@@ -157,14 +157,18 @@ function Card({ card }) {
       )}
       <h3 className="font-bold mb-1">{card.name}</h3>
       <div className="flex flex-wrap gap-1 mb-2">
-        {tags.map((t) => (
-          <span
-            key={t}
-            className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} hover:animate-pulse`}
-          >
-            {TAG_ICONS[t]} {t}
-          </span>
-        ))}
+        {tags.map((t) => {
+          const match = selectedTags.includes(t);
+          return (
+            <span
+              key={t}
+              data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
+              className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} hover:animate-pulse ${match ? 'ring-2 ring-brand-start' : ''}`}
+            >
+              {TAG_ICONS[t]} {t}
+            </span>
+          );
+        })}
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs mb-2">
         {sellingPoints.map((p) => (

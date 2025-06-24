@@ -3,12 +3,14 @@ import FeatureFilter from './FeatureFilter';
 
 const CARD_TYPES = ['', 'Rewards', 'Travel', 'Balance transfer', 'Low interest', 'No annual fee'];
 
-function AdvancedFilters({ filters, setFilters }) {
+function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
   const update = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const setFeatures = (features) => update('features', features);
+  const clearAll = () =>
+    setFilters({ type: '', creditScore: '', annualFee: '', interestRate: '', features: [] });
 
   return (
     <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md hover:shadow-lg transition">
@@ -32,7 +34,11 @@ function AdvancedFilters({ filters, setFilters }) {
           ))}
         </select>
       </label>
-      <FeatureFilter active={filters.features} setActive={setFeatures} />
+      <FeatureFilter
+        active={filters.features}
+        setActive={setFeatures}
+        tags={availableTags}
+      />
       <details className="space-y-4">
         <summary className="cursor-pointer font-semibold">More Filters</summary>
         <label className="block text-sm">
@@ -63,6 +69,14 @@ function AdvancedFilters({ filters, setFilters }) {
           />
         </label>
       </details>
+      <button
+        type="button"
+        onClick={clearAll}
+        className="text-sm text-brand-start underline"
+        data-testid="clear-all-filters"
+      >
+        Clear All Filters
+      </button>
     </div>
   );
 }

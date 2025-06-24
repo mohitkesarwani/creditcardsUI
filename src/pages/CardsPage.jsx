@@ -2,13 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { fetchCreditCards } from '../api/creditCards';
 import CardGrid from '../components/CardGrid';
 import AdvancedFilters from '../components/AdvancedFilters';
-import { getMinimumAnnualFee } from '../utils.js';
+import { getMinimumAnnualFee, getCardTags } from '../utils.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 
 function CardsPage() {
   const [cards, setCards] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({
@@ -27,8 +28,12 @@ function CardsPage() {
     const load = async () => {
       try {
         const data = await fetchCreditCards();
-        setCards(data);
-        setFiltered(data);
+        const withTags = data.map((c) => ({ ...c, tags: getCardTags(c, 10) }));
+        setCards(withTags);
+        setFiltered(withTags);
+        setAvailableTags([
+          ...new Set(withTags.flatMap((c) => c.tags)),
+        ]);
       } catch (err) {
         setError('Failed to load cards');
       } finally {
@@ -43,33 +48,17 @@ function CardsPage() {
 
     if (filters.features.length) {
       result = result.filter((c) =>
-        filters.features.every((f) => {
-          const t = f.toLowerCase();
-          const inFeatures = c.features?.some(
-            (feat) =>
-              (feat.featureType && feat.featureType.toLowerCase().includes(t)) ||
-              (feat.additionalValue &&
-                feat.additionalValue.toLowerCase().includes(t))
-          );
-            const inCategory =
-              c.productCategory && c.productCategory.toLowerCase().includes(t);
-          return inFeatures || inCategory;
-        })
+        filters.features.every((f) =>
+          c.tags.some((t) => t.toLowerCase() === f.toLowerCase())
+        )
       );
     }
 
     if (filters.type) {
       const t = filters.type.toLowerCase();
-      result = result.filter((c) => {
-        const inCategory =
-          c.productCategory && c.productCategory.toLowerCase().includes(t);
-        const inFeatures = c.features?.some(
-          (feat) =>
-            (feat.featureType && feat.featureType.toLowerCase().includes(t)) ||
-            (feat.additionalValue && feat.additionalValue.toLowerCase().includes(t))
-        );
-        return inCategory || inFeatures;
-      });
+      result = result.filter((c) =>
+        c.tags.some((tag) => tag.toLowerCase().includes(t))
+      );
     }
 
     if (filters.creditScore) {
@@ -142,7 +131,11 @@ function CardsPage() {
         </header>
         <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
           <div className="md:w-1/4 md:pr-4 md:sticky md:top-4 flex-shrink-0">
-            <AdvancedFilters filters={filters} setFilters={setFilters} />
+            <AdvancedFilters
+              filters={filters}
+              setFilters={setFilters}
+              availableTags={availableTags}
+            />
             <button
               disabled={!selected.length}
               onClick={() => navigate('/compare')}
@@ -152,7 +145,10 @@ function CardsPage() {
             </button>
           </div>
           <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
-            <CardGrid cards={filtered.slice(0, visibleCount)} />
+            <CardGrid
+              cards={filtered.slice(0, visibleCount)}
+              selectedTags={filters.features}
+            />
             <div ref={loadMoreRef} className="h-10" />
           </div>
         </div>
