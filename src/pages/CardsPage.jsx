@@ -5,7 +5,7 @@ import AdvancedFilters from '../components/AdvancedFilters';
 import { getMinimumAnnualFee } from '../utils.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
-import Disclaimers from '../components/Disclaimers';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 function CardsPage() {
   const [cards, setCards] = useState([]);
@@ -127,10 +127,10 @@ function CardsPage() {
 
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen">
-      <div className="max-w-5xl mx-auto">
-        <header className="text-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-brand-start mb-2">Browse &amp; Compare Credit Cards</h1>
-          <p className="text-gray-700">Use smart filters to find credit cards suited to rewards, cashback, travel and more.</p>
+      <div className="max-w-6xl mx-auto">
+        <header className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Credit Cards</h1>
+          <p className="text-gray-700 text-lg">Use smart filters to discover the right credit cards for your lifestyle—rewards, cashback, travel perks and more.</p>
         </header>
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/4 md:pr-4 md:sticky md:top-4">
@@ -138,15 +138,15 @@ function CardsPage() {
             <button
               disabled={!selected.length}
               onClick={() => navigate('/compare')}
-              className="mt-4 w-full px-3 py-2 rounded text-white bg-gradient-to-r from-brand-start to-brand-end disabled:opacity-50"
+              className="btn btn-primary w-full mt-4 disabled:opacity-50"
             >
               Compare ({selected.length})
             </button>
           </div>
           <div className="md:flex-1 mt-4 md:mt-0">
+            <HowItWorksSection />
             <CardGrid cards={filtered.slice(0, visibleCount)} />
             <div ref={loadMoreRef} className="h-10" />
-            <Disclaimers className="mt-8" />
           </div>
         </div>
       </div>
