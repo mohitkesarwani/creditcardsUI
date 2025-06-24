@@ -21,6 +21,7 @@ function CardsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
   const { selected } = useSelectedCards();
   const navigate = useNavigate();
 
@@ -110,36 +111,46 @@ function CardsPage() {
     return () => observer.disconnect();
   }, [filtered]);
 
-  // prevent body scrolling while on this page
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, []);
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 h-screen overflow-hidden flex flex-col">
+    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen flex flex-col overflow-x-hidden">
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Credit Cards</h1>
           <p className="text-gray-700 text-lg">Use smart filters to discover the right credit cards for your lifestyle—rewards, cashback, travel perks and more.</p>
         </header>
-        <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-          <div className="md:w-1/4 md:pr-4 md:sticky md:top-4 flex-shrink-0">
+        <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden relative">
+          <button
+            className="md:hidden mb-2 btn btn-secondary self-start"
+            onClick={() => setShowFilters(true)}
+          >
+            Filters
+          </button>
+          {showFilters && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setShowFilters(false)}
+            />
+          )}
+          <div
+            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:pr-4 md:sticky md:top-4 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+          >
             <AdvancedFilters
               filters={filters}
               setFilters={setFilters}
               availableTags={availableTags}
             />
+            <button className="md:hidden mt-2 text-sm" onClick={() => setShowFilters(false)}>
+              Close
+            </button>
             <button
               disabled={!selected.length}
               onClick={() => navigate('/compare')}
-              className="btn btn-primary w-full mt-4 disabled:opacity-50"
+              className="btn btn-primary w-full mt-4 disabled:opacity-50 md:hidden"
             >
               Compare ({selected.length})
             </button>

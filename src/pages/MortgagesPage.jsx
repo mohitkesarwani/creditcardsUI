@@ -77,19 +77,14 @@ function MortgagesPage() {
     return () => observer.disconnect();
   }, [filtered]);
 
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, []);
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 h-screen overflow-hidden flex flex-col">
+    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen flex flex-col overflow-x-hidden">
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Mortgages</h1>
         </header>
-        <div className="flex flex-col md:flex-row flex-1 overflow-hidden relative">
+        <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden relative">
           <button
             className="md:hidden mb-2 btn btn-secondary self-start"
             onClick={() => setShowFilters(true)}
