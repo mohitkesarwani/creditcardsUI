@@ -2,12 +2,11 @@ import React from 'react';
 
 function FeatureFilter({ active, setActive, tags = [] }) {
   const toggle = (f) => {
-    setActive((prev) => {
-      if (prev.includes(f)) {
-        return prev.filter((p) => p !== f);
-      }
-      return [...prev, f];
-    });
+    if (active.includes(f)) {
+      setActive(active.filter((p) => p !== f));
+    } else {
+      setActive([...active, f]);
+    }
   };
 
   const clear = () => setActive([]);
