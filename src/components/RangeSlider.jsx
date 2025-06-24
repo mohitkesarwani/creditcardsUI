@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function RangeSlider({ min = 0, max = 100, step = 1, value = [min, max], onChange }) {
+function RangeSlider({ min = 0, max = 100, step = 0.05, value = [min, max], onChange }) {
   const [minVal, maxVal] = value;
+  const [activeThumb, setActiveThumb] = useState(null);
 
   const handleMin = (e) => {
     const val = Math.min(Number(e.target.value), maxVal);
@@ -24,6 +25,20 @@ function RangeSlider({ min = 0, max = 100, step = 1, value = [min, max], onChang
         className="absolute h-1 bg-brand-start rounded top-1/2 transform -translate-y-1/2"
         style={{ left: `${left}%`, right: `${right}%` }}
       />
+      <div className="absolute -top-6 left-0 w-full" aria-hidden="true">
+        <span
+          className={`tooltip ${activeThumb === 'min' ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
+          style={{ left: `${left}%` }}
+        >
+          {minVal.toFixed(2)}%
+        </span>
+        <span
+          className={`tooltip ${activeThumb === 'max' ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
+          style={{ left: `${100 - right}%` }}
+        >
+          {maxVal.toFixed(2)}%
+        </span>
+      </div>
       <input
         type="range"
         min={min}
@@ -31,6 +46,12 @@ function RangeSlider({ min = 0, max = 100, step = 1, value = [min, max], onChang
         step={step}
         value={minVal}
         onChange={handleMin}
+        onMouseDown={() => setActiveThumb('min')}
+        onTouchStart={() => setActiveThumb('min')}
+        onMouseUp={() => setActiveThumb(null)}
+        onTouchEnd={() => setActiveThumb(null)}
+        onBlur={() => setActiveThumb(null)}
+        aria-label="Minimum interest rate"
         className="thumb absolute w-full h-1 bg-transparent pointer-events-none appearance-none"
         style={{ zIndex: minVal > max - 100 ? 5 : 3 }}
       />
@@ -41,6 +62,12 @@ function RangeSlider({ min = 0, max = 100, step = 1, value = [min, max], onChang
         step={step}
         value={maxVal}
         onChange={handleMax}
+        onMouseDown={() => setActiveThumb('max')}
+        onTouchStart={() => setActiveThumb('max')}
+        onMouseUp={() => setActiveThumb(null)}
+        onTouchEnd={() => setActiveThumb(null)}
+        onBlur={() => setActiveThumb(null)}
+        aria-label="Maximum interest rate"
         className="thumb absolute w-full h-1 bg-transparent pointer-events-none appearance-none"
         style={{ zIndex: 4 }}
       />

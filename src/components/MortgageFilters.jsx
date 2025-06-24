@@ -25,7 +25,7 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
-          step={0.01}
+          step={0.05}
           value={filters.rate}
           onChange={val => update('rate', val)}
         />
