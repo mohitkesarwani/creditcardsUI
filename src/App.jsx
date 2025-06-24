@@ -5,7 +5,6 @@ import CardDetailPage from './pages/CardDetailPage';
 import ComparePage from './pages/ComparePage';
 import HowWeMakeMoneyPage from './pages/HowWeMakeMoneyPage';
 import LoansDepositsPage from './pages/LoansDepositsPage';
-import HomeLoansPage from './pages/HomeLoansPage';
 import DepositsPage from './pages/DepositsPage';
 import MortgagesPage from './pages/MortgagesPage';
 import FaqPage from './pages/FaqPage';
@@ -27,7 +26,7 @@ function App() {
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/how-we-make-money" element={<HowWeMakeMoneyPage />} />
         <Route path="/loans-deposits" element={<LoansDepositsPage />} />
-        <Route path="/home-loans" element={<HomeLoansPage />} />
+        <Route path="/home-loans" element={<MortgagesPage />} />
         <Route path="/mortgages" element={<MortgagesPage />} />
         <Route path="/deposits" element={<DepositsPage />} />
         <Route path="/faqs" element={<FaqPage />} />
