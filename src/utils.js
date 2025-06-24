@@ -159,3 +159,13 @@ export function getSellingPoints(card, max = 4) {
   return collected.slice(0, max);
 }
 
+/**
+ * Combine feature tags and selling points into a single list of tags.
+ * This is used for filtering so every label shown on the card is captured.
+ */
+export function getCardTags(card, maxSellingPoints = 4) {
+  const combined = new Set(getFeatureTags(card));
+  getSellingPoints(card, maxSellingPoints).forEach((t) => combined.add(t));
+  return Array.from(combined);
+}
+
