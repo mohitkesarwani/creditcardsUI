@@ -1,51 +1,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import HeroInfographic from '../components/HeroInfographic';
+import HowItWorksSection from '../components/HowItWorksSection';
+import BenefitsSection from '../components/BenefitsSection';
 // Landing page hero focuses on clear messaging without busy animation
 
 function LandingPage() {
   return (
     <div>
-      <section className="bg-gray-50 px-4 py-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-            Compare and Choose the Right Financial Products for You
+      <section className="bg-gray-50 px-4 py-20 text-center">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900">
+            Smarter Financial Decisions Start Here.
           </h1>
           <p className="mb-8 text-lg text-gray-700">
-            Find and compare credit cards, home loans, and deposit accounts based on your needs.
+            Compare credit cards, home loans, and deposits in one simple dashboard—tailored to your goals.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/credit-cards" className="btn btn-primary">Explore Credit Cards</Link>
-            <Link to="/home-loans" className="btn btn-secondary">Compare Home Loans</Link>
-            <Link to="/deposits" className="btn btn-secondary">Find Deposit Accounts</Link>
+          <HeroInfographic />
+          <div className="mt-4">
+            <a href="#" className="inline-flex items-center gap-2 text-brand-start font-semibold hover:underline">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              See How It Works
+            </a>
           </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
-              <h3 className="font-bold mb-2 flex items-center gap-2">
-                <span role="img" aria-label="Airplane">✈️</span> Travel
-              </h3>
-              <p className="text-sm text-gray-600">Reward programs and points</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
-              <h3 className="font-bold mb-2 flex items-center gap-2">
-                <span role="img" aria-label="Cash">💰</span> Cashback
-              </h3>
-              <p className="text-sm text-gray-600">Get value back on spending</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
-              <h3 className="font-bold mb-2 flex items-center gap-2">
-                <span role="img" aria-label="Home">🏠</span> Home Loans
-              </h3>
-              <p className="text-sm text-gray-600">Fixed and variable rate options</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow hover:shadow-md transition">
-              <h3 className="font-bold mb-2 flex items-center gap-2">
-                <span role="img" aria-label="Savings">💼</span> Deposits
-              </h3>
-              <p className="text-sm text-gray-600">High-interest savings and term deposits</p>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+            <Link to="/credit-cards" className="btn btn-primary">Compare Credit Cards</Link>
+            <Link to="/home-loans" className="btn btn-secondary">Compare Home Loans</Link>
+            <Link to="/deposits" className="btn btn-secondary">Compare Deposit Accounts</Link>
+          </div>
+          <div className="mt-6 text-xs text-gray-500">
+            Information is general only. Compare options based on your needs. We don’t promote sponsored products.
           </div>
         </div>
       </section>
+      <HowItWorksSection />
+      <BenefitsSection />
 
       <section id="features" className="py-16 px-4 text-center">
         <h2 className="text-3xl font-bold mb-8">Why RewardRadar?</h2>
