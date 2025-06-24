@@ -169,3 +169,22 @@ export function getCardTags(card, maxSellingPoints = 4) {
   return Array.from(combined);
 }
 
+export function normalizeMortgageFeature(label) {
+  if (!label) return null;
+  const upper = label.trim().toUpperCase();
+  if (upper === 'OTHER') return null;
+  if (upper.includes('DIGITAL')) return 'Digital Access';
+  return label
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function getMortgageFeatureTags(mortgage) {
+  if (!mortgage?.features) return [];
+  const tags = mortgage.features
+    .map((f) => normalizeMortgageFeature(f.featureType))
+    .filter(Boolean);
+  return Array.from(new Set(tags));
+}
+

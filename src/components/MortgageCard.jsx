@@ -1,14 +1,22 @@
 import React from 'react';
-import { formatMoney, formatPercent, getTagColor } from '../utils.js';
+import {
+  formatMoney,
+  formatPercent,
+  getTagColor,
+  getMortgageFeatureTags,
+} from '../utils.js';
 
 function MortgageCard({ mortgage, highlightTags = [] }) {
   const rate = mortgage.lendingRates?.[0]?.rate;
   const comparisonRate = mortgage.lendingRates?.[0]?.comparisonRate;
   const fees = mortgage.feesAndPricing?.fees || [];
-  const tags = mortgage.features?.map(f => f.featureType) || [];
+  const tags = getMortgageFeatureTags(mortgage);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow flex flex-col" data-testid="mortgage-card">
+    <div
+      className="bg-white rounded-lg shadow transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 p-4 flex flex-col relative fade-in"
+      data-testid="mortgage-card"
+    >
       {mortgage.cardArt?.imageUri ? (
         <img src={mortgage.cardArt.imageUri} alt="" className="mb-2 rounded" />
       ) : (
