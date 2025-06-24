@@ -215,7 +215,7 @@ function Card({ card }) {
           {isSelected ? 'Selected' : 'Compare'}
         </button>
         <button
-          onClick={() => navigate(`/cards/${card.id}`)}
+          onClick={() => navigate(`/credit-cards/${card.id}`)}
           className="border rounded px-2 py-1 text-sm text-center flex-1 bg-gray-50"
         >
           Details

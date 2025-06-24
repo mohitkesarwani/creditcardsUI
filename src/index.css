@@ -76,3 +76,12 @@ body {
   max-width: 40rem;
   width: 100%;
 }
+.btn {
+  @apply px-5 py-3 rounded-full font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-start focus:ring-offset-2;
+}
+.btn-primary {
+  @apply bg-brand-start text-white hover:bg-brand-end;
+}
+.btn-secondary {
+  @apply border border-brand-start text-brand-start hover:bg-brand-start hover:text-white;
+}

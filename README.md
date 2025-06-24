@@ -11,7 +11,7 @@ This project provides a React 18 application for browsing and comparing Australi
 ## Project Structure
 
 - `src/components` – reusable UI components
-- `src/pages` – route pages (`/cards`, `/compare`)
+- `src/pages` – route pages (`/credit-cards`, `/compare`)
 - `src/api` – API utilities (Axios)
 - `src/hooks` – custom React hooks and context
 

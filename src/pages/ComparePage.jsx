@@ -14,7 +14,7 @@ function ComparePage() {
         <p>No cards selected for comparison.</p>
         <button
           className="mt-2 px-3 py-1 text-blue-600 underline"
-          onClick={() => navigate('/cards')}
+          onClick={() => navigate('/credit-cards')}
         >
           Back to cards
         </button>
