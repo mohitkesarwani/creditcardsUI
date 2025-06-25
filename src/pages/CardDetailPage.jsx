@@ -10,6 +10,7 @@ import {
   formatMoney,
 } from '../utils.js';
 import Disclaimers from '../components/Disclaimers';
+import Loader from '../components/Loader.jsx';
 
 function CardDetailPage() {
   const { id } = useParams();
@@ -31,8 +32,8 @@ function CardDetailPage() {
     load();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <Loader message="Loading card..." />;
+  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
   if (!card) return <p>Card not found.</p>;
 
   const annualFee = getMinimumAnnualFee(card);
