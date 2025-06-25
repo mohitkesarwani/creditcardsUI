@@ -16,10 +16,10 @@ function CardsPage() {
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({
-    creditScore: '',
     annualFee: '',
     features: [],
   });
+  const resetFilters = () => setFilters({ annualFee: '', features: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -57,17 +57,6 @@ function CardsPage() {
     }
 
 
-    if (filters.creditScore) {
-      const min = Number(filters.creditScore);
-      result = result.filter((c) => {
-        const score = Number(
-          c.creditScore ||
-            c.minimumCreditScore ||
-            c.eligibility?.find((e) => e.type === 'creditScore')?.value
-        );
-        return score && score >= min;
-      });
-    }
 
     if (filters.annualFee) {
       const max = Number(filters.annualFee);
@@ -147,6 +136,7 @@ function CardsPage() {
               cards={filtered.slice(0, visibleCount)}
               selectedTags={filters.features}
               adFrequency={adFrequency}
+              onReset={resetFilters}
             />
             <div ref={loadMoreRef} className="h-10" />
           </div>
