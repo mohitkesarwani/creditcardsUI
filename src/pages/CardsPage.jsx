@@ -96,11 +96,8 @@ function CardsPage() {
     if (filters.interestRate?.length) {
       result = result.filter((c) => {
         const rate = parseFloat(c.feesAndPricing?.interestRates?.[0]?.rate);
-        return (
-          !isNaN(rate) &&
-          rate >= filters.interestRate[0] &&
-          rate <= filters.interestRate[1]
-        );
+        if (isNaN(rate)) return true;
+        return rate >= filters.interestRate[0] && rate <= filters.interestRate[1];
       });
     }
 
