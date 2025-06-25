@@ -216,13 +216,12 @@ html {
 
 /* Icon group inside hero selector */
 .product-icon-container {
-  @apply flex justify-center items-center space-x-3 flex-wrap max-w-full overflow-hidden;
+  @apply grid grid-cols-3 place-items-center w-full h-full gap-1 overflow-hidden;
 }
 
 @media (max-width: 640px) {
-  .product-icon-container {
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
+  .product-icon-container svg {
+    width: 20px;
+    height: 20px;
   }
 }

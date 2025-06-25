@@ -24,7 +24,7 @@ const normalizeCard = (card) => {
 
   const eligibility = card.eligibility?.length
     ? `${card.eligibility[0].value}${card.eligibility[0].unit || ''}`
-    : 'Info not available';
+    : null;
 
   const productImageUrl = card.cardArt?.[0]?.imageUri || null;
 
@@ -33,7 +33,7 @@ const normalizeCard = (card) => {
   return {
     ...card,
     brand: card.brand || card.brandName || 'Unknown',
-    interestRate: interestRate || '–',
+    interestRate: interestRate || null,
     interestFree: card.feesAndPricing?.interestFreePeriod || null,
     comparisonRate: comparisonRate || null,
     annualFee: annualFee !== null ? formatMoney(annualFee) : null,

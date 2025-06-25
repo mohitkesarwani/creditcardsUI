@@ -6,6 +6,7 @@ import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMinimumAnnualFee, getCardTags } from '../utils.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
+import CompareStickyButton from '../components/CompareStickyButton.jsx';
 
 function CardsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
@@ -15,7 +16,6 @@ function CardsPage() {
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({
-    type: '',
     creditScore: '',
     annualFee: '',
     features: [],
@@ -56,12 +56,6 @@ function CardsPage() {
       );
     }
 
-    if (filters.type) {
-      const t = filters.type.toLowerCase();
-      result = result.filter((c) =>
-        c.tags.some((tag) => tag.toLowerCase().includes(t))
-      );
-    }
 
     if (filters.creditScore) {
       const min = Number(filters.creditScore);
@@ -114,7 +108,7 @@ function CardsPage() {
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Card. No Guesswork.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Use smart filters to explore rewards, cashback, low-interest, and balance transfer credit cards—compare clearly and choose with confidence.</p>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Use smart filters to explore cards that match your lifestyle — rewards, cashback, travel perks and more.</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
@@ -158,6 +152,7 @@ function CardsPage() {
           </div>
         </div>
       </div>
+      <CompareStickyButton />
     </div>
   );
 }

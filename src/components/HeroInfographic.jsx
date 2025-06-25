@@ -5,7 +5,7 @@ const steps = [
   {
     label: 'Select a product type',
     icon: (
-      <div className="product-icon-container flex justify-center items-center space-x-3 flex-wrap max-w-full overflow-hidden">
+      <div className="product-icon-container">
         <svg aria-label="credit card" role="img" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="1" y="4" width="10" height="7" rx="1" />
           <line x1="1" y1="7" x2="11" y2="7" />
