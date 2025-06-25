@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   getMinimumAnnualFee,
   formatValue,
@@ -40,8 +41,8 @@ function Row({ label, values }) {
       </th>
       {values.map((v, i) => (
         <td key={i} className="border px-3 py-2 text-left max-w-xs">
-          <span className={`flex items-center gap-1 ${anyDiff && diffs[i] ? 'font-semibold' : ''}`}> 
-            {anyDiff && diffs[i] && <DiffIcon />} 
+          <span className="flex items-center gap-1">
+            {anyDiff && diffs[i] && <DiffIcon />}
             {formatValue(label, safeDisplay(v, 'Not available'))}
           </span>
         </td>
@@ -65,7 +66,7 @@ function RateRow({ label, values }) {
         return (
           <td
             key={i}
-            className={`border px-3 py-2 text-left max-w-xs ${highlight ? 'bg-green-50 font-semibold' : ''}`}
+            className={`border px-3 py-2 text-left max-w-xs ${highlight ? 'bg-green-50' : ''}`}
           >
             {formatValue(label, safeDisplay(v, 'Not available'))}
           </td>
@@ -77,6 +78,7 @@ function RateRow({ label, values }) {
 
 function CompareTable({ cards }) {
   const [sort, setSort] = useState({ by: 'annualFee', dir: 'asc' });
+  const navigate = useNavigate();
 
   const sortedCards = useMemo(() => {
     const arr = [...cards];
@@ -128,12 +130,22 @@ function CompareTable({ cards }) {
                 <th key={c.id} className="border px-4 py-3 bg-white text-center max-w-[12rem]">
                   <div className="flex flex-col items-center gap-2">
                     <img
-                      src={c.productImageUrl || c.cardArt?.[0]?.imageUri}
+                      src={c.productImageUrl || c.cardArt?.[0]?.imageUri || '/radar.svg'}
                       alt={c.name}
                       className="h-12 object-contain"
-                      onError={(e) => (e.currentTarget.src = '/radar.svg')}
+                      onError={(e) => {
+                        if (e.currentTarget.src !== '/radar.svg') {
+                          e.currentTarget.src = '/radar.svg';
+                        }
+                      }}
                     />
-                    <p className="font-semibold text-sm truncate" title={c.name}>{c.name}</p>
+                    <p className="font-medium text-sm truncate" title={c.name}>{c.name}</p>
+                    <button
+                      onClick={() => navigate(`/credit-cards/${c.id}`)}
+                      className="btn btn-primary text-xs px-3 py-1"
+                    >
+                      Details
+                    </button>
                     {c.applicationUrl && (
                       <a
                         href={c.applicationUrl}
