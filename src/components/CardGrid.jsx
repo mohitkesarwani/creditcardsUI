@@ -2,12 +2,21 @@ import React from 'react';
 import Card from './Card';
 import AdBanner from './AdBanner.jsx';
 
-function CardGrid({ cards, selectedTags = [], adFrequency = 4 }) {
+function CardGrid({ cards, selectedTags = [], adFrequency = 4, onReset }) {
   if (!cards.length) {
     return (
-      <p className="text-center py-8">
-        No cards match your selected filters. Try adjusting your filters.
-      </p>
+      <div className="text-center py-8 space-y-4">
+        <p>We couldn’t find any credit cards matching your filters.</p>
+        {onReset && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="btn btn-outline text-sm"
+          >
+            Reset Filters
+          </button>
+        )}
+      </div>
     );
   }
 

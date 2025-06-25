@@ -20,7 +20,7 @@ function FeatureFilter({ active, setActive, tags = [] }) {
             key={f}
             type="button"
             onClick={() => toggle(f)}
-            className={`text-sm px-3 py-1 rounded-full border transition ${active.includes(f) ? 'bg-accent text-white border-accent' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+            className={`text-sm px-3 py-1 rounded-full border transition focus:outline-none ${active.includes(f) ? 'bg-accent text-white border-accent shadow-sm ring-2 ring-accent' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
             data-testid={`filter-${f.toLowerCase().replace(/\s+/g, '-')}`}
           >
             {f}
