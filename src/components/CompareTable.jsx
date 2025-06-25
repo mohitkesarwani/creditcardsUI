@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   getMinimumAnnualFee,
@@ -18,33 +18,17 @@ import {
   getRewardsValue,
 } from '../utils.js';
 
-const DiffIcon = () => (
-  <svg
-    className="w-3 h-3 text-accent"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9l2 2 4-4" />
-  </svg>
-);
-
-
 function Row({ label, values }) {
   if (values.every((v) => v === undefined || v === null || v === '')) return null;
   const first = values[0];
-  const diffs = values.map((v) => v !== first);
-  const anyDiff = diffs.some(Boolean);
   return (
-    <tr className="even:bg-gray-50 hover:bg-accent/5">
-      <th className="text-left border px-3 py-2 bg-white sticky left-0 z-10 font-medium">
+    <tr className="md:table-row block even:bg-[#f9f9f9] hover:bg-accent/5 border-b border-gray-200">
+      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => (
-        <td key={i} className="border px-3 py-2 text-left max-w-xs">
-          <span className="flex items-center gap-1">
-            {anyDiff && diffs[i] && <DiffIcon />}
-            {formatValue(label, safeDisplay(v, 'Not available'))}
-          </span>
+        <td key={i} className="md:table-cell block px-4 py-3 text-left max-w-xs font-medium">
+          {formatValue(label, safeDisplay(v, 'Not available'))}
         </td>
       ))}
     </tr>
@@ -56,8 +40,8 @@ function RateRow({ label, values }) {
   const nums = values.map((v) => parseFloat(String(v).replace(/[^0-9.]/g, '')));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="even:bg-gray-50 hover:bg-accent/5">
-      <th className="text-left border px-3 py-2 bg-white sticky left-0 z-10 font-medium">
+    <tr className="md:table-row block even:bg-[#f9f9f9] hover:bg-accent/5 border-b border-gray-200">
+      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => {
@@ -66,7 +50,7 @@ function RateRow({ label, values }) {
         return (
           <td
             key={i}
-            className={`border px-3 py-2 text-left max-w-xs ${highlight ? 'bg-green-50' : ''}`}
+            className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50' : ''}`}
           >
             {formatValue(label, safeDisplay(v, 'Not available'))}
           </td>
@@ -78,7 +62,16 @@ function RateRow({ label, values }) {
 
 function CompareTable({ cards }) {
   const [sort, setSort] = useState({ by: 'annualFee', dir: 'asc' });
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 768);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   const sortedCards = useMemo(() => {
     const arr = [...cards];
@@ -98,6 +91,83 @@ function CompareTable({ cards }) {
     });
     return arr;
   }, [cards, sort]);
+
+  const rows = [
+    <Row key="brand" label="Brand" values={sortedCards.map((c) => c.brand)} />,
+    <Row
+      key="interestFree"
+      label="Interest-Free Period"
+      values={sortedCards.map((c) => getInterestFreePeriod(c) || 'Not Offered')}
+    />,
+    <RateRow
+      key="purchaseRate"
+      label="Purchase Interest Rate"
+      values={sortedCards.map((c) => getPurchaseInterestRate(c))}
+    />,
+    <Row
+      key="cashAdvance"
+      label={<span title="Using your card to withdraw cash">Cash Advance Rate</span>}
+      values={sortedCards.map((c) => getCashAdvanceRate(c))}
+    />,
+    <Row
+      key="lateFee"
+      label="Late Payment Fee"
+      values={sortedCards.map((c) => getLatePaymentFee(c))}
+    />,
+    <Row
+      key="comparisonRate"
+      label={<span title="The rate that includes fees and interest">Comparison Rate</span>}
+      values={sortedCards.map((c) => c.comparisonRate)}
+    />,
+    <Row
+      key="annualFee"
+      label="Annual Fee"
+      values={sortedCards.map((c) => c.annualFee ?? getMinimumAnnualFee(c))}
+    />,
+    <Row
+      key="intlSingle"
+      label="International Transaction Fee - Single Currency"
+      values={sortedCards.map((c) => getInternationalFee(c, false))}
+    />,
+    <Row
+      key="intlMulti"
+      label="International Transaction Fee - Multi Currency"
+      values={sortedCards.map((c) => getInternationalFee(c, true))}
+    />,
+    <Row
+      key="addCard"
+      label="Additional Card Fee"
+      values={sortedCards.map((c) => getAdditionalCardFee(c))}
+    />,
+    <Row
+      key="eligibility"
+      label={<span title="Typical qualification criteria">Eligibility</span>}
+      values={sortedCards.map((c) => c.eligibilityCriteria)}
+    />,
+    <Row
+      key="rewardsProg"
+      label="Rewards Program"
+      values={sortedCards.map((c) => getRewardsProgram(c))}
+    />,
+    <Row
+      key="wallets"
+      label="Digital Wallets"
+      values={sortedCards.map((c) => getDigitalWallets(c).join(', '))}
+    />,
+    <Row
+      key="insurance"
+      label="Insurance Offered"
+      values={sortedCards.map((c) => {
+        const list = getInsuranceTypes(c);
+        return list.length > 3 ? list.slice(0, 3).join(', ') + '…' : list.join(', ');
+      })}
+    />,
+    <Row
+      key="cashback"
+      label="Cashback Offer"
+      values={sortedCards.map((c) => getBonusOffer(c))}
+    />,
+  ];
 
   return (
     <div className="overflow-x-auto">
@@ -122,27 +192,31 @@ function CompareTable({ cards }) {
         </button>
       </div>
       <div className="inline-block min-w-full align-middle shadow-md rounded-lg border bg-white">
-        <table className="min-w-full table-auto text-sm">
-          <thead>
+        <table className="min-w-full text-sm leading-relaxed block md:table">
+          <thead className="hidden md:table-header-group">
             <tr className="bg-gray-50">
               <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50"></th>
               {sortedCards.map((c) => (
                 <th key={c.id} className="border px-4 py-3 bg-white text-center max-w-[12rem]">
-                  <div className="flex flex-col items-center gap-2">
+                  <div
+                    className="flex flex-col items-center gap-3 p-4 rounded-lg"
+                    style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                  >
                     <img
                       src={c.productImageUrl || c.cardArt?.[0]?.imageUri || '/radar.svg'}
                       alt={c.name}
-                      className="h-12 object-contain"
+                      className="h-12 object-contain rounded-lg"
                       onError={(e) => {
                         if (e.currentTarget.src !== '/radar.svg') {
                           e.currentTarget.src = '/radar.svg';
                         }
                       }}
                     />
-                    <p className="font-medium text-sm truncate" title={c.name}>{c.name}</p>
+                    <p className="font-semibold text-[1.1rem] leading-snug truncate" title={c.name}>{c.name}</p>
                     <button
                       onClick={() => navigate(`/credit-cards/${c.id}`)}
-                      className="btn btn-primary text-xs px-3 py-1"
+                      aria-label={`View details for ${c.name}`}
+                      className="btn btn-primary text-xs px-3 py-1 hover:bg-accent/90"
                     >
                       Details
                     </button>
@@ -161,68 +235,23 @@ function CompareTable({ cards }) {
               ))}
             </tr>
           </thead>
-        <tbody>
-        <Row label="Brand" values={sortedCards.map((c) => c.brand)} />
-        <Row
-          label="Interest-Free Period"
-          values={sortedCards.map((c) => getInterestFreePeriod(c) || 'Not Offered')}
-        />
-        <RateRow
-          label="Purchase Interest Rate"
-          values={sortedCards.map((c) => getPurchaseInterestRate(c))}
-        />
-        <Row
-          label={<span title="Using your card to withdraw cash">Cash Advance Rate</span>}
-          values={sortedCards.map((c) => getCashAdvanceRate(c))}
-        />
-        <Row
-          label="Late Payment Fee"
-          values={sortedCards.map((c) => getLatePaymentFee(c))}
-        />
-        <Row
-          label={<span title="The rate that includes fees and interest">Comparison Rate</span>}
-          values={sortedCards.map((c) => c.comparisonRate)}
-        />
-        <Row
-          label="Annual Fee"
-          values={sortedCards.map((c) => c.annualFee ?? getMinimumAnnualFee(c))}
-        />
-        <Row
-          label="International Transaction Fee - Single Currency"
-          values={sortedCards.map((c) => getInternationalFee(c, false))}
-        />
-        <Row
-          label="International Transaction Fee - Multi Currency"
-          values={sortedCards.map((c) => getInternationalFee(c, true))}
-        />
-        <Row
-          label="Additional Card Fee"
-          values={sortedCards.map((c) => getAdditionalCardFee(c))}
-        />
-        <Row
-          label={<span title="Typical qualification criteria">Eligibility</span>}
-          values={sortedCards.map((c) => c.eligibilityCriteria)}
-        />
-        <Row
-          label="Rewards Program"
-          values={sortedCards.map((c) => getRewardsProgram(c))}
-        />
-        <Row
-          label="Digital Wallets"
-          values={sortedCards.map((c) => getDigitalWallets(c).join(', '))}
-        />
-        <Row
-          label="Insurance Offered"
-          values={sortedCards.map((c) => {
-            const list = getInsuranceTypes(c);
-            return list.length > 3 ? list.slice(0, 3).join(', ') + '…' : list.join(', ');
-          })}
-        />
-        <Row
-          label="Cashback Offer"
-          values={sortedCards.map((c) => getBonusOffer(c))}
-        />
-        </tbody>
+          <tbody className="block md:table-row-group">
+            {rows.map((row, idx) => (isMobile && !showMore && idx >= 5 ? null : row))}
+          </tbody>
+          {isMobile && !showMore && (
+            <tfoot className="block md:hidden">
+              <tr>
+                <td colSpan={sortedCards.length + 1} className="text-center py-2">
+                  <button
+                    onClick={() => setShowMore(true)}
+                    className="text-xs text-accent underline"
+                  >
+                    + Show more
+                  </button>
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
     </div>
