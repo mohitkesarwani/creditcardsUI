@@ -84,7 +84,7 @@ function MortgagesPage() {
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Mortgages</h1>
         </header>
-        <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden relative">
+        <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
             className="md:hidden mb-2 btn btn-secondary self-start"
             onClick={() => setShowFilters(true)}
@@ -98,7 +98,7 @@ function MortgagesPage() {
             />
           )}
           <div
-            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:pr-4 md:sticky md:top-4 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-4 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
           >
             <MortgageFilters
               filters={filters}
