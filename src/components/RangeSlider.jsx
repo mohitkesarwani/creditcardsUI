@@ -31,7 +31,7 @@ function RangeSlider({
     <div className="relative w-full range-slider h-6" role="group" aria-label="value range selector">
       <div className="absolute w-full h-1 bg-gray-200 rounded top-1/2 transform -translate-y-1/2" />
       <div
-        className="absolute h-1 bg-brand-start rounded top-1/2 transform -translate-y-1/2"
+        className="absolute h-1 bg-accent rounded top-1/2 transform -translate-y-1/2"
         style={{ left: `${left}%`, right: `${right}%` }}
       />
       <div className="absolute -top-6 left-0 w-full" aria-hidden="true">

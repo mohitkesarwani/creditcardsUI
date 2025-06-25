@@ -58,7 +58,7 @@ function HeroInfographic() {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.35, ease: 'easeInOut', delay: i * 0.1 }}
         >
-          <div className="p-4 bg-white rounded-full shadow text-brand-start mb-2">
+          <div className="p-4 bg-white rounded-full shadow text-accent mb-2">
             {step.icon}
           </div>
           <p className="text-sm font-medium text-gray-700 w-32">{step.label}</p>

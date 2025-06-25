@@ -25,7 +25,7 @@ function LandingPage() {
           <HeroInfographic />
           <a
             href="#how-it-works"
-            className="inline-flex items-center gap-2 text-brand-start font-semibold group mt-6"
+            className="inline-flex items-center gap-2 text-accent font-semibold group mt-6"
           >
             <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-2">
               See How It Works

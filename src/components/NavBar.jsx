@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedRadarLogo from './AnimatedRadarLogo';
 
-function Header() {
+function NavBar() {
   return (
-    <header className="bg-navy text-white shadow">
+    <header className="bg-navy text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="RewardRadar home">
           <AnimatedRadarLogo className="w-8 h-8 text-white" />
@@ -27,4 +27,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default NavBar;

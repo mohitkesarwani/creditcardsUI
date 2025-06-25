@@ -22,7 +22,7 @@ function ComparePage() {
   }
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen overflow-auto">
+    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen overflow-auto">
       <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">Browse &amp; Compare Credit Cards</h1>
       <CompareTable cards={selected} />
     </div>

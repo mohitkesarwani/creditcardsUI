@@ -12,13 +12,13 @@ import ContactPage from './pages/ContactPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
-import Header from './components/Header';
+import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 
 function App() {
   return (
     <SelectedCardsProvider>
-      <Header />
+      <NavBar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/credit-cards" element={<CardsPage />} />

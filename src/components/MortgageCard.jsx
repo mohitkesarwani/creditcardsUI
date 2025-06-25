@@ -20,7 +20,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
       {mortgage.cardArt?.imageUri ? (
         <img src={mortgage.cardArt.imageUri} alt="" className="mb-2 rounded" />
       ) : (
-        <div className="h-12 mb-2 rounded bg-gradient-to-r from-brand-start to-brand-end text-white flex items-center justify-center font-semibold">
+        <div className="h-12 mb-2 rounded bg-gradient-to-r from-accent to-accent/80 text-white flex items-center justify-center font-semibold">
           {mortgage.bankName || mortgage.brandName}
         </div>
       )}
@@ -44,7 +44,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
       </div>
       <div className="flex flex-wrap gap-1 mb-2">
         {tags.map(t => (
-          <span key={t} className={`text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} ${highlightTags.includes(t) ? 'ring-2 ring-brand-start' : ''}`} data-testid={`tag-${t.toLowerCase().replace(/\s+/g,'-')}`}>{t}</span>
+          <span key={t} className={`text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} ${highlightTags.includes(t) ? 'ring-2 ring-accent' : ''}`} data-testid={`tag-${t.toLowerCase().replace(/\s+/g,'-')}`}>{t}</span>
         ))}
       </div>
       <a href={mortgage.applicationUri} target="_blank" rel="noopener noreferrer" className="mt-auto btn btn-primary text-center text-sm">Apply Now</a>

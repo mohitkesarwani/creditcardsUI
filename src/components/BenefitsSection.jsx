@@ -38,7 +38,7 @@ function BenefitsSection() {
       <div className="max-w-5xl mx-auto grid gap-8 md:grid-cols-3 text-center">
         {benefits.map((b, i) => (
           <div key={i} className="flex flex-col items-center">
-            <div className="p-4 rounded-full bg-white shadow mb-2 text-brand-start">
+            <div className="p-4 rounded-full bg-white shadow mb-2 text-accent">
               {b.icon}
             </div>
             <h3 className="font-medium text-gray-800">{b.title}</h3>

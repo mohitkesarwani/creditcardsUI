@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { fetchCreditCards } from '../api/creditCards';
 import CardGrid from '../components/CardGrid';
 import AdvancedFilters from '../components/AdvancedFilters';
-import Loader from '../components/Loader.jsx';
+import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMinimumAnnualFee, getCardTags } from '../utils.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
@@ -106,11 +106,11 @@ function CardsPage() {
 
 
 
-  if (loading) return <Loader message="Loading credit cards..." />;
+  if (loading) return <LoaderSkeleton rows={5} />;
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen flex flex-col overflow-x-hidden">
+    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen flex flex-col overflow-x-hidden">
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Credit Cards</h1>

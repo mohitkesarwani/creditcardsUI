@@ -6,8 +6,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'brand-start': '#4f46e5',
-        'brand-end': '#8b5cf6',
+        accent: '#0078FF',
+        navy: '#001f3f',
+        'light-bg': '#f9f9f9',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],

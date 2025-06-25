@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply font-sans;
+  @apply font-sans bg-light-bg text-gray-900;
 }
 
 @keyframes orbit {
@@ -26,7 +26,7 @@ body {
 }
 
 .feature-box {
-  @apply bg-gradient-to-r from-brand-start to-brand-end p-px rounded-lg transition transform;
+  @apply bg-gradient-to-r from-accent to-accent/80 p-px rounded-lg transition transform;
 }
 .feature-inner {
   @apply bg-white rounded-lg shadow-md flex items-start gap-4 p-6;
@@ -35,7 +35,7 @@ body {
   @apply shadow-xl;
 }
 .icon-wrap {
-  @apply p-3 rounded-full bg-gradient-to-r from-brand-start to-brand-end text-white shadow;
+  @apply p-3 rounded-full bg-gradient-to-r from-accent to-accent/80 text-white shadow;
 }
 .feature-box:hover {
   @apply -translate-y-1;
@@ -78,13 +78,13 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .btn {
-  @apply px-5 py-3 rounded-full font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-start focus:ring-offset-2;
+  @apply px-5 py-3 rounded-lg font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
 }
 .btn-primary {
-  @apply bg-brand-start text-white hover:bg-brand-end;
+  @apply bg-accent text-white hover:bg-accent/90;
 }
 .btn-secondary {
-  @apply border border-brand-start text-brand-start hover:bg-brand-start hover:text-white;
+  @apply border border-accent text-accent hover:bg-accent hover:text-white;
 }
 
 html {
@@ -132,7 +132,7 @@ html {
   height: 1rem;
   width: 1rem;
   border-radius: 9999px;
-  background-color: theme('colors.brand-start');
+  background-color: theme('colors.accent');
   border: 2px solid white;
 }
 .range-slider input[type='range']::-moz-range-thumb {
@@ -140,7 +140,7 @@ html {
   height: 1rem;
   width: 1rem;
   border-radius: 9999px;
-  background-color: theme('colors.brand-start');
+  background-color: theme('colors.accent');
   border: 2px solid white;
 }
 
