@@ -17,29 +17,37 @@ function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Smarter Financial Decisions Start Here.
+            Compare. Choose. Confidently.
           </motion.h1>
           <p className="mb-8 text-lg text-gray-700">
-            Compare credit cards, home loans, and deposits in one simple dashboard—tailored to your goals.
+            Explore credit cards, home loans, and term deposits with easy-to-use tools that help you make informed financial comparisons — all in one place.
           </p>
           <HeroInfographic />
           <a
             href="#how-it-works"
-            className="inline-flex items-center gap-2 text-accent font-semibold group mt-6"
+            className="inline-flex items-center font-semibold text-[#007aff] mt-6"
           >
-            <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-2">
-              See How It Works
-            </span>
+            <span>See How It Works</span>
             <svg
-              className="w-6 h-6 opacity-80 transition-transform duration-300 ease-in-out group-hover:opacity-100 group-hover:scale-110"
+              className="w-4 h-4 ml-[6px]"
               viewBox="0 0 24 24"
-              fill="currentColor"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path d="M8 5v14l11-7z" />
+              <path d="M5 12h14" />
+              <path d="M12 5l7 7-7 7" />
             </svg>
           </a>
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-            <Link to="/credit-cards" className="btn btn-primary">Compare Credit Cards</Link>
+            <Link
+              to="/credit-cards"
+              className="bg-[#007aff] text-white rounded-[12px] text-[16px] font-semibold px-6 py-3"
+            >
+              Compare Credit Cards
+            </Link>
             <Link to="/home-loans" className="btn btn-secondary">Compare Home Loans</Link>
             <Link to="/deposits" className="btn btn-secondary">Compare Deposit Accounts</Link>
           </div>
@@ -108,6 +116,9 @@ function LandingPage() {
           </div>
         </div>
       </section>
+      <p className="text-[12px] text-[#888] mt-8 px-4 max-w-3xl mx-auto text-center md:text-left">
+        Information on this site is general in nature and does not constitute financial advice. Always consider your personal circumstances before making a financial decision.
+      </p>
     </div>
   );
 }
