@@ -6,6 +6,7 @@ import CreditCard from './src/models/CreditCard.js';
 import Referral from './src/models/Referral.js';
 import Lead from './src/models/Lead.js';
 import EmailEvent from './src/models/EmailEvent.js';
+import { getMinimumAnnualFee, formatPercent, formatMoney } from './src/utils.js';
 
 dotenv.config();
 
@@ -14,12 +15,41 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+const normalizeCard = (card) => {
+  const interestRateRaw = card.feesAndPricing?.interestRates?.[0]?.rate;
+  const interestRate = interestRateRaw ? formatPercent(parseFloat(interestRateRaw)) : null;
+  const comparisonRateRaw = card.lendingRates?.[0]?.comparisonRate;
+  const comparisonRate = comparisonRateRaw ? formatPercent(parseFloat(comparisonRateRaw)) : null;
+  const annualFee = getMinimumAnnualFee(card);
+
+  const eligibility = card.eligibility?.length
+    ? `${card.eligibility[0].value}${card.eligibility[0].unit || ''}`
+    : 'Info not available';
+
+  const productImageUrl = card.cardArt?.[0]?.imageUri || null;
+
+  const hasRequired = !!(productImageUrl && card.applicationUri);
+
+  return {
+    ...card,
+    brand: card.brand || card.brandName || 'Unknown',
+    interestRate: interestRate || '–',
+    interestFree: card.feesAndPricing?.interestFreePeriod || null,
+    comparisonRate: comparisonRate || null,
+    annualFee: annualFee !== null ? formatMoney(annualFee) : null,
+    eligibilityCriteria: eligibility,
+    applicationUrl: card.applicationUri || null,
+    productImageUrl,
+    status: hasRequired ? 'complete' : 'incomplete',
+  };
+};
+
 app.get('/api/credit-cards', async (req, res) => {
   try {
     const cards = await CreditCard.find({})
       .sort({ isSponsored: -1, sponsorRank: 1 })
       .lean();
-    res.json(cards);
+    res.json(cards.map(normalizeCard));
   } catch (err) {
     console.error('Error fetching cards:', err.message);
     res.status(500).send('Server error');
@@ -39,7 +69,7 @@ app.get('/api/credit-cards/:id', async (req, res) => {
     if (!card) {
       return res.status(404).send('Card not found');
     }
-    res.json(card);
+    res.json(normalizeCard(card));
   } catch (err) {
     console.error('Error fetching card:', err.message);
     res.status(500).send('Server error');

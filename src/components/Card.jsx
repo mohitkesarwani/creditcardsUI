@@ -9,8 +9,7 @@ import {
   getTagColor,
   getSellingPoints,
   formatCategory,
-  formatMoney,
-  formatPercent,
+  formatValue,
   findFeeAmount,
 } from '../utils.js';
 
@@ -20,31 +19,11 @@ function Card({ card, selectedTags = [] }) {
   const [showDetails, setShowDetails] = useState(false);
   const navigate = useNavigate();
 
-  const formatValue = (label, value) => {
-    if (value === null || value === undefined || value === '') return value;
-    if (typeof value === 'string' && (/\$/i.test(value) || /%/.test(value))) {
-      return value;
-    }
-    const num = parseFloat(value);
-    if (!Number.isNaN(num)) {
-      const l = label.toLowerCase();
-      if (/fee|payment|amount|cash|advance/.test(l)) {
-        return formatMoney(num);
-      }
-      if (/rate|interest|percent/.test(l)) {
-        return formatPercent(num);
-      }
-      if (num >= 0 && num <= 1) {
-        return formatPercent(num);
-      }
-    }
-    return value;
-  };
 
-  const annualFee = findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
-  const interestRate = card.feesAndPricing?.interestRates?.[0]?.rate;
-  const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
-  const interestFree = card.feesAndPricing?.interestFreePeriod;
+  const annualFee = card.annualFee ?? findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
+  const interestRate = card.interestRate ?? card.feesAndPricing?.interestRates?.[0]?.rate;
+  const comparisonRate = card.comparisonRate ?? card.lendingRates?.[0]?.comparisonRate;
+  const interestFree = card.interestFree ?? card.feesAndPricing?.interestFreePeriod;
   const latePaymentFee = findFeeAmount(card, 'late');
   const tags = card.tags || getFeatureTags(card);
   const sellingPoints = getSellingPoints(card, 4);
@@ -61,7 +40,7 @@ function Card({ card, selectedTags = [] }) {
       await apiClient.post('/api/referrals', {
         cardId: card.id,
         partnerId: card.partnerId,
-        redirectUrl: card.applicationUri,
+        redirectUrl: card.applicationUrl || card.applicationUri,
       });
       if (window.gtag) {
         window.gtag('event', 'affiliate_click', {
@@ -165,9 +144,10 @@ function Card({ card, selectedTags = [] }) {
       className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in"
     >
       <img
-        src={card.cardArt?.[0]?.imageUri}
+        src={card.productImageUrl || card.cardArt?.[0]?.imageUri}
         alt={card.brandName || card.brand}
         className="w-full h-32 object-contain mb-2 cursor-pointer"
+        onError={(e) => (e.currentTarget.src = '/radar.svg')}
         onClick={() => setShowDetails(true)}
       />
       {sponsored && (
@@ -264,7 +244,7 @@ function Card({ card, selectedTags = [] }) {
         </button>
       </div>
       <a
-        href={card.applicationUri}
+        href={card.applicationUrl || card.applicationUri}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleApply}

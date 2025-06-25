@@ -1,30 +1,21 @@
 import React from 'react';
-import { getMinimumAnnualFee, formatPercent, formatMoney } from '../utils.js';
+import { getMinimumAnnualFee, formatValue, safeDisplay } from '../utils.js';
 
 
 function Row({ label, values }) {
+  if (values.every((v) => v === undefined || v === null || v === '')) return null;
   const first = values[0];
   const diffs = values.map((v) => v !== first);
   const anyDiff = diffs.some(Boolean);
-  const format = (val) => {
-    if (val === null || val === undefined || val === '') return '-';
-    if (typeof val === 'string' && (/\$/i.test(val) || /%/.test(val))) return val;
-    const num = parseFloat(val);
-    if (!Number.isNaN(num)) {
-      if (/fee|amount|payment|cash|advance/i.test(label)) return formatMoney(num);
-      if (num >= 0 && num <= 1) return formatPercent(num);
-    }
-    return val;
-  };
   return (
-    <tr>
-      <th className="text-left border px-2 py-1 bg-gray-50">{label}</th>
+    <tr className="even:bg-gray-50 hover:bg-accent/5">
+      <th className="text-left border px-3 py-2 bg-white sticky left-0 z-10">{label}</th>
       {values.map((v, i) => (
         <td
           key={i}
-          className={`border px-2 py-1 text-center ${anyDiff && diffs[i] ? 'bg-yellow-100' : ''}`}
+          className={`border px-3 py-2 text-left max-w-xs ${anyDiff && diffs[i] ? 'bg-yellow-50' : ''}`}
         >
-          {format(v)}
+          {formatValue(label, safeDisplay(v))}
         </td>
       ))}
     </tr>
@@ -33,66 +24,59 @@ function Row({ label, values }) {
 
 function CompareTable({ cards }) {
   return (
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="border px-2 py-1"></th>
-          {cards.map((c) => (
-            <th key={c.id} className="border px-2 py-1">
-              <img
-                src={c.cardArt?.[0]?.imageUri}
-                alt={c.name}
-                className="h-12 mx-auto"
-              />
-              <p className="font-bold text-sm mt-1">{c.name}</p>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        <Row label="Brand" values={cards.map((c) => c.brandName || c.brand)} />
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse min-w-max leading-relaxed">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border px-3 py-2 sticky left-0 z-20 bg-gray-100"></th>
+            {cards.map((c) => (
+              <th key={c.id} className="border px-3 py-2 text-center max-w-[12rem]">
+                <img
+                  src={c.productImageUrl || c.cardArt?.[0]?.imageUri}
+                  alt={c.name}
+                  className="h-12 mx-auto object-contain"
+                  onError={(e) => (e.currentTarget.src = '/radar.svg')}
+                />
+                <p className="font-bold text-sm mt-1 truncate" title={c.name}>{c.name}</p>
+                {c.applicationUrl && (
+                  <a
+                    href={c.applicationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-block bg-accent text-white px-3 py-1 rounded text-xs"
+                  >
+                    Apply
+                  </a>
+                )}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+        <Row label="Brand" values={cards.map((c) => c.brand)} />
         <Row
           label="Interest Free"
-          values={cards.map((c) => c.feesAndPricing?.interestFreePeriod)}
+          values={cards.map((c) => c.interestFree)}
         />
         <Row
           label="Interest Rate"
-          values={cards.map((c) => c.feesAndPricing?.interestRates?.[0]?.rate)}
+          values={cards.map((c) => c.interestRate)}
         />
         <Row
           label="Comparison Rate"
-          values={cards.map((c) => c.lendingRates?.[0]?.comparisonRate)}
+          values={cards.map((c) => c.comparisonRate)}
         />
         <Row
           label="Annual Fee"
-          values={cards.map((c) => {
-            const fee = getMinimumAnnualFee(c);
-            return fee ?? '';
-          })}
+          values={cards.map((c) => c.annualFee ?? getMinimumAnnualFee(c))}
         />
         <Row
           label="Eligibility"
-          values={cards.map((c) =>
-            c.eligibility?.length
-              ? `${c.eligibility[0].value}${c.eligibility[0].unit || ''}`
-              : ''
-          )}
+          values={cards.map((c) => c.eligibilityCriteria)}
         />
-        <Row
-          label="Application"
-          values={cards.map((c) => (
-            <a
-              href={c.applicationUri}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600"
-            >
-              Apply
-            </a>
-          ))}
-        />
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   );
 }
 
