@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { fetchMortgages } from '../api/residentialMortgages';
 import MortgageCardGrid from '../components/MortgageCardGrid';
 import MortgageFilters from '../components/MortgageFilters';
+import Loader from '../components/Loader.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
 
 function MortgagesPage() {
@@ -14,6 +15,8 @@ function MortgagesPage() {
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableEligibility, setAvailableEligibility] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -36,6 +39,9 @@ function MortgagesPage() {
         setAvailableEligibility([...new Set(data.flatMap(m => m.eligibility?.map(e => e.eligibilityType) || []))]);
       } catch (err) {
         console.error(err);
+        setError('Failed to load mortgages');
+      } finally {
+        setLoading(false);
       }
     };
     load();
@@ -77,6 +83,8 @@ function MortgagesPage() {
     return () => observer.disconnect();
   }, [filtered]);
 
+  if (loading) return <Loader message="Fetching mortgage rates..." />;
+  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen flex flex-col overflow-x-hidden">

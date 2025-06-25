@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { fetchCreditCards } from '../api/creditCards';
 import CardGrid from '../components/CardGrid';
 import AdvancedFilters from '../components/AdvancedFilters';
+import Loader from '../components/Loader.jsx';
 import { getMinimumAnnualFee, getCardTags } from '../utils.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
@@ -126,8 +127,8 @@ function CardsPage() {
 
 
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <Loader message="Loading credit cards..." />;
+  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-brand-start/10 to-brand-end/10 min-h-screen flex flex-col overflow-x-hidden">

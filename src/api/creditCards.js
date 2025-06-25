@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+import apiClient from './apiClient.js';
 
 const normalizeCard = (card) => {
   if (!card) return card;
@@ -12,8 +10,7 @@ const normalizeCard = (card) => {
 
 export const fetchCreditCards = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/credit-cards`);
-    console.log('Fetched credit cards:', response.data);
+    const response = await apiClient.get('/api/credit-cards');
     return response.data.map(normalizeCard);
   } catch (err) {
     console.error('Error fetching credit cards:', err);
@@ -23,7 +20,7 @@ export const fetchCreditCards = async () => {
 
 export const fetchCreditCard = async (id) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/credit-cards/${id}`);
+    const response = await apiClient.get(`/api/credit-cards/${id}`);
     return normalizeCard(response.data);
   } catch (err) {
     console.error('Error fetching credit card:', err);
