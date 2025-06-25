@@ -17,10 +17,8 @@ function CardsPage() {
     type: '',
     creditScore: '',
     annualFee: '',
-    interestRate: [0, 0],
     features: [],
   });
-  const [interestBounds, setInterestBounds] = useState([0, 0]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -37,15 +35,6 @@ function CardsPage() {
         setAvailableTags([
           ...new Set(withTags.flatMap((c) => c.tags)),
         ]);
-        const rates = withTags
-          .map((c) => parseFloat(c.feesAndPricing?.interestRates?.[0]?.rate))
-          .filter((n) => !isNaN(n));
-        if (rates.length) {
-          const minRate = Math.min(...rates);
-          const maxRate = Math.max(...rates);
-          setInterestBounds([minRate, maxRate]);
-          setFilters((f) => ({ ...f, interestRate: [minRate, maxRate] }));
-        }
       } catch (err) {
         setError('Failed to load cards');
       } finally {
@@ -90,17 +79,6 @@ function CardsPage() {
       result = result.filter((c) => {
         const fee = getMinimumAnnualFee(c);
         return fee !== null && fee <= max;
-      });
-    }
-
-    if (filters.interestRate?.length) {
-      result = result.filter((c) => {
-        const rate = parseFloat(c.feesAndPricing?.interestRates?.[0]?.rate);
-        return (
-          !isNaN(rate) &&
-          rate >= filters.interestRate[0] &&
-          rate <= filters.interestRate[1]
-        );
       });
     }
 
@@ -157,7 +135,6 @@ function CardsPage() {
               filters={filters}
               setFilters={setFilters}
               availableTags={availableTags}
-              interestBounds={interestBounds}
             />
             <button className="md:hidden mt-2 text-sm" onClick={() => setShowFilters(false)}>
               Close

@@ -1,18 +1,15 @@
 import React from 'react';
 import FeatureFilter from './FeatureFilter';
-import RangeSlider from './RangeSlider';
-import { formatPercent } from '../utils.js';
-
 const CARD_TYPES = ['', 'Rewards', 'Travel', 'Balance transfer', 'Low interest', 'No annual fee'];
 
-function AdvancedFilters({ filters, setFilters, availableTags = [], interestBounds = [0, 0] }) {
+function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
   const update = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const setFeatures = (features) => update('features', features);
   const clearAll = () =>
-    setFilters({ type: '', creditScore: '', annualFee: '', interestRate: interestBounds, features: [] });
+    setFilters({ type: '', creditScore: '', annualFee: '', features: [] });
 
   return (
     <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md hover:shadow-lg transition">
@@ -60,19 +57,6 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], interestBoun
             value={filters.annualFee}
             onChange={(e) => update('annualFee', e.target.value)}
           />
-        </label>
-        <label className="block text-sm">
-          Interest Rate Range
-          <RangeSlider
-            min={interestBounds[0]}
-            max={interestBounds[1]}
-            step={0.005}
-            value={filters.interestRate}
-            onChange={(val) => update('interestRate', val)}
-          />
-          <div className="text-xs text-gray-600 mt-1">
-            Showing: {formatPercent(filters.interestRate[0], 3)} – {formatPercent(filters.interestRate[1], 3)}
-          </div>
         </label>
       </details>
       <button
