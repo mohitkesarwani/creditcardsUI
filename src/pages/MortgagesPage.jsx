@@ -91,7 +91,7 @@ function MortgagesPage() {
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Mortgage. No Guesswork.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Compare home loans with confidence—interest rates, features, and fees made easy to understand so you can choose what fits you best.</p>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Compare mortgages easily. Find your best rate, faster.</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button

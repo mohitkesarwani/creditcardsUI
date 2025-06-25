@@ -1,6 +1,5 @@
 import React from 'react';
 import FeatureFilter from './FeatureFilter';
-const CARD_TYPES = ['', 'Rewards', 'Travel', 'Balance transfer', 'Low interest', 'No annual fee'];
 
 function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
   const update = (key, value) => {
@@ -9,7 +8,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
 
   const setFeatures = (features) => update('features', features);
   const clearAll = () =>
-    setFilters({ type: '', creditScore: '', annualFee: '', features: [] });
+    setFilters({ creditScore: '', annualFee: '', features: [] });
 
   return (
     <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md hover:shadow-lg transition">
@@ -19,46 +18,37 @@ function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
         </svg>
         Filters
       </h4>
-      <label className="block text-sm">
-        Card Type
-        <select
-          className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent"
-          value={filters.type}
-          onChange={(e) => update('type', e.target.value)}
-        >
-          {CARD_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {t || 'Any'}
-            </option>
-          ))}
-        </select>
-      </label>
       <FeatureFilter
         active={filters.features}
         setActive={setFeatures}
         tags={availableTags}
       />
-      <details className="space-y-4">
-        <summary className="cursor-pointer font-semibold">More Filters</summary>
-        <label className="block text-sm">
-          Minimum Credit Score
+      <label className="block text-sm">
+        Minimum Credit Score
+        <input
+          type="number"
+          placeholder="e.g., 700"
+          className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent shadow-sm"
+          value={filters.creditScore}
+          onChange={(e) => update('creditScore', e.target.value)}
+        />
+      </label>
+      <label className="block text-sm">
+        Max Annual Fee
+        <div className="flex items-center gap-2 mt-1">
           <input
-            type="number"
-            className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent"
-            value={filters.creditScore}
-            onChange={(e) => update('creditScore', e.target.value)}
+            type="range"
+            min="0"
+            max="600"
+            value={filters.annualFee || 600}
+            onChange={(e) => update('annualFee', e.target.value === '600' ? '' : e.target.value)}
+            className="w-full accent-accent"
           />
-        </label>
-        <label className="block text-sm">
-          Max Annual Fee
-          <input
-            type="number"
-            className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent"
-            value={filters.annualFee}
-            onChange={(e) => update('annualFee', e.target.value)}
-          />
-        </label>
-      </details>
+          <span className="text-xs font-medium w-12 text-right">
+            {filters.annualFee ? `$${filters.annualFee}` : 'Any'}
+          </span>
+        </div>
+      </label>
       <button
         type="button"
         onClick={clearAll}
