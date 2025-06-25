@@ -113,8 +113,8 @@ function CardsPage() {
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen flex flex-col overflow-x-hidden">
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Credit Cards</h1>
-          <p className="text-gray-700 text-lg">Use smart filters to discover the right credit cards for your lifestyle—rewards, cashback, travel perks and more.</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Card. No Guesswork.</h1>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Use smart filters to explore rewards, cashback, low-interest, and balance transfer credit cards—compare clearly and choose with confidence.</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
