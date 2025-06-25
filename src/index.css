@@ -213,3 +213,16 @@ html {
 .app-footer a {
   @apply text-white text-sm leading-6 pb-3 block;
 }
+
+/* Icon group inside hero selector */
+.product-icon-container {
+  @apply flex justify-center items-center space-x-3 flex-wrap max-w-full overflow-hidden;
+}
+
+@media (max-width: 640px) {
+  .product-icon-container {
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+}
