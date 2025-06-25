@@ -48,20 +48,20 @@ const steps = [
 
 function HeroInfographic() {
   return (
-    <div className="mt-8 flex flex-col sm:flex-row justify-center items-start gap-8 sm:gap-16">
+    <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-8 sm:gap-16">
       {steps.map((step, i) => (
         <motion.div
           key={step.label}
-          className="flex flex-col items-center text-center"
+          className="flex flex-col items-center text-center gap-2 w-[120px] my-6"
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.35, ease: 'easeInOut', delay: i * 0.1 }}
         >
-          <div className="p-4 bg-white rounded-full shadow text-accent mb-2">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow text-accent">
             {step.icon}
           </div>
-          <p className="text-sm font-medium text-gray-700 w-32">{step.label}</p>
+          <p className="text-sm font-medium text-gray-700">{step.label}</p>
         </motion.div>
       ))}
     </div>
