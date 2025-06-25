@@ -14,7 +14,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
 
   return (
     <div
-      className="bg-white rounded-lg shadow transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 p-4 flex flex-col relative fade-in"
+      className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in"
       data-testid="mortgage-card"
     >
       {mortgage.cardArt?.imageUri ? (
@@ -24,8 +24,8 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           {mortgage.bankName || mortgage.brandName}
         </div>
       )}
-      <h3 className="font-bold mb-1">{mortgage.name}</h3>
-      <div className="grid grid-cols-2 gap-2 text-sm mb-2">
+      <h3 className="card-title mb-1">{mortgage.name}</h3>
+      <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-2">
         {rate && (
           <span>
             <span className="font-semibold">Rate:</span> {formatPercent(rate)}

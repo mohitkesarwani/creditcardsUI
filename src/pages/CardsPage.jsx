@@ -118,7 +118,7 @@ function CardsPage() {
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
-            className="md:hidden mb-2 btn btn-secondary self-start"
+            className="md:hidden mb-2 btn btn-outline self-start"
             onClick={() => setShowFilters(true)}
           >
             Filters
@@ -137,7 +137,7 @@ function CardsPage() {
               setFilters={setFilters}
               availableTags={availableTags}
             />
-            <button className="md:hidden mt-2 text-sm" onClick={() => setShowFilters(false)}>
+            <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
               Close
             </button>
             <button

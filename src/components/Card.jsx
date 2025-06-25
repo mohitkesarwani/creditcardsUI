@@ -162,7 +162,7 @@ function Card({ card, selectedTags = [] }) {
 
   return (
     <div
-      className="bg-white rounded-lg shadow transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 p-4 flex flex-col relative fade-in"
+      className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in"
     >
       <img
         src={card.cardArt?.[0]?.imageUri}
@@ -178,7 +178,7 @@ function Card({ card, selectedTags = [] }) {
           {featuredBadge}
         </span>
       )}
-      <h3 className="font-bold mb-1">{card.name}</h3>
+      <h3 className="card-title mb-1">{card.name}</h3>
       <div className="flex flex-wrap gap-1 mb-2">
         {tags.map((t) => {
           const match = selectedTags.includes(t);
@@ -203,32 +203,32 @@ function Card({ card, selectedTags = [] }) {
           </span>
         ))}
       </div>
-      <div className="text-sm grid gap-1 mb-2">
-        <p>
+      <div className="grid gap-1 mb-2 text-sm">
+        <p className="card-subtext">
           <span className="font-bold">Interest Rate:</span>{' '}
           {interestRate ? formatValue('interest rate', interestRate) : '0%'}
         </p>
         {comparisonRate && (
-          <p>
+          <p className="card-subtext">
             <span className="font-bold">Comparison Rate:</span>{' '}
             {formatValue('comparison rate', comparisonRate)}
           </p>
         )}
         {interestFree && (
-          <p>
+          <p className="card-subtext">
             <span className="font-bold">Interest Free:</span> {interestFree}
           </p>
         )}
-        <p>
+        <p className="card-subtext">
           <span className="font-bold">Annual Fee:</span>{' '}
           {annualFee !== null ? formatValue('annual fee', annualFee) : '$0'}
         </p>
-        <p>
+        <p className="card-subtext">
           <span className="font-bold">Rewards Type:</span>{' '}
           {card.productCategory ? formatCategory(card.productCategory) : 'None'}
         </p>
         {latePaymentFee && (
-          <p>
+          <p className="card-subtext">
             <span className="font-bold">Late Payment Fee:</span>{' '}
             {formatValue('late fee', latePaymentFee)}
           </p>

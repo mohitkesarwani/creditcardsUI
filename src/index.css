@@ -147,3 +147,69 @@ html {
 .range-slider .tooltip {
   @apply absolute px-2 py-0.5 rounded bg-gray-700 text-white text-xs transform -translate-x-1/2 whitespace-nowrap transition-opacity;
 }
+/* Skyscanner inspired components */
+.card-tile {
+  @apply bg-white rounded-xl p-4 relative;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+.card-title {
+  @apply text-lg font-semibold;
+}
+.card-subtext {
+  @apply text-sm text-gray-600;
+}
+.card-price {
+  @apply text-lg font-bold text-black text-right;
+}
+
+.pill-tab {
+  @apply text-sm font-semibold px-5 py-3 rounded-full transition;
+}
+.pill-tab-selected {
+  @apply bg-navy text-white;
+}
+.pill-tab-unselected {
+  @apply border border-gray-300 text-gray-700;
+}
+.pill-tab:hover {
+  @apply contrast-125;
+}
+
+.section-heading {
+  font-size: 28px;
+  @apply font-bold text-[#111] mt-8;
+}
+.section-subtext {
+  font-size: 16px;
+  @apply text-[#666] leading-relaxed;
+}
+
+.accordion-item {
+  @apply px-5 py-4 border-b border-gray-100;
+}
+.accordion-question {
+  @apply flex justify-between items-center font-semibold text-base;
+}
+.accordion-answer {
+  @apply text-[15px] py-2;
+}
+
+.btn {
+  @apply px-5 py-2 rounded-lg font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 min-h-[44px];
+}
+.btn-primary {
+  @apply bg-accent text-white hover:bg-accent/90;
+}
+.btn-outline {
+  @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+}
+.btn-pill {
+  @apply bg-accent text-white rounded-full hover:bg-accent/90;
+}
+
+.app-footer {
+  @apply bg-navy text-white py-8 mt-12;
+}
+.app-footer a {
+  @apply text-white text-sm leading-6 pb-3 block;
+}

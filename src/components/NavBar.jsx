@@ -19,8 +19,8 @@ function NavBar() {
           <Link to="/contact">Contact Us</Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Link to="/login" className="btn btn-secondary text-sm px-4 py-2">Log In</Link>
-          <Link to="/signup" className="btn btn-primary text-sm px-4 py-2">Sign Up</Link>
+          <Link to="/login" className="btn btn-outline text-sm">Log In</Link>
+          <Link to="/signup" className="btn btn-pill text-sm">Sign Up</Link>
         </div>
       </div>
     </header>
