@@ -36,10 +36,10 @@ function CardDetailPage() {
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
   if (!card) return <p>Card not found.</p>;
 
-  const annualFee = getMinimumAnnualFee(card);
-  const interestRate = card.feesAndPricing?.interestRates?.[0]?.rate;
-  const comparisonRate = card.lendingRates?.[0]?.comparisonRate;
-  const interestFree = card.feesAndPricing?.interestFreePeriod;
+  const annualFee = card.annualFee ?? getMinimumAnnualFee(card);
+  const interestRate = card.interestRate ?? card.feesAndPricing?.interestRates?.[0]?.rate;
+  const comparisonRate = card.comparisonRate ?? card.lendingRates?.[0]?.comparisonRate;
+  const interestFree = card.interestFree ?? card.feesAndPricing?.interestFreePeriod;
   const tags = getFeatureTags(card);
   const featureGroups = categorizeFeatures(card.features);
 
@@ -49,9 +49,10 @@ function CardDetailPage() {
       <div className="mt-4 max-w-3xl mx-auto">
         <div className="flex flex-col items-center text-center mb-6">
           <img
-            src={card.cardArt?.[0]?.imageUri}
+            src={card.productImageUrl || card.cardArt?.[0]?.imageUri}
             alt={card.name}
             className="h-40 mb-4"
+            onError={(e) => (e.currentTarget.src = '/radar.svg')}
           />
           <h2 className="text-2xl font-bold mb-2">{card.name}</h2>
           <div className="flex flex-wrap gap-1 mb-2">
@@ -66,7 +67,7 @@ function CardDetailPage() {
           </div>
           <p className="mb-4 max-w-xl">{card.description}</p>
           <a
-            href={card.applicationUri}
+            href={card.applicationUrl || card.applicationUri}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-blue-600 text-white px-4 py-2 rounded"

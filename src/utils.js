@@ -4,6 +4,26 @@ export function parseCurrency(value) {
   return Number.isNaN(num) ? null : num;
 }
 
+// Gracefully handle undefined/null values when displaying UI fields
+export function safeDisplay(value, fallback = '–') {
+  return value === undefined || value === null || value === '' ? fallback : value;
+}
+
+// Format various numeric or string values consistently
+export function formatValue(label, value, fallback = '–') {
+  const val = safeDisplay(value, null);
+  if (val === null) return fallback;
+  if (typeof val === 'string' && (/\$/i.test(val) || /%/.test(val))) return val;
+  const num = parseFloat(val);
+  if (!Number.isNaN(num)) {
+    const l = label.toLowerCase();
+    if (/fee|payment|amount|cash|advance/.test(l)) return formatMoney(num);
+    if (/rate|interest|percent|comparison/.test(l)) return formatPercent(num);
+    if (num >= 0 && num <= 1) return formatPercent(num);
+  }
+  return val;
+}
+
 export function formatMoney(value) {
   const num = parseCurrency(value);
   if (num === null) return value;
