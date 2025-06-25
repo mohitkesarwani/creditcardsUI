@@ -14,23 +14,24 @@ function FeatureFilter({ active, setActive, tags = [] }) {
   return (
     <div className="mb-4">
       <h4 className="font-bold mb-2">Filter Features</h4>
-      {tags.map((f) => (
-        <label key={f} className="flex items-center text-sm space-x-2 py-1">
-          <input
-            type="checkbox"
-            className="rounded text-brand-start focus:ring-brand-start"
-            checked={active.includes(f)}
-            onChange={() => toggle(f)}
+      <div className="flex flex-wrap gap-2">
+        {tags.map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => toggle(f)}
+            className={`text-sm px-3 py-1 rounded-full border transition ${active.includes(f) ? 'bg-accent text-white border-accent' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
             data-testid={`filter-${f.toLowerCase().replace(/\s+/g, '-')}`}
-          />
-          <span>{f}</span>
-        </label>
-      ))}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
       {tags.length > 0 && (
         <button
           type="button"
           onClick={clear}
-          className="text-xs text-brand-start mt-2 underline"
+          className="text-xs text-accent mt-2 underline"
           data-testid="clear-filters"
         >
           Clear All Filters

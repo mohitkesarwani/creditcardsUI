@@ -58,7 +58,7 @@ function HowItWorksSection() {
             custom={i}
             variants={variants}
           >
-            <div className="p-4 rounded-full bg-brand-start/10 text-brand-start mb-4">
+            <div className="p-4 rounded-full bg-accent/10 text-accent mb-4">
               {step.icon}
             </div>
             <p className="font-medium text-gray-700 max-w-xs">{step.text}</p>

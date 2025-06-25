@@ -42,7 +42,7 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
               type="checkbox"
               checked={filters.features.includes(f)}
               onChange={() => toggle('features', f)}
-              className="rounded text-brand-start focus:ring-brand-start"
+              className="rounded text-accent focus:ring-accent"
               data-testid={`filter-${f.toLowerCase().replace(/\s+/g,'-')}`}
             />
             <span>{f}</span>
@@ -57,14 +57,14 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
               type="checkbox"
               checked={filters.eligibility.includes(f)}
               onChange={() => toggle('eligibility', f)}
-              className="rounded text-brand-start focus:ring-brand-start"
+              className="rounded text-accent focus:ring-accent"
               data-testid={`elig-${f.toLowerCase().replace(/\s+/g,'-')}`}
             />
             <span>{f}</span>
           </label>
         ))}
       </div>
-      <button type="button" onClick={clear} className="text-sm text-brand-start underline" data-testid="clear-all-filters">Clear All Filters</button>
+      <button type="button" onClick={clear} className="text-sm text-accent underline" data-testid="clear-all-filters">Clear All Filters</button>
     </div>
   );
 }

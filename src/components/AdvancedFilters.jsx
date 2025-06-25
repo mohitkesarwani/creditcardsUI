@@ -22,7 +22,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
       <label className="block text-sm">
         Card Type
         <select
-          className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-brand-start focus:ring-brand-start"
+          className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent"
           value={filters.type}
           onChange={(e) => update('type', e.target.value)}
         >
@@ -44,7 +44,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
           Minimum Credit Score
           <input
             type="number"
-            className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-brand-start focus:ring-brand-start"
+            className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent"
             value={filters.creditScore}
             onChange={(e) => update('creditScore', e.target.value)}
           />
@@ -53,7 +53,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
           Max Annual Fee
           <input
             type="number"
-            className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-brand-start focus:ring-brand-start"
+            className="mt-1 w-full rounded border-gray-300 px-3 py-2 focus:border-accent focus:ring-accent"
             value={filters.annualFee}
             onChange={(e) => update('annualFee', e.target.value)}
           />
@@ -62,7 +62,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [] }) {
       <button
         type="button"
         onClick={clearAll}
-        className="text-sm text-brand-start underline"
+        className="text-sm text-accent underline"
         data-testid="clear-all-filters"
       >
         Clear All Filters
