@@ -11,17 +11,19 @@ function LandingPage() {
     <div>
       <section className="bg-gray-50 px-4 py-20 text-center">
         <div className="max-w-3xl mx-auto">
-          <motion.h1
-            className="text-5xl md:text-7xl font-bold mb-4 text-gray-900"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            Compare. Choose. Confidently.
-          </motion.h1>
-          <p className="mb-8 text-lg text-gray-700">
-            Explore credit cards, home loans, and term deposits with easy-to-use tools that help you make informed financial comparisons — all in one place.
-          </p>
+          <div className="text-center px-4 pt-10 pb-6">
+            <motion.h1
+              className="text-4xl md:text-6xl font-extrabold text-center leading-tight mb-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Clarity in Every Comparison.
+            </motion.h1>
+            <p className="text-lg md:text-xl font-medium text-slate-600 max-w-xl mx-auto leading-relaxed">
+              Explore credit cards, mortgages, deposits, and more with tools that help you compare, not guess.
+            </p>
+          </div>
           <HeroInfographic />
           <a
             href="#how-it-works"
