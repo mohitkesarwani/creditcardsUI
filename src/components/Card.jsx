@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
+import apiClient from '../api/apiClient.js';
 import {
   getMinimumAnnualFee,
   getFeatureTags,
@@ -53,6 +54,25 @@ function Card({ card, selectedTags = [] }) {
     : category.toLowerCase().includes('travel')
     ? 'Best for Travel'
     : null;
+  const sponsored = card.isSponsored;
+
+  const handleApply = async () => {
+    try {
+      await apiClient.post('/api/referrals', {
+        cardId: card.id,
+        partnerId: card.partnerId,
+        redirectUrl: card.applicationUri,
+      });
+      if (window.gtag) {
+        window.gtag('event', 'affiliate_click', {
+          card_id: card.id,
+          partner_id: card.partnerId,
+        });
+      }
+    } catch (err) {
+      console.error('Referral log failed', err);
+    }
+  };
 
   const FEATURE_ICONS = {
     'Balance Transfer Offer': (
@@ -150,6 +170,9 @@ function Card({ card, selectedTags = [] }) {
         className="w-full h-32 object-contain mb-2 cursor-pointer"
         onClick={() => setShowDetails(true)}
       />
+      {sponsored && (
+        <span className="absolute top-2 right-2 text-xs text-white bg-yellow-600 px-2 py-0.5 rounded">Sponsored</span>
+      )}
       {featuredBadge && (
         <span className="absolute top-2 left-2 text-xs text-white px-2 py-0.5 rounded-full bg-gradient-to-r from-brand-start to-brand-end animate-bounce">
           {featuredBadge}
@@ -244,6 +267,7 @@ function Card({ card, selectedTags = [] }) {
         href={card.applicationUri}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleApply}
         className="mt-2 bg-brand-start hover:bg-brand-end text-white rounded-md px-4 py-2 text-sm font-semibold transition transform hover:scale-105 w-full flex items-center justify-center gap-1"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

@@ -9,6 +9,19 @@
       rel="stylesheet"
     />
     <title>RewardRadar - Credit Card Rewards</title>
+    <script type="module">
+      const gaId = import.meta.env.VITE_GA_ID;
+      if (gaId) {
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', gaId);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
