@@ -19,6 +19,8 @@ const creditCardSchema = new mongoose.Schema({
   fees: [{ amount: String }],
   eligibility: [{ value: String, unit: String }],
   applicationUri: String,
+  isSponsored: { type: Boolean, default: false },
+  sponsorRank: { type: Number, default: 0 },
   features: [featureSchema],
 });
 
