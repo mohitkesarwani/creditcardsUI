@@ -16,9 +16,10 @@ function CardsPage() {
     type: '',
     creditScore: '',
     annualFee: '',
-    interestRate: '',
+    interestRate: [0, 0],
     features: [],
   });
+  const [interestBounds, setInterestBounds] = useState([0, 0]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -35,6 +36,15 @@ function CardsPage() {
         setAvailableTags([
           ...new Set(withTags.flatMap((c) => c.tags)),
         ]);
+        const rates = withTags
+          .map((c) => parseFloat(c.feesAndPricing?.interestRates?.[0]?.rate))
+          .filter((n) => !isNaN(n));
+        if (rates.length) {
+          const minRate = Math.min(...rates);
+          const maxRate = Math.max(...rates);
+          setInterestBounds([minRate, maxRate]);
+          setFilters((f) => ({ ...f, interestRate: [minRate, maxRate] }));
+        }
       } catch (err) {
         setError('Failed to load cards');
       } finally {
@@ -82,11 +92,14 @@ function CardsPage() {
       });
     }
 
-    if (filters.interestRate) {
-      const max = Number(filters.interestRate);
+    if (filters.interestRate?.length) {
       result = result.filter((c) => {
         const rate = parseFloat(c.feesAndPricing?.interestRates?.[0]?.rate);
-        return !isNaN(rate) && rate <= max;
+        return (
+          !isNaN(rate) &&
+          rate >= filters.interestRate[0] &&
+          rate <= filters.interestRate[1]
+        );
       });
     }
 
@@ -123,7 +136,7 @@ function CardsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Browse &amp; Compare Credit Cards</h1>
           <p className="text-gray-700 text-lg">Use smart filters to discover the right credit cards for your lifestyle—rewards, cashback, travel perks and more.</p>
         </header>
-        <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden relative">
+        <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
             className="md:hidden mb-2 btn btn-secondary self-start"
             onClick={() => setShowFilters(true)}
@@ -137,12 +150,13 @@ function CardsPage() {
             />
           )}
           <div
-            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:pr-4 md:sticky md:top-4 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-4 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
           >
             <AdvancedFilters
               filters={filters}
               setFilters={setFilters}
               availableTags={availableTags}
+              interestBounds={interestBounds}
             />
             <button className="md:hidden mt-2 text-sm" onClick={() => setShowFilters(false)}>
               Close

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function RangeSlider({ min = 0, max = 100, step = 0.05, value = [min, max], onChange }) {
+function RangeSlider({ min = 0, max = 100, step = 0.005, value = [min, max], onChange }) {
   const [minVal, maxVal] = value;
   const [activeThumb, setActiveThumb] = useState(null);
 
@@ -19,7 +19,7 @@ function RangeSlider({ min = 0, max = 100, step = 0.05, value = [min, max], onCh
   const right = 100 - ((maxVal - min) / range) * 100;
 
   return (
-    <div className="relative w-full range-slider h-6">
+    <div className="relative w-full range-slider h-6" role="group" aria-label="value range selector">
       <div className="absolute w-full h-1 bg-gray-200 rounded top-1/2 transform -translate-y-1/2" />
       <div
         className="absolute h-1 bg-brand-start rounded top-1/2 transform -translate-y-1/2"
@@ -30,13 +30,13 @@ function RangeSlider({ min = 0, max = 100, step = 0.05, value = [min, max], onCh
           className={`tooltip ${activeThumb === 'min' ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
           style={{ left: `${left}%` }}
         >
-          {minVal.toFixed(2)}%
+          {minVal.toFixed(3)}%
         </span>
         <span
           className={`tooltip ${activeThumb === 'max' ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
           style={{ left: `${100 - right}%` }}
         >
-          {maxVal.toFixed(2)}%
+          {maxVal.toFixed(3)}%
         </span>
       </div>
       <input

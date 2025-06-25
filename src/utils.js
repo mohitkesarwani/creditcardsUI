@@ -85,11 +85,11 @@ export function getTagColor(tag) {
   return TAG_COLORS[tag] || 'bg-gray-100 text-gray-800';
 }
 
-export function formatPercent(value) {
+export function formatPercent(value, digits = 2) {
   const num = parseFloat(value);
   if (Number.isNaN(num)) return value;
   const pct = num > 1 ? num : num * 100;
-  return pct.toFixed(2) + '%';
+  return pct.toFixed(digits) + '%';
 }
 
 export function categorizeFeatures(features = []) {

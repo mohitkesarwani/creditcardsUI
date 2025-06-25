@@ -25,12 +25,12 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
-          step={0.05}
+          step={0.005}
           value={filters.rate}
-          onChange={val => update('rate', val)}
+          onChange={(val) => update('rate', val)}
         />
         <div className="text-xs text-gray-600 mt-1">
-          Showing: {formatPercent(filters.rate[0])} – {formatPercent(filters.rate[1])}
+          Showing: {formatPercent(filters.rate[0], 3)} – {formatPercent(filters.rate[1], 3)}
         </div>
       </div>
       <div>
