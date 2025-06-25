@@ -203,12 +203,16 @@ function CompareTable({ cards }) {
                     style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
                   >
                     <img
-                      src={c.productImageUrl || c.cardArt?.[0]?.imageUri || '/radar.svg'}
+                      src={
+                        c.productImageUrl ||
+                        c.cardArt?.[0]?.imageUri ||
+                        '/assets/image-not-available.svg'
+                      }
                       alt={c.name}
                       className="h-12 object-contain rounded-lg"
                       onError={(e) => {
-                        if (e.currentTarget.src !== '/radar.svg') {
-                          e.currentTarget.src = '/radar.svg';
+                        if (e.currentTarget.src !== '/assets/image-not-available.svg') {
+                          e.currentTarget.src = '/assets/image-not-available.svg';
                         }
                       }}
                     />
