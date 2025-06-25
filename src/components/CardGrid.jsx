@@ -2,7 +2,7 @@ import React from 'react';
 import Card from './Card';
 import AdBanner from './AdBanner.jsx';
 
-function CardGrid({ cards, selectedTags = [] }) {
+function CardGrid({ cards, selectedTags = [], adFrequency = 4 }) {
   if (!cards.length) {
     return (
       <p className="text-center py-8">
@@ -16,7 +16,9 @@ function CardGrid({ cards, selectedTags = [] }) {
       {cards.map((card, idx) => (
         <React.Fragment key={card.id}>
           <Card card={card} selectedTags={selectedTags} />
-          {idx % 4 === 3 && <AdBanner />}
+          {adFrequency > 0 && idx % adFrequency === adFrequency - 1 && (
+            <AdBanner />
+          )}
         </React.Fragment>
       ))}
     </div>

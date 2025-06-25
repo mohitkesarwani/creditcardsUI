@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 
 function CardsPage() {
+  const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [cards, setCards] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
@@ -151,6 +152,7 @@ function CardsPage() {
             <CardGrid
               cards={filtered.slice(0, visibleCount)}
               selectedTags={filters.features}
+              adFrequency={adFrequency}
             />
             <div ref={loadMoreRef} className="h-10" />
           </div>

@@ -55,6 +55,7 @@ deploying to Railway, add them to the service's environment tab.
 | `VITE_GA_ID` | Google Analytics 4 measurement ID. |
 | `VITE_ADSENSE_CLIENT` | Google AdSense client ID. |
 | `VITE_ADSENSE_SLOT` | AdSense slot ID for banner ads. |
+| `VITE_AD_FREQUENCY` | Number of cards to display before showing an ad. |
 
 ## Monetization Features
 
