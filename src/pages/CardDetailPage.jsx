@@ -49,10 +49,18 @@ function CardDetailPage() {
       <div className="mt-4 max-w-3xl mx-auto">
         <div className="flex flex-col items-center text-center mb-6">
           <img
-            src={card.productImageUrl || card.cardArt?.[0]?.imageUri}
+            src={
+              card.productImageUrl ||
+              card.cardArt?.[0]?.imageUri ||
+              '/assets/image-not-available.svg'
+            }
             alt={card.name}
-            className="h-40 mb-4"
-            onError={(e) => (e.currentTarget.src = '/radar.svg')}
+            className="h-40 mb-4 object-contain"
+            onError={(e) => {
+              if (e.currentTarget.src !== '/assets/image-not-available.svg') {
+                e.currentTarget.src = '/assets/image-not-available.svg';
+              }
+            }}
           />
           <h2 className="text-2xl font-bold mb-2">{card.name}</h2>
           <div className="flex flex-wrap gap-1 mb-2">

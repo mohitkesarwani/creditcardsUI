@@ -144,10 +144,18 @@ function Card({ card, selectedTags = [] }) {
       className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in"
     >
       <img
-        src={card.productImageUrl || card.cardArt?.[0]?.imageUri}
+        src={
+          card.productImageUrl ||
+          card.cardArt?.[0]?.imageUri ||
+          '/assets/image-not-available.svg'
+        }
         alt={card.brandName || card.brand}
         className="w-full h-32 object-contain mb-2 cursor-pointer"
-        onError={(e) => (e.currentTarget.src = '/radar.svg')}
+        onError={(e) => {
+          if (e.currentTarget.src !== '/assets/image-not-available.svg') {
+            e.currentTarget.src = '/assets/image-not-available.svg';
+          }
+        }}
         onClick={() => setShowDetails(true)}
       />
       {sponsored && (
