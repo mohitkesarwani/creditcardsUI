@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from './Card';
+import AdBanner from './AdBanner.jsx';
 
 function CardGrid({ cards, selectedTags = [] }) {
   if (!cards.length) {
@@ -12,8 +13,11 @@ function CardGrid({ cards, selectedTags = [] }) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {cards.map((card) => (
-        <Card key={card.id} card={card} selectedTags={selectedTags} />
+      {cards.map((card, idx) => (
+        <React.Fragment key={card.id}>
+          <Card card={card} selectedTags={selectedTags} />
+          {idx % 4 === 3 && <AdBanner />}
+        </React.Fragment>
       ))}
     </div>
   );
