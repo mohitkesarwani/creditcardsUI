@@ -121,7 +121,10 @@ export function categorizeFeatures(features = []) {
     Other: [],
   };
   features.forEach((f) => {
-    const t = (f.featureType || '').toLowerCase();
+    if (!f?.featureType) return;
+    const normalized = f.featureType.trim().toUpperCase();
+    if (normalized === 'OTHER' || normalized === 'UNLIMITED_TXNS') return;
+    const t = normalized.toLowerCase();
     if (t.includes('insurance') || t.includes('protection')) groups.Insurance.push(f);
     else if (t.includes('wallet') || t.includes('apple') || t.includes('google') || t.includes('samsung')) groups['Digital Wallets'].push(f);
     else if (t.includes('loyalty') || t.includes('reward') || t.includes('point')) groups.Loyalty.push(f);
@@ -206,5 +209,92 @@ export function getMortgageFeatureTags(mortgage) {
     .map((f) => normalizeMortgageFeature(f.featureType))
     .filter(Boolean);
   return Array.from(new Set(tags));
+}
+
+export function getPurchaseInterestRate(card) {
+  const rates = card.lendingRates || card.feesAndPricing?.interestRates || [];
+  const entry = rates.find(
+    (r) => r.rateType && /purchase/i.test(r.rateType)
+  );
+  return entry?.rate || card.interestRate || null;
+}
+
+export function getCashAdvanceRate(card) {
+  const rates = card.lendingRates || card.feesAndPricing?.interestRates || [];
+  const entry = rates.find(
+    (r) => r.rateType && /cash|advance/i.test(r.rateType)
+  );
+  return entry?.rate || null;
+}
+
+export function getInternationalFee(card, multi = false) {
+  const label = multi ? 'multi' : 'international';
+  const fees = card.details?.fees || card.fees || [];
+  const entry = fees.find(
+    (f) =>
+      f.name &&
+      f.name.toLowerCase().includes('transaction') &&
+      f.name.toLowerCase().includes(label)
+  );
+  return entry ? entry.amount : null;
+}
+
+export function getLatePaymentFee(card) {
+  return findFeeAmount(card, 'late');
+}
+
+export function getAdditionalCardFee(card) {
+  return findFeeAmount(card, 'additional');
+}
+
+export function getInterestFreePeriod(card) {
+  return card.interestFree || card.feesAndPricing?.interestFreePeriod || null;
+}
+
+export function getDigitalWallets(card) {
+  const wallets = new Set();
+  card?.features?.forEach((f) => {
+    const text = `${f.featureType || ''} ${f.additionalValue || ''}`.toLowerCase();
+    if (text.includes('apple')) wallets.add('Apple Pay');
+    if (text.includes('google')) wallets.add('Google Pay');
+    if (text.includes('samsung')) wallets.add('Samsung Pay');
+  });
+  return Array.from(wallets);
+}
+
+export function getInsuranceTypes(card) {
+  const list = [];
+  card?.features?.forEach((f) => {
+    const t = (f.featureType || '').toLowerCase();
+    if (t.includes('insurance') || t.includes('protection')) {
+      list.push(f.additionalValue ? `${f.featureType} - ${f.additionalValue}` : f.featureType);
+    }
+  });
+  return list;
+}
+
+export function getRewardsProgram(card) {
+  const feature = card?.features?.find((f) => /reward|loyalty|point/i.test(f.featureType || ''));
+  if (feature) {
+    return feature.additionalValue ? `${feature.featureType} ${feature.additionalValue}` : feature.featureType;
+  }
+  return null;
+}
+
+export function getBonusOffer(card) {
+  const feature = card?.features?.find((f) =>
+    /cashback|bonus|welcome/i.test(`${f.featureType || ''} ${f.additionalValue || ''}`)
+  );
+  return feature?.additionalValue || null;
+}
+
+export function getRewardsValue(card) {
+  const regex = /(\d[\d,]*)\s*(bonus|reward)?\s*points/i;
+  for (const f of card?.features || []) {
+    const text = `${f.featureType || ''} ${f.additionalValue || ''}`;
+    const m = text.match(regex);
+    if (m) return parseInt(m[1].replace(/,/g, ''), 10);
+  }
+  return null;
 }
 
