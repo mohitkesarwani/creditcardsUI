@@ -13,13 +13,15 @@ function CardsPage() {
   const [cards, setCards] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
+  const [availableBanks, setAvailableBanks] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({
     annualFee: '',
     features: [],
+    bank: '',
   });
-  const resetFilters = () => setFilters({ annualFee: '', features: [] });
+  const resetFilters = () => setFilters({ annualFee: '', features: [], bank: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -35,6 +37,9 @@ function CardsPage() {
         setFiltered(withTags);
         setAvailableTags([
           ...new Set(withTags.flatMap((c) => c.tags)),
+        ]);
+        setAvailableBanks([
+          ...new Set(withTags.map((c) => c.brandName || c.brand).filter(Boolean)),
         ]);
       } catch (err) {
         setError('Failed to load cards');
@@ -53,6 +58,15 @@ function CardsPage() {
         filters.features.every((f) =>
           c.tags.some((t) => t.toLowerCase() === f.toLowerCase())
         )
+      );
+    }
+
+    if (filters.bank) {
+      const term = filters.bank.toLowerCase();
+      result = result.filter(
+        (c) =>
+          (c.brandName && c.brandName.toLowerCase().includes(term)) ||
+          (c.brand && c.brand.toLowerCase().includes(term))
       );
     }
 
@@ -119,6 +133,7 @@ function CardsPage() {
               filters={filters}
               setFilters={setFilters}
               availableTags={availableTags}
+              banks={availableBanks}
             />
             <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
               Close

@@ -22,7 +22,7 @@ function Row({ label, values }) {
   if (values.every((v) => v === undefined || v === null || v === '')) return null;
   const first = values[0];
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] hover:bg-accent/5 border-b border-gray-200">
+    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
       <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
@@ -40,7 +40,7 @@ function RateRow({ label, values }) {
   const nums = values.map((v) => parseFloat(String(v).replace(/[^0-9.]/g, '')));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] hover:bg-accent/5 border-b border-gray-200">
+    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
       <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
@@ -50,7 +50,7 @@ function RateRow({ label, values }) {
         return (
           <td
             key={i}
-            className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50' : ''}`}
+            className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}
           >
             {formatValue(label, safeDisplay(v, 'Not available'))}
           </td>
@@ -171,7 +171,7 @@ function CompareTable({ cards }) {
 
   return (
     <div className="overflow-x-auto">
-      <div className="p-2 flex gap-2 items-center bg-white border-b">
+      <div className="p-2 flex gap-2 items-center bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <label className="text-sm">Sort by:</label>
         <select
           value={sort.by}
@@ -191,13 +191,13 @@ function CompareTable({ cards }) {
           {sort.dir === 'asc' ? '▲' : '▼'}
         </button>
       </div>
-      <div className="inline-block min-w-full align-middle shadow-md rounded-lg border bg-white">
+      <div className="inline-block min-w-full align-middle shadow-md rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700">
         <table className="min-w-full text-sm leading-relaxed block md:table">
           <thead className="hidden md:table-header-group">
-            <tr className="bg-gray-50">
-              <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50"></th>
+            <tr className="bg-gray-50 dark:bg-gray-700">
+              <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
               {sortedCards.map((c) => (
-                <th key={c.id} className="border px-4 py-3 bg-white text-center max-w-[12rem]">
+                <th key={c.id} className="border px-4 py-3 bg-white dark:bg-gray-800 text-center max-w-[12rem]">
                   <div
                     className="flex flex-col items-center gap-3 p-4 rounded-lg"
                     style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
