@@ -50,12 +50,18 @@ deploying to Railway, add them to the service's environment tab.
 | -------- | ----------- |
 | `MONGO_URI` | MongoDB connection string used by the Express server. |
 | `PORT` | Port the server listens on (defaults to `3000`). |
+| `BASIC_AUTH_USER` | Username for HTTP Basic Authentication. |
+| `BASIC_AUTH_PASS` | Password for HTTP Basic Authentication. |
+| `ALLOWED_IP` | IP address allowed to access the API. |
 | `CRM_WEBHOOK_URL` | Optional webhook to receive new leads as JSON. |
 | `VITE_API_BASE_URL` | Public URL of the API used by the frontend. |
 | `VITE_GA_ID` | Google Analytics 4 measurement ID. |
 | `VITE_ADSENSE_CLIENT` | Google AdSense client ID. |
 | `VITE_ADSENSE_SLOT` | AdSense slot ID for banner ads. |
 | `VITE_AD_FREQUENCY` | Number of cards to display before showing an ad. |
+
+Copy `.env.example` to `.env` and fill in these values. The `.env` file is
+listed in `.gitignore` so your secrets remain private.
 
 ## Monetization Features
 
