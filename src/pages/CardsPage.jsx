@@ -61,6 +61,18 @@ function CardsPage() {
       );
     }
 
+    if (filters.annualFee) {
+      const max = Number(filters.annualFee);
+      result = result.filter((c) => {
+        const fee = getMinimumAnnualFee(c);
+        return fee !== null && fee <= max;
+      });
+    }
+
+    setAvailableBanks([
+      ...new Set(result.map((c) => c.brandName || c.brand).filter(Boolean)),
+    ]);
+
     if (filters.bank) {
       const term = filters.bank.toLowerCase();
       result = result.filter(
@@ -68,16 +80,6 @@ function CardsPage() {
           (c.brandName && c.brandName.toLowerCase().includes(term)) ||
           (c.brand && c.brand.toLowerCase().includes(term))
       );
-    }
-
-
-
-    if (filters.annualFee) {
-      const max = Number(filters.annualFee);
-      result = result.filter((c) => {
-        const fee = getMinimumAnnualFee(c);
-        return fee !== null && fee <= max;
-      });
     }
 
     setFiltered(result);

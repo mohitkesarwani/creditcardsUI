@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelectedCards } from '../hooks/useSelectedCards';
 import {
   getMinimumAnnualFee,
   formatValue,
@@ -17,6 +18,68 @@ import {
   getAdditionalCardFee,
   getRewardsValue,
 } from '../utils.js';
+
+const rowDefs = [
+  { key: 'brand', label: 'Brand', fn: (c) => c.brand },
+  {
+    key: 'interestFree',
+    label: 'Interest-Free Period',
+    fn: (c) => getInterestFreePeriod(c) || 'Not Offered',
+  },
+  {
+    key: 'purchaseRate',
+    label: 'Purchase Interest Rate',
+    fn: (c) => getPurchaseInterestRate(c),
+    rate: true,
+  },
+  {
+    key: 'cashAdvance',
+    label: (
+      <span title="Using your card to withdraw cash">Cash Advance Rate</span>
+    ),
+    fn: (c) => getCashAdvanceRate(c),
+  },
+  { key: 'lateFee', label: 'Late Payment Fee', fn: (c) => getLatePaymentFee(c) },
+  {
+    key: 'comparisonRate',
+    label: (
+      <span title="The rate that includes fees and interest">Comparison Rate</span>
+    ),
+    fn: (c) => c.comparisonRate,
+  },
+  {
+    key: 'annualFee',
+    label: 'Annual Fee',
+    fn: (c) => c.annualFee ?? getMinimumAnnualFee(c),
+  },
+  {
+    key: 'intlSingle',
+    label: 'International Transaction Fee - Single Currency',
+    fn: (c) => getInternationalFee(c, false),
+  },
+  {
+    key: 'intlMulti',
+    label: 'International Transaction Fee - Multi Currency',
+    fn: (c) => getInternationalFee(c, true),
+  },
+  { key: 'addCard', label: 'Additional Card Fee', fn: (c) => getAdditionalCardFee(c) },
+  {
+    key: 'eligibility',
+    label: <span title="Typical qualification criteria">Eligibility</span>,
+    fn: (c) => c.eligibilityCriteria,
+  },
+  { key: 'rewardsProg', label: 'Rewards Program', fn: (c) => getRewardsProgram(c) },
+  { key: 'wallets', label: 'Digital Wallets', fn: (c) => getDigitalWallets(c).join(', ') },
+  {
+    key: 'insurance',
+    label: 'Insurance Offered',
+    fn: (c) => {
+      const list = getInsuranceTypes(c);
+      return list.length > 3 ? list.slice(0, 3).join(', ') + '…' : list.join(', ');
+    },
+  },
+  { key: 'cashback', label: 'Cashback Offer', fn: (c) => getBonusOffer(c) },
+];
 
 function Row({ label, values }) {
   if (values.every((v) => v === undefined || v === null || v === '')) return null;
@@ -65,6 +128,7 @@ function CompareTable({ cards }) {
   const [isMobile, setIsMobile] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
+  const { toggleCard } = useSelectedCards();
 
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 768);
@@ -92,82 +156,61 @@ function CompareTable({ cards }) {
     return arr;
   }, [cards, sort]);
 
-  const rows = [
-    <Row key="brand" label="Brand" values={sortedCards.map((c) => c.brand)} />,
-    <Row
-      key="interestFree"
-      label="Interest-Free Period"
-      values={sortedCards.map((c) => getInterestFreePeriod(c) || 'Not Offered')}
-    />,
-    <RateRow
-      key="purchaseRate"
-      label="Purchase Interest Rate"
-      values={sortedCards.map((c) => getPurchaseInterestRate(c))}
-    />,
-    <Row
-      key="cashAdvance"
-      label={<span title="Using your card to withdraw cash">Cash Advance Rate</span>}
-      values={sortedCards.map((c) => getCashAdvanceRate(c))}
-    />,
-    <Row
-      key="lateFee"
-      label="Late Payment Fee"
-      values={sortedCards.map((c) => getLatePaymentFee(c))}
-    />,
-    <Row
-      key="comparisonRate"
-      label={<span title="The rate that includes fees and interest">Comparison Rate</span>}
-      values={sortedCards.map((c) => c.comparisonRate)}
-    />,
-    <Row
-      key="annualFee"
-      label="Annual Fee"
-      values={sortedCards.map((c) => c.annualFee ?? getMinimumAnnualFee(c))}
-    />,
-    <Row
-      key="intlSingle"
-      label="International Transaction Fee - Single Currency"
-      values={sortedCards.map((c) => getInternationalFee(c, false))}
-    />,
-    <Row
-      key="intlMulti"
-      label="International Transaction Fee - Multi Currency"
-      values={sortedCards.map((c) => getInternationalFee(c, true))}
-    />,
-    <Row
-      key="addCard"
-      label="Additional Card Fee"
-      values={sortedCards.map((c) => getAdditionalCardFee(c))}
-    />,
-    <Row
-      key="eligibility"
-      label={<span title="Typical qualification criteria">Eligibility</span>}
-      values={sortedCards.map((c) => c.eligibilityCriteria)}
-    />,
-    <Row
-      key="rewardsProg"
-      label="Rewards Program"
-      values={sortedCards.map((c) => getRewardsProgram(c))}
-    />,
-    <Row
-      key="wallets"
-      label="Digital Wallets"
-      values={sortedCards.map((c) => getDigitalWallets(c).join(', '))}
-    />,
-    <Row
-      key="insurance"
-      label="Insurance Offered"
-      values={sortedCards.map((c) => {
-        const list = getInsuranceTypes(c);
-        return list.length > 3 ? list.slice(0, 3).join(', ') + '…' : list.join(', ');
-      })}
-    />,
-    <Row
-      key="cashback"
-      label="Cashback Offer"
-      values={sortedCards.map((c) => getBonusOffer(c))}
-    />,
-  ];
+  const rows = rowDefs.map((r) => {
+    const values = sortedCards.map((c) => r.fn(c));
+    return r.rate ? (
+      <RateRow key={r.key} label={r.label} values={values} />
+    ) : (
+      <Row key={r.key} label={r.label} values={values} />
+    );
+  });
+
+  const mobileView = (
+    <div className="space-y-4 md:hidden">
+      {sortedCards.map((c) => (
+        <div key={c.id} className="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div className="flex items-center gap-3 p-4 border-b">
+            <img
+              src={
+                c.productImageUrl ||
+                c.cardArt?.[0]?.imageUri ||
+                '/assets/image-not-available.svg'
+              }
+              alt={c.name}
+              className="h-10 object-contain rounded-lg"
+              onError={(e) => {
+                if (e.currentTarget.src !== '/assets/image-not-available.svg') {
+                  e.currentTarget.src = '/assets/image-not-available.svg';
+                }
+              }}
+            />
+            <p className="font-semibold flex-1" title={c.name}>{c.name}</p>
+            <button onClick={() => toggleCard(c)} className="text-xs text-accent underline">
+              Remove
+            </button>
+          </div>
+          <table className="w-full text-sm">
+            <tbody>
+              {rowDefs.map((r) => {
+                const val = r.fn(c);
+                if (val === 'Not Offered' || val === undefined || val === null || val === '') return null;
+                return (
+                  <tr key={r.key} className="border-t">
+                    <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">
+                      {r.label}
+                    </th>
+                    <td className="px-4 py-2">{formatValue(r.label, safeDisplay(val, '–'))}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (isMobile) return mobileView;
 
   return (
     <div className="overflow-x-auto">

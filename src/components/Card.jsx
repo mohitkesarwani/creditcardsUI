@@ -224,18 +224,26 @@ function Card({ card, selectedTags = [] }) {
       </div>
       <div className="mt-auto flex flex-wrap items-center gap-2">
         {isSelected ? (
-          <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Selected
+            </span>
+            <button
+              onClick={() => toggleCard(card)}
+              className="text-xs text-accent underline"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            Selected
-          </span>
+              Deselect
+            </button>
+          </div>
         ) : (
           <button
             onClick={() => toggleCard(card)}
