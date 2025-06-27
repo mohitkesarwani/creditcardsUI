@@ -42,19 +42,18 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
       </label>
       <label className="block text-sm">
         Bank / Brand
-        <input
-          type="text"
-          list="bank-list"
-          value={filters.bank || ''}
+        <select
+          value={filters.bank}
           onChange={(e) => update('bank', e.target.value)}
-          className="mt-1 w-full border rounded px-2 py-1 text-sm"
-          placeholder="Any"
-        />
-        <datalist id="bank-list">
+          className="mt-1 w-full border rounded px-2 py-2 text-sm"
+        >
+          <option value="">Any</option>
           {banks.map((b) => (
-            <option key={b} value={b} />
+            <option key={b} value={b}>
+              {b}
+            </option>
           ))}
-        </datalist>
+        </select>
       </label>
       <button
         type="button"

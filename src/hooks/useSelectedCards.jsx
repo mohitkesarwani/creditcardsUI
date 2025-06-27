@@ -16,8 +16,10 @@ export function SelectedCardsProvider({ children }) {
     });
   };
 
+  const clearSelected = () => setSelected([]);
+
   return (
-    <SelectedCardsContext.Provider value={{ selected, toggleCard }}>
+    <SelectedCardsContext.Provider value={{ selected, toggleCard, clearSelected }}>
       {children}
     </SelectedCardsContext.Provider>
   );
