@@ -7,6 +7,8 @@ import Referral from './src/models/Referral.js';
 import Lead from './src/models/Lead.js';
 import EmailEvent from './src/models/EmailEvent.js';
 import { getMinimumAnnualFee, formatPercent, formatMoney } from './src/utils.js';
+import { requestLogger } from './src/middleware/logger.js';
+import { securityMiddleware } from './src/middleware/security.js';
 
 dotenv.config();
 
@@ -14,6 +16,11 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(requestLogger);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(securityMiddleware);
+}
 
 const normalizeCard = (card) => {
   const interestRateRaw = card.feesAndPricing?.interestRates?.[0]?.rate;
