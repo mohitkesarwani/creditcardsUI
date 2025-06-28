@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedRadarLogo from './AnimatedRadarLogo';
 import useDarkMode from '../hooks/useDarkMode';
+import { useAuth } from '../hooks/useAuth.jsx';
 
 function NavBar() {
   const [dark, setDark] = useDarkMode();
+  const { authed, logout } = useAuth();
 
   return (
     <header className="bg-navy text-white shadow-md">
@@ -37,8 +39,13 @@ function NavBar() {
               </svg>
             )}
           </button>
-          <Link to="/login" className="btn btn-outline text-sm">Log In</Link>
-          <Link to="/signup" className="btn btn-pill text-sm">Sign Up</Link>
+          {authed ? (
+            <button onClick={logout} className="btn btn-outline text-sm">
+              Log Out
+            </button>
+          ) : (
+            <Link to="/login" className="btn btn-outline text-sm">Log In</Link>
+          )}
         </div>
       </div>
     </header>

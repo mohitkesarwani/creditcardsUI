@@ -12,12 +12,18 @@ import ContactPage from './pages/ContactPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
+import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
+import LoginPage from './pages/LoginPage.jsx';
 
-function App() {
+function AppContent() {
+  const { authed } = useAuth();
+  if (!authed) {
+    return <LoginPage />;
+  }
   return (
-    <SelectedCardsProvider>
+    <>
       <NavBar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -35,7 +41,17 @@ function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
       </Routes>
       <Footer />
-    </SelectedCardsProvider>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <SelectedCardsProvider>
+        <AppContent />
+      </SelectedCardsProvider>
+    </AuthProvider>
   );
 }
 
