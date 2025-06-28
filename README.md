@@ -50,9 +50,8 @@ deploying to Railway, add them to the service's environment tab.
 | -------- | ----------- |
 | `MONGO_URI` | MongoDB connection string used by the Express server. |
 | `PORT` | Port the server listens on (defaults to `3000`). |
-| `BASIC_AUTH_USER` | Username for HTTP Basic Authentication. |
-| `BASIC_AUTH_PASS` | Password for HTTP Basic Authentication. |
-| `ALLOWED_IP` | IP address allowed to access the API. |
+| `VITE_LOGIN_USER` | Username required to access the UI. |
+| `VITE_LOGIN_PASS` | Password required to access the UI. |
 | `CRM_WEBHOOK_URL` | Optional webhook to receive new leads as JSON. |
 | `VITE_API_BASE_URL` | Public URL of the API used by the frontend. |
 | `VITE_GA_ID` | Google Analytics 4 measurement ID. |
