@@ -11,7 +11,6 @@ import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
-import InfographicPage from './pages/InfographicPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
 import NavBar from './components/NavBar';
@@ -38,7 +37,6 @@ function AppContent() {
         <Route path="/deposits" element={<DepositsPage />} />
         <Route path="/faqs" element={<FaqPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/infographic" element={<InfographicPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
       </Routes>
