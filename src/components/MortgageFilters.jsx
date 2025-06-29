@@ -15,7 +15,10 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
     });
   };
 
-  const clear = () => setFilters({ rate: rateBounds, fees: [], features: [], eligibility: [], bank: '' });
+  const clear = () => {
+    localStorage.removeItem('mortgageFilters');
+    setFilters({ rate: rateBounds, fees: [], features: [], eligibility: [], bank: '' });
+  };
 
   return (
     <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md" data-testid="mortgage-filters">
