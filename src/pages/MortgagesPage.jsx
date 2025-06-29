@@ -33,7 +33,23 @@ function MortgagesPage() {
           const minRate = Math.min(...rates);
           const maxRate = Math.max(...rates);
           setRateBounds([minRate, maxRate]);
-          setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [], bank: '' });
+          const stored = localStorage.getItem('mortgageFilters');
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              setFilters({
+                rate: parsed.rate || [minRate, maxRate],
+                fees: parsed.fees || [],
+                features: parsed.features || [],
+                eligibility: parsed.eligibility || [],
+                bank: parsed.bank || '',
+              });
+            } catch {
+              setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [], bank: '' });
+            }
+          } else {
+            setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [], bank: '' });
+          }
         }
         setAvailableFeatures([
           ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
@@ -79,6 +95,11 @@ function MortgagesPage() {
     }, 200);
     return () => clearTimeout(handle);
   }, [filters, mortgages]);
+
+  useEffect(() => {
+    if (rateBounds[0] === 0 && rateBounds[1] === 0) return;
+    localStorage.setItem('mortgageFilters', JSON.stringify(filters));
+  }, [filters, rateBounds]);
 
   useEffect(() => { setVisibleCount(20); }, [filtered]);
 
