@@ -5,12 +5,15 @@ import {
   getTagColor,
   getMortgageFeatureTags,
 } from '../utils.js';
+import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 
 function MortgageCard({ mortgage, highlightTags = [] }) {
   const rate = mortgage.lendingRates?.[0]?.rate;
   const comparisonRate = mortgage.lendingRates?.[0]?.comparisonRate;
   const fees = mortgage.feesAndPricing?.fees || [];
   const tags = getMortgageFeatureTags(mortgage);
+  const { selected, toggleMortgage } = useSelectedMortgages();
+  const isSelected = selected.some((m) => m.id === mortgage.id);
 
   return (
     <div
@@ -47,7 +50,28 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           <span key={t} className={`text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} ${highlightTags.includes(t) ? 'ring-2 ring-accent' : ''}`} data-testid={`tag-${t.toLowerCase().replace(/\s+/g,'-')}`}>{t}</span>
         ))}
       </div>
-      <a href={mortgage.applicationUri} target="_blank" rel="noopener noreferrer" className="mt-auto btn btn-primary text-center text-sm">Apply Now</a>
+      <div className="mt-auto flex flex-wrap items-center gap-2">
+        {isSelected ? (
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Selected
+            </span>
+            <button onClick={() => toggleMortgage(mortgage)} className="text-xs text-accent underline">
+              Deselect
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => toggleMortgage(mortgage)} className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition flex-1">
+            Compare
+          </button>
+        )}
+        <a href={mortgage.applicationUri} target="_blank" rel="noopener noreferrer" className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition flex-1 text-center">
+          Apply
+        </a>
+      </div>
     </div>
   );
 }
