@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import CardsPage from './pages/CardsPage';
 import CardDetailPage from './pages/CardDetailPage';
 import ComparePage from './pages/ComparePage';
+import CompareMortgagesPage from './pages/CompareMortgagesPage.jsx';
 import HowWeMakeMoneyPage from './pages/HowWeMakeMoneyPage';
 import LoansDepositsPage from './pages/LoansDepositsPage';
 import DepositsPage from './pages/DepositsPage';
@@ -12,6 +13,7 @@ import ContactPage from './pages/ContactPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
+import { SelectedMortgagesProvider } from './hooks/useSelectedMortgages.jsx';
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
@@ -30,6 +32,7 @@ function AppContent() {
         <Route path="/credit-cards" element={<CardsPage />} />
         <Route path="/credit-cards/:id" element={<CardDetailPage />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/compare-mortgages" element={<CompareMortgagesPage />} />
         <Route path="/how-we-make-money" element={<HowWeMakeMoneyPage />} />
         <Route path="/loans-deposits" element={<LoansDepositsPage />} />
         <Route path="/home-loans" element={<MortgagesPage />} />
@@ -49,7 +52,9 @@ function App() {
   return (
     <AuthProvider>
       <SelectedCardsProvider>
-        <AppContent />
+        <SelectedMortgagesProvider>
+          <AppContent />
+        </SelectedMortgagesProvider>
       </SelectedCardsProvider>
     </AuthProvider>
   );

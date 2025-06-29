@@ -2,7 +2,7 @@ import React from 'react';
 import RangeSlider from './RangeSlider';
 import { formatPercent } from '../utils.js';
 
-function MortgageFilters({ filters, setFilters, availableFeatures = [], availableEligibility = [], rateBounds = [0,0] }) {
+function MortgageFilters({ filters, setFilters, availableFeatures = [], availableEligibility = [], rateBounds = [0,0], banks = [] }) {
   const update = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
 
   const toggle = (key, val) => {
@@ -15,11 +15,23 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
     });
   };
 
-  const clear = () => setFilters({ rate: rateBounds, fees: [], features: [], eligibility: [] });
+  const clear = () => setFilters({ rate: rateBounds, fees: [], features: [], eligibility: [], bank: '' });
 
   return (
     <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md" data-testid="mortgage-filters">
       <h4 className="font-bold">Filters</h4>
+      <label className="block text-sm">Bank / Brand
+        <select
+          value={filters.bank}
+          onChange={(e) => update('bank', e.target.value)}
+          className="mt-1 w-full border rounded px-2 py-2 text-sm"
+        >
+          <option value="">Any</option>
+          {banks.map((b) => (
+            <option key={b} value={b}>{b}</option>
+          ))}
+        </select>
+      </label>
       <div>
         <label className="block text-sm font-semibold mb-2">Interest Rate Range</label>
         <RangeSlider
