@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { fetchMortgages } from '../api/residentialMortgages';
 import MortgageCardGrid from '../components/MortgageCardGrid';
 import MortgageFilters from '../components/MortgageFilters';
+import MortgageCompareStickyButton from '../components/MortgageCompareStickyButton.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
 
@@ -10,10 +11,11 @@ function MortgagesPage() {
   const [filtered, setFiltered] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
-  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], eligibility: [] });
+  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], eligibility: [], bank: '' });
   const [rateBounds, setRateBounds] = useState([0, 0]);
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableEligibility, setAvailableEligibility] = useState([]);
+  const [availableBanks, setAvailableBanks] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,12 +33,13 @@ function MortgagesPage() {
           const minRate = Math.min(...rates);
           const maxRate = Math.max(...rates);
           setRateBounds([minRate, maxRate]);
-          setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [] });
+          setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [], bank: '' });
         }
         setAvailableFeatures([
           ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
         setAvailableEligibility([...new Set(data.flatMap(m => m.eligibility?.map(e => e.eligibilityType) || []))]);
+        setAvailableBanks([...new Set(data.map(m => m.bankName || m.brandName).filter(Boolean))]);
       } catch (err) {
         console.error(err);
         setError('Failed to load mortgages');
@@ -64,6 +67,14 @@ function MortgagesPage() {
       if (filters.eligibility.length) {
         result = result.filter(m => filters.eligibility.every(e => m.eligibility?.some(x => x.eligibilityType === e)));
       }
+      if (filters.bank) {
+        const term = filters.bank.toLowerCase();
+        result = result.filter(m =>
+          (m.bankName && m.bankName.toLowerCase().includes(term)) ||
+          (m.brandName && m.brandName.toLowerCase().includes(term))
+        );
+      }
+      setAvailableBanks([...new Set(result.map(m => m.bankName || m.brandName).filter(Boolean))]);
       setFiltered(result);
     }, 200);
     return () => clearTimeout(handle);
@@ -87,6 +98,7 @@ function MortgagesPage() {
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
+    <>
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen flex flex-col overflow-x-hidden">
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
@@ -115,6 +127,7 @@ function MortgagesPage() {
               availableFeatures={availableFeatures}
               availableEligibility={availableEligibility}
               rateBounds={rateBounds}
+              banks={availableBanks}
             />
             <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
               Close
@@ -127,6 +140,8 @@ function MortgagesPage() {
         </div>
       </div>
     </div>
+    <MortgageCompareStickyButton />
+    </>
   );
 }
 
