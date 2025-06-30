@@ -145,14 +145,16 @@ function HomeLoanDetailsPage() {
                   ))}
                 </tbody>
               </table>
-              {lendingRates.length > prominentRates.length && (
+              {lendingRates.length > prominentRates.length ? (
                 <button
                   className="mt-2 text-sm text-accent underline"
                   onClick={() => setShowAllRates((v) => !v)}
                 >
-                  {showAllRates ? 'Hide All Rate Options' : 'View All Rate Options'}
+                  {showAllRates
+                    ? 'Hide All Rate Options'
+                    : 'View All Rate Options'}
                 </button>
-              )}
+              ) : null}
             ) : (
               <p className="text-sm text-gray-600">Not specified.</p>
             )}
