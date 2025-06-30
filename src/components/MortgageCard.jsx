@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   formatMoney,
   formatPercent,
@@ -8,6 +9,7 @@ import {
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 
 function MortgageCard({ mortgage, highlightTags = [] }) {
+  const navigate = useNavigate();
   const rate = mortgage.lendingRates?.[0]?.rate;
   const comparisonRate = mortgage.lendingRates?.[0]?.comparisonRate;
   const fees = mortgage.feesAndPricing?.fees || [];
@@ -72,6 +74,12 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           Apply
         </a>
       </div>
+      <button
+        onClick={() => navigate(`/home-loans/${mortgage.id}`)}
+        className="mt-2 w-full text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition"
+      >
+        View Details
+      </button>
     </div>
   );
 }
