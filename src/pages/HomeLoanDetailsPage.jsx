@@ -5,12 +5,37 @@ import {
   formatMoney,
   formatPercent,
   getMortgageFeatureTags,
-  getTagColor,
   normalizeMortgageFeature,
   filterProminentMortgageRates,
 } from '../utils.js';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
+
+function calcRepayments(amount, rate, years) {
+  const r = parseFloat(rate);
+  if (Number.isNaN(r)) return null;
+  const monthly = r / 100 / 12;
+  const n = years * 12;
+  const payment = (amount * monthly) / (1 - Math.pow(1 + monthly, -n));
+  return { monthly: payment, total: payment * n };
+}
+
+function Section({ title, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b pb-4">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex justify-between items-center w-full sm:cursor-default"
+      >
+        <h3 className="font-semibold">{title}</h3>
+        <span className="sm:hidden">{open ? '▾' : '▸'}</span>
+      </button>
+      <div className={`${open ? 'block' : 'hidden sm:block'} mt-2 text-sm`}>{children}</div>
+    </div>
+  );
+}
 
 function HomeLoanDetailsPage() {
   const { loanId } = useParams();
@@ -86,6 +111,17 @@ function HomeLoanDetailsPage() {
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
 
+  const repaymentInfo = calcRepayments(150000, rate, 30);
+  const bumpInfo = calcRepayments(150000, rate ? parseFloat(rate) + 1 : null, 30);
+
+  const setupFee = fees.find((f) => /(establishment|application|setup)/i.test(f.name || ''));
+  const ongoingFee = fees.find((f) => /(ongoing|monthly|annual|service)/i.test(f.name || ''));
+
+  const featureLabels = ['Offset', 'Redraw', 'Extra Repayments', 'Digital Access', 'Cashback'];
+  const featureSet = new Set(
+    loan.features?.map((f) => normalizeMortgageFeature(f.featureType)) || []
+  );
+
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen">
       <div className="max-w-2xl mx-auto">
@@ -93,131 +129,108 @@ function HomeLoanDetailsPage() {
           &larr; Go Back
         </button>
         <div className="bg-white rounded-xl shadow p-4 md:p-6 space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold mb-1">{loan.name}</h2>
-            <p className="text-gray-700 mb-2">{loan.bankName || loan.brandName}</p>
-            <div className="flex flex-wrap gap-1 mb-2">
-              {tags.map((t) => (
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">
+              {loan.bankName || loan.brandName} – {loan.name}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+              <div>
+                <span className="font-semibold">Interest Type:</span>{' '}
+                {rateTypes[0] || 'N/A'}
+              </div>
+              <div>
+                <span className="font-semibold">Rate:</span>{' '}
+                {rate ? formatPercent(rate) : 'N/A'}
+              </div>
+              <div>
+                <span className="font-semibold flex items-center gap-1">
+                  Comparison
+                  <span title="Based on a standard $150k loan over 25 years" className="cursor-help">?</span>:
+                </span>
+                {comparisonRate ? formatPercent(comparisonRate) : 'N/A'}
+              </div>
+              <div>
+                <span className="font-semibold">Loan Term:</span> Up to 30 years
+              </div>
+            </div>
+          </div>
+
+          <Section title="Estimated Cost (Preview)">
+            {repaymentInfo ? (
+              <div className="grid grid-cols-2 gap-2">
+                <p>Monthly Repayment: {formatMoney(repaymentInfo.monthly)}</p>
+                <p>Total Repayment: {formatMoney(repaymentInfo.total)}</p>
+                <p className="col-span-2 text-xs text-gray-600">
+                  Cost per $1 borrowed: {formatMoney(repaymentInfo.total / 150000)}
+                </p>
+                <p className="col-span-2 text-xs text-gray-600">
+                  Estimate based on standard loan assumptions
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">Not Available</p>
+            )}
+          </Section>
+
+          <Section title="Loan Features">
+            <div className="flex flex-wrap gap-1">
+              {featureLabels.map((f) => (
                 <span
-                  key={t}
-                  className={`text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)}`}
+                  key={f}
+                  className={`text-xs px-2 py-0.5 rounded-full border ${featureSet.has(f) ? 'bg-accent/10 border-accent text-accent' : 'bg-gray-50 border-gray-200 text-gray-500'}`}
                 >
-                  {t}
+                  {f}
                 </span>
               ))}
             </div>
-            {loan.description && <p className="text-sm mb-2">{loan.description}</p>}
-            {loan.additionalInfo && (
-              <p className="text-sm whitespace-pre-line mb-2">{loan.additionalInfo}</p>
-            )}
-          </div>
+          </Section>
 
-          <section>
-            <h3 className="font-semibold mb-2">Interest &amp; Comparison Rates</h3>
-            {lendingRates.length ? (
-              <>
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr>
-                    <th className="border px-2 py-1 text-left">Type</th>
-                    <th className="border px-2 py-1 text-left">Rate</th>
-                    <th className="border px-2 py-1 text-left">Comparison</th>
-                    <th className="border px-2 py-1 text-left">Purpose</th>
-                    <th className="border px-2 py-1 text-left">Repayment</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayRates.map((r, i) => (
-                    <tr key={i} className={i % 2 ? 'bg-gray-50' : ''}>
-                      <td className="border px-2 py-1">
-                        {r.additionalValue && /fixed/i.test(r.rateType || r.lendingRateType)
-                          ? `${r.rateType || r.lendingRateType} – ${r.additionalValue}`
-                          : r.rateType || r.lendingRateType || '–'}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {r.rate ? formatPercent(r.rate) : '–'}
-                      </td>
-                      <td className="border px-2 py-1">
-                        {r.comparisonRate ? formatPercent(r.comparisonRate) : '–'}
-                      </td>
-                      <td className="border px-2 py-1">{r.loanPurpose || '–'}</td>
-                      <td className="border px-2 py-1">{r.repaymentType || '–'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {lendingRates.length > prominentRates.length ? (
-                <button
-                  className="mt-2 text-sm text-accent underline"
-                  onClick={() => setShowAllRates((v) => !v)}
-                >
-                  {showAllRates
-                    ? 'Hide All Rate Options'
-                    : 'View All Rate Options'}
-                </button>
-              ) : null}
-              </>
-            ) : (
-              <p className="text-sm text-gray-600">Not specified.</p>
-            )}
-          </section>
-
-          <section>
-            <h3 className="font-semibold mb-2">Loan Features</h3>
-            {loan.features?.length ? (
-              <ul className="list-disc ml-5 space-y-1 text-sm">
-                {loan.features.map((f, i) => (
-                  <li key={i}>
-                    {normalizeMortgageFeature(f.featureType)}
-                    {f.additionalValue ? ` - ${f.additionalValue}` : ''}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-600">Not specified.</p>
-            )}
-          </section>
-
-          <section>
-            <h3 className="font-semibold mb-2">Fees &amp; Charges</h3>
-            {fees.length ? (
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr>
-                    <th className="border px-2 py-1 text-left">Fee</th>
-                    <th className="border px-2 py-1 text-left">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fees.map((f, i) => (
-                    <tr key={i} className={i % 2 ? 'bg-gray-50' : ''}>
-                      <td className="border px-2 py-1">{f.name || `Fee ${i + 1}`}</td>
-                      <td className="border px-2 py-1">{formatMoney(f.amount)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-sm text-gray-600">Not specified.</p>
-            )}
-          </section>
+          <Section title="Fees & Charges">
+            <table className="w-full text-sm border-collapse">
+              <tbody>
+                <tr>
+                  <th className="border px-2 py-1 text-left">Setup Fee</th>
+                  <td className="border px-2 py-1">{setupFee ? formatMoney(setupFee.amount) : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th className="border px-2 py-1 text-left">Ongoing Fee</th>
+                  <td className="border px-2 py-1">{ongoingFee ? formatMoney(ongoingFee.amount) : 'N/A'}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
 
           {cleanedEligibility.length > 0 && (
-            <section>
-              <h3 className="font-semibold mb-2">Eligibility Criteria</h3>
+            <Section title="Eligibility Criteria">
               <ul className="list-disc ml-5 text-sm space-y-1">
                 {cleanedEligibility.map((e, i) => (
                   <li key={i}>{e}</li>
                 ))}
               </ul>
-            </section>
+            </Section>
           )}
 
+          <Section title="Helpful Insights">
+            {repaymentInfo && bumpInfo ? (
+              <div className="space-y-1 text-sm">
+                <p>
+                  If the rate increases by 1%, your monthly repayment could be around{' '}
+                  {formatMoney(bumpInfo.monthly)}.
+                </p>
+                {featureSet.has('Extra Repayments') && (
+                  <p>You can repay faster by making extra payments when possible.</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">Not Available</p>
+            )}
+          </Section>
+
           {(purposes.length || repayments.length || rateTypes.length || maxLvr) && (
-            <section className="space-y-2">
+            <Section title="Available Options">
               {purposes.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-sm mb-1">Available Purposes</h4>
+                  <h4 className="font-semibold text-sm mb-1">Purposes</h4>
                   <div className="flex flex-wrap gap-1">
                     {purposes.map((p) => (
                       <span key={p} className="text-xs bg-gray-100 px-2 py-0.5 rounded">
@@ -229,7 +242,7 @@ function HomeLoanDetailsPage() {
               )}
               {repayments.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-sm mb-1">Repayment Options</h4>
+                  <h4 className="font-semibold text-sm mb-1">Repayments</h4>
                   <div className="flex flex-wrap gap-1">
                     {repayments.map((r) => (
                       <span key={r} className="text-xs bg-gray-100 px-2 py-0.5 rounded">
@@ -257,7 +270,7 @@ function HomeLoanDetailsPage() {
                   <p className="text-sm">{formatPercent(maxLvr)}</p>
                 </div>
               )}
-            </section>
+            </Section>
           )}
 
           {(loan.additionalInfoUri || loan.productGuideUri) && (
