@@ -35,6 +35,29 @@ function HomeLoanDetailsPage() {
     load();
   }, [loanId]);
 
+  const lendingRates = loan?.lendingRates || [];
+  const prominentRates = useMemo(
+    () => filterProminentMortgageRates(lendingRates),
+    [lendingRates]
+  );
+  const cleanedEligibility = useMemo(() => {
+    if (!Array.isArray(loan?.eligibility)) return [];
+    const list = loan.eligibility
+      .filter(
+        (e) =>
+          e &&
+          e.eligibilityType &&
+          e.eligibilityType.trim() !== '' &&
+          e.eligibilityType.toLowerCase() !== 'other'
+      )
+      .map((e) =>
+        e.additionalValue
+          ? `${e.eligibilityType} - ${e.additionalValue}`
+          : e.eligibilityType
+      );
+    return Array.from(new Set(list));
+  }, [loan]);
+
   if (loading) return <LoaderSkeleton rows={4} />;
   if (error) return <div className="p-4 text-red-600">{error}</div>;
   if (!loan) return <div className="p-4">Loan not found.</div>;
@@ -44,11 +67,6 @@ function HomeLoanDetailsPage() {
   const fees = loan.feesAndPricing?.fees || [];
   const tags = getMortgageFeatureTags(loan);
   const isSelected = selected.some((m) => m.id === loan.id);
-  const lendingRates = loan.lendingRates || [];
-  const prominentRates = useMemo(
-    () => filterProminentMortgageRates(lendingRates),
-    [lendingRates]
-  );
   const displayRates = showAllRates ? lendingRates : prominentRates;
   const purposes = Array.from(
     new Set(lendingRates.map((r) => r.loanPurpose).filter(Boolean))
@@ -67,24 +85,6 @@ function HomeLoanDetailsPage() {
     .map((r) => parseFloat(r.lvr || r.loanToValueRatio))
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
-
-  const cleanedEligibility = useMemo(() => {
-    if (!Array.isArray(loan.eligibility)) return [];
-    const list = loan.eligibility
-      .filter(
-        (e) =>
-          e &&
-          e.eligibilityType &&
-          e.eligibilityType.trim() !== '' &&
-          e.eligibilityType.toLowerCase() !== 'other'
-      )
-      .map((e) =>
-        e.additionalValue
-          ? `${e.eligibilityType} - ${e.additionalValue}`
-          : e.eligibilityType
-      );
-    return Array.from(new Set(list));
-  }, [loan.eligibility]);
 
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen">
