@@ -68,6 +68,24 @@ function HomeLoanDetailsPage() {
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
 
+  const cleanedEligibility = useMemo(() => {
+    if (!Array.isArray(loan.eligibility)) return [];
+    const list = loan.eligibility
+      .filter(
+        (e) =>
+          e &&
+          e.eligibilityType &&
+          e.eligibilityType.trim() !== '' &&
+          e.eligibilityType.toLowerCase() !== 'other'
+      )
+      .map((e) =>
+        e.additionalValue
+          ? `${e.eligibilityType} - ${e.additionalValue}`
+          : e.eligibilityType
+      );
+    return Array.from(new Set(list));
+  }, [loan.eligibility]);
+
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen">
       <div className="max-w-2xl mx-auto">
@@ -180,15 +198,12 @@ function HomeLoanDetailsPage() {
             )}
           </section>
 
-          {loan.eligibility?.length > 0 && (
+          {cleanedEligibility.length > 0 && (
             <section>
               <h3 className="font-semibold mb-2">Eligibility Criteria</h3>
               <ul className="list-disc ml-5 text-sm space-y-1">
-                {loan.eligibility.map((e, i) => (
-                  <li key={i}>
-                    {e.eligibilityType}
-                    {e.additionalValue ? ` - ${e.additionalValue}` : ''}
-                  </li>
+                {cleanedEligibility.map((e, i) => (
+                  <li key={i}>{e}</li>
                 ))}
               </ul>
             </section>
