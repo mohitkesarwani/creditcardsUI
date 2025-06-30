@@ -298,3 +298,39 @@ export function getRewardsValue(card) {
   return null;
 }
 
+export function filterProminentMortgageRates(rates) {
+  if (!Array.isArray(rates)) return [];
+  const groups = new Map();
+  rates.forEach(r => {
+    const type = (r.rateType || r.lendingRateType || '').toLowerCase();
+    const duration = (r.additionalValue || r.interestPaymentDue || '').toString().toLowerCase();
+    const key = `${type}|${duration}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(r);
+  });
+  const selected = [];
+  groups.forEach(list => {
+    const withMeta = list.filter(x => x.loanPurpose || x.repaymentType);
+    const candidates = withMeta.length ? withMeta : list;
+    candidates.sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate));
+    if (candidates[0]) selected.push(candidates[0]);
+  });
+  const deduped = [];
+  selected.sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate));
+  selected.forEach(r => {
+    const match = deduped.find(d => (
+      (d.rateType || d.lendingRateType) === (r.rateType || r.lendingRateType) &&
+      Math.abs(parseFloat(d.rate) - parseFloat(r.rate)) <= 0.05 &&
+      Math.abs(parseFloat(d.comparisonRate || 0) - parseFloat(r.comparisonRate || 0)) <= 0.05
+    ));
+    if (!match) deduped.push(r);
+  });
+  const variable = deduped
+    .filter(r => /(variable|discount|intro)/i.test(r.rateType || r.lendingRateType))
+    .sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate));
+  const fixed = deduped
+    .filter(r => /fixed/i.test(r.rateType || r.lendingRateType))
+    .sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate));
+  return [...variable, ...fixed];
+}
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMortgage } from '../api/residentialMortgages';
 import {
@@ -7,6 +7,7 @@ import {
   getMortgageFeatureTags,
   getTagColor,
   normalizeMortgageFeature,
+  filterProminentMortgageRates,
 } from '../utils.js';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
@@ -17,6 +18,7 @@ function HomeLoanDetailsPage() {
   const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAllRates, setShowAllRates] = useState(false);
   const { selected, toggleMortgage } = useSelectedMortgages();
 
   useEffect(() => {
@@ -43,6 +45,11 @@ function HomeLoanDetailsPage() {
   const tags = getMortgageFeatureTags(loan);
   const isSelected = selected.some((m) => m.id === loan.id);
   const lendingRates = loan.lendingRates || [];
+  const prominentRates = useMemo(
+    () => filterProminentMortgageRates(lendingRates),
+    [lendingRates]
+  );
+  const displayRates = showAllRates ? lendingRates : prominentRates;
   const purposes = Array.from(
     new Set(lendingRates.map((r) => r.loanPurpose).filter(Boolean))
   );
@@ -101,9 +108,13 @@ function HomeLoanDetailsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {lendingRates.map((r, i) => (
+                  {displayRates.map((r, i) => (
                     <tr key={i} className={i % 2 ? 'bg-gray-50' : ''}>
-                      <td className="border px-2 py-1">{r.rateType || r.lendingRateType || '–'}</td>
+                      <td className="border px-2 py-1">
+                        {r.additionalValue && /fixed/i.test(r.rateType || r.lendingRateType)
+                          ? `${r.rateType || r.lendingRateType} – ${r.additionalValue}`
+                          : r.rateType || r.lendingRateType || '–'}
+                      </td>
                       <td className="border px-2 py-1">
                         {r.rate ? formatPercent(r.rate) : '–'}
                       </td>
@@ -116,6 +127,14 @@ function HomeLoanDetailsPage() {
                   ))}
                 </tbody>
               </table>
+              {lendingRates.length > prominentRates.length && (
+                <button
+                  className="mt-2 text-sm text-accent underline"
+                  onClick={() => setShowAllRates((v) => !v)}
+                >
+                  {showAllRates ? 'Hide All Rate Options' : 'View All Rate Options'}
+                </button>
+              )}
             ) : (
               <p className="text-sm text-gray-600">Not specified.</p>
             )}
