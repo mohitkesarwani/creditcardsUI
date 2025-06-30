@@ -10,6 +10,7 @@ import {
 } from '../utils.js';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
+import LoanRepaymentCalculator from '../components/LoanRepaymentCalculator.jsx';
 
 function calcRepayments(amount, rate, years) {
   const r = parseFloat(rate);
@@ -152,10 +153,12 @@ function HomeLoanDetailsPage() {
               <div>
                 <span className="font-semibold">Loan Term:</span> Up to 30 years
               </div>
-            </div>
           </div>
+        </div>
 
-          <Section title="Estimated Cost (Preview)">
+        <LoanRepaymentCalculator rate={rate} />
+
+        <Section title="Estimated Cost (Preview)">
             {repaymentInfo ? (
               <div className="grid grid-cols-2 gap-2">
                 <p>Monthly Repayment: {formatMoney(repaymentInfo.monthly)}</p>
