@@ -14,3 +14,13 @@ export const fetchMortgages = async (params = {}) => {
     throw err;
   }
 };
+
+export const fetchMortgage = async (id) => {
+  try {
+    const response = await apiClient.get(`/api/residential-mortgages/${id}`);
+    return normalizeMortgage(response.data);
+  } catch (err) {
+    console.error('Error fetching mortgage:', err);
+    throw err;
+  }
+};
