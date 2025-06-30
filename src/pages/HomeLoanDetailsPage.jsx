@@ -115,6 +115,7 @@ function HomeLoanDetailsPage() {
           <section>
             <h3 className="font-semibold mb-2">Interest &amp; Comparison Rates</h3>
             {lendingRates.length ? (
+              <>
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr>
@@ -155,6 +156,7 @@ function HomeLoanDetailsPage() {
                     : 'View All Rate Options'}
                 </button>
               ) : null}
+              </>
             ) : (
               <p className="text-sm text-gray-600">Not specified.</p>
             )}
