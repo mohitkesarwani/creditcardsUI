@@ -5,7 +5,7 @@ function MortgageCardGrid({ mortgages, selectedTags = [] }) {
   if (!mortgages.length) {
     return (
       <p className="text-center py-8" data-testid="no-mortgages">
-        No matching mortgages found.
+        No loans match your criteria.
       </p>
     );
   }

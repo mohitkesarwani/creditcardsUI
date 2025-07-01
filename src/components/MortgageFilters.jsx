@@ -2,7 +2,7 @@ import React from 'react';
 import RangeSlider from './RangeSlider';
 import { formatPercent } from '../utils.js';
 
-function MortgageFilters({ filters, setFilters, availableFeatures = [], availableEligibility = [], rateBounds = [0,0], banks = [] }) {
+function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBounds = [0,0], banks = [] }) {
   const update = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
 
   const toggle = (key, val) => {
@@ -17,24 +17,42 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
 
   const clear = () => {
     localStorage.removeItem('mortgageFilters');
-    setFilters({ rate: rateBounds, fees: [], features: [], eligibility: [], bank: '' });
+    setFilters({ rate: rateBounds, fees: [], features: [], bank: '' });
   };
 
   return (
-    <div className="mb-4 space-y-4 bg-white/80 p-4 rounded-lg shadow-md" data-testid="mortgage-filters">
+    <div className="mb-4 space-y-4 bg-white p-4 rounded-xl shadow" data-testid="mortgage-filters">
       <h4 className="font-bold">Filters</h4>
       <label className="block text-sm">Bank / Brand
-        <select
+        <input
+          type="text"
+          list="bank-list"
           value={filters.bank}
           onChange={(e) => update('bank', e.target.value)}
+          placeholder="Search bank..."
           className="mt-1 w-full border rounded px-2 py-2 text-sm"
-        >
-          <option value="">Any</option>
+        />
+        <datalist id="bank-list">
           {banks.map((b) => (
-            <option key={b} value={b}>{b}</option>
+            <option key={b} value={b} />
           ))}
-        </select>
+        </datalist>
       </label>
+      {filters.bank && (
+        <div className="flex items-center gap-1 mt-1" data-testid="bank-chip">
+          <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">
+            {filters.bank}
+          </span>
+          <button
+            type="button"
+            onClick={() => update('bank', '')}
+            aria-label="Clear bank"
+            className="text-xs text-accent"
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div>
         <label className="block text-sm font-semibold mb-2">Interest Rate Range</label>
         <RangeSlider
@@ -59,21 +77,6 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], availabl
               onChange={() => toggle('features', f)}
               className="rounded text-accent focus:ring-accent"
               data-testid={`filter-${f.toLowerCase().replace(/\s+/g,'-')}`}
-            />
-            <span>{f}</span>
-          </label>
-        ))}
-      </div>
-      <div>
-        <h5 className="font-semibold text-sm">Eligibility</h5>
-        {availableEligibility.map(f => (
-          <label key={f} className="flex items-center text-sm space-x-2 py-1">
-            <input
-              type="checkbox"
-              checked={filters.eligibility.includes(f)}
-              onChange={() => toggle('eligibility', f)}
-              className="rounded text-accent focus:ring-accent"
-              data-testid={`elig-${f.toLowerCase().replace(/\s+/g,'-')}`}
             />
             <span>{f}</span>
           </label>

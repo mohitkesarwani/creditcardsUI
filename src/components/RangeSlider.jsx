@@ -28,10 +28,10 @@ function RangeSlider({
     asPercent ? `${(v * 100).toFixed(3)}%` : `${v.toFixed(3)}%`;
 
   return (
-    <div className="relative w-full range-slider h-6" role="group" aria-label="value range selector">
-      <div className="absolute w-full h-1 bg-gray-200 rounded top-1/2 transform -translate-y-1/2" />
+    <div className="relative w-full range-slider h-8" role="group" aria-label="value range selector">
+      <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 transform -translate-y-1/2" />
       <div
-        className="absolute h-1 bg-accent rounded top-1/2 transform -translate-y-1/2"
+        className="absolute h-2 bg-gradient-to-r from-blue-500 to-sky-400 rounded-full top-1/2 transform -translate-y-1/2"
         style={{ left: `${left}%`, right: `${right}%` }}
       />
       <div className="absolute -top-6 left-0 w-full" aria-hidden="true">
@@ -61,7 +61,7 @@ function RangeSlider({
         onTouchEnd={() => setActiveThumb(null)}
         onBlur={() => setActiveThumb(null)}
         aria-label="Minimum interest rate"
-        className="thumb absolute w-full h-1 bg-transparent pointer-events-none appearance-none"
+        className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none"
         style={{ zIndex: minVal > max - 100 ? 5 : 3 }}
       />
       <input
@@ -77,7 +77,7 @@ function RangeSlider({
         onTouchEnd={() => setActiveThumb(null)}
         onBlur={() => setActiveThumb(null)}
         aria-label="Maximum interest rate"
-        className="thumb absolute w-full h-1 bg-transparent pointer-events-none appearance-none"
+        className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none"
         style={{ zIndex: 4 }}
       />
     </div>

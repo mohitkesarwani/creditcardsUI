@@ -11,10 +11,9 @@ function MortgagesPage() {
   const [filtered, setFiltered] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
-  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], eligibility: [], bank: '' });
+  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], bank: '' });
   const [rateBounds, setRateBounds] = useState([0, 0]);
   const [availableFeatures, setAvailableFeatures] = useState([]);
-  const [availableEligibility, setAvailableEligibility] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -41,20 +40,18 @@ function MortgagesPage() {
                 rate: parsed.rate || [minRate, maxRate],
                 fees: parsed.fees || [],
                 features: parsed.features || [],
-                eligibility: parsed.eligibility || [],
                 bank: parsed.bank || '',
               });
             } catch {
-              setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [], bank: '' });
+              setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
             }
           } else {
-            setFilters({ rate: [minRate, maxRate], fees: [], features: [], eligibility: [], bank: '' });
+            setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
           }
         }
         setAvailableFeatures([
           ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
-        setAvailableEligibility([...new Set(data.flatMap(m => m.eligibility?.map(e => e.eligibilityType) || []))]);
         setAvailableBanks([...new Set(data.map(m => m.bankName || m.brandName).filter(Boolean))]);
       } catch (err) {
         console.error(err);
@@ -79,9 +76,6 @@ function MortgagesPage() {
           const tags = getMortgageFeatureTags(m);
           return filters.features.every(f => tags.includes(f));
         });
-      }
-      if (filters.eligibility.length) {
-        result = result.filter(m => filters.eligibility.every(e => m.eligibility?.some(x => x.eligibilityType === e)));
       }
       if (filters.bank) {
         const term = filters.bank.toLowerCase();
@@ -146,7 +140,6 @@ function MortgagesPage() {
               filters={filters}
               setFilters={setFilters}
               availableFeatures={availableFeatures}
-              availableEligibility={availableEligibility}
               rateBounds={rateBounds}
               banks={availableBanks}
             />

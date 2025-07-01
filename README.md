@@ -28,6 +28,8 @@ Run unit tests using Node's built-in runner:
 
 ```bash
 npm test
+# or with pnpm
+pnpm test
 ```
 
 The API should expose `/api/credit-cards` for card data.
