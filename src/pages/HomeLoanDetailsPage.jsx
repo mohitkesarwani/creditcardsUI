@@ -90,8 +90,12 @@ function HomeLoanDetailsPage() {
   if (error) return <div className="p-4 text-red-600">{error}</div>;
   if (!loan) return <div className="p-4">Loan not found.</div>;
 
-  const rate = loan.lendingRates?.[0]?.rate;
-  const comparisonRate = loan.lendingRates?.[0]?.comparisonRate;
+  const rateRaw = loan.lendingRates?.[0]?.rate;
+  const comparisonRateRaw = loan.lendingRates?.[0]?.comparisonRate;
+  const rate = rateRaw ? parseFloat(rateRaw) : null;
+  const comparisonRate = comparisonRateRaw
+    ? parseFloat(comparisonRateRaw)
+    : null;
   const fees = loan.feesAndPricing?.fees || [];
   const tags = getMortgageFeatureTags(loan);
   const isSelected = selected.some((m) => m.id === loan.id);
@@ -114,7 +118,7 @@ function HomeLoanDetailsPage() {
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
 
-  const bumpInfo = calcRepayments(150000, rate ? parseFloat(rate) + 1 : null, 30);
+  const bumpInfo = calcRepayments(150000, rate !== null ? rate + 1 : null, 30);
 
   const setupFee = fees.find((f) => /(establishment|application|setup)/i.test(f.name || ''));
   const ongoingFee = fees.find((f) => /(ongoing|monthly|annual|service)/i.test(f.name || ''));
