@@ -27,8 +27,12 @@ export function formatValue(label, value, fallback = '–') {
 export function formatMoney(value) {
   const num = parseCurrency(value);
   if (num === null) return value;
-  const fixed = num.toFixed(2);
-  return '$' + fixed.replace(/\.00$/, '');
+  return num.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 export function getMinimumAnnualFee(card) {

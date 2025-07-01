@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { formatMoney } from '../utils.js';
+import React, { useState, useMemo, useEffect } from 'react';
+import { formatMoney, parseCurrency } from '../utils.js';
 import RepaymentChart from './RepaymentChart.jsx';
 
 function calcMonthly(amount, rate, years) {
@@ -31,9 +31,27 @@ function generateSchedule(amount, rate, years, interestOnly) {
 function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const [propertyPrice, setPropertyPrice] = useState(1000000);
   const [loanAmount, setLoanAmount] = useState(800000);
-  const [term, setTerm] = useState(30);
   const [rate, setRate] = useState(parseFloat(defaultRate) || 0);
+  const [term, setTerm] = useState(30);
   const [interestOnly, setInterestOnly] = useState(false);
+  const [propertyPriceInput, setPropertyPriceInput] = useState(
+    formatMoney(1000000)
+  );
+  const [loanAmountInput, setLoanAmountInput] = useState(formatMoney(800000));
+  const [rateInput, setRateInput] = useState(rate.toFixed(2) + '%');
+
+  // Keep formatted input fields in sync with numeric values
+  useEffect(() => {
+    setPropertyPriceInput(formatMoney(propertyPrice));
+  }, [propertyPrice]);
+
+  useEffect(() => {
+    setLoanAmountInput(formatMoney(loanAmount));
+  }, [loanAmount]);
+
+  useEffect(() => {
+    setRateInput(rate.toFixed(2) + '%');
+  }, [rate]);
 
   const validInputs =
     propertyPrice > 0 &&
@@ -44,7 +62,9 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
     term > 0;
 
   const suggest = () => {
-    setLoanAmount(Math.round(propertyPrice * 0.8));
+    const val = Math.round(propertyPrice * 0.8);
+    setLoanAmount(val);
+    setLoanAmountInput(formatMoney(val));
   };
 
   const schedule = useMemo(
@@ -68,37 +88,46 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <label className="text-sm">Property Price
           <input
-            type="number"
-            min="1"
-            max="10000000"
+            type="text"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
             aria-label="Property Price"
-            value={propertyPrice}
-            onChange={(e) => setPropertyPrice(parseFloat(e.target.value) || 0)}
+            value={propertyPriceInput}
+            onChange={(e) => {
+              setPropertyPriceInput(e.target.value);
+              const val = parseCurrency(e.target.value);
+              if (val !== null) setPropertyPrice(val);
+            }}
+            onBlur={() => setPropertyPriceInput(formatMoney(propertyPrice))}
           />
         </label>
         <label className="text-sm">Loan Amount
           <span title="What is LVR? Loan-to-value ratio is the loan amount divided by property price" className="ml-1 cursor-help">?</span>
           <input
-            type="number"
-            min="1"
-            max="10000000"
+            type="text"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
             aria-label="Loan Amount"
-            value={loanAmount}
-            onChange={(e) => setLoanAmount(parseFloat(e.target.value) || 0)}
+            value={loanAmountInput}
+            onChange={(e) => {
+              setLoanAmountInput(e.target.value);
+              const val = parseCurrency(e.target.value);
+              if (val !== null) setLoanAmount(val);
+            }}
+            onBlur={() => setLoanAmountInput(formatMoney(loanAmount))}
           />
         </label>
         <label className="text-sm">Interest Rate
           <input
-            type="number"
-            step="0.01"
-            min="0"
-            max="20"
+            type="text"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
             aria-label="Interest Rate"
-            value={rate}
-            onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
+            value={rateInput}
+            onChange={(e) => {
+              const raw = e.target.value;
+              setRateInput(raw);
+              const val = parseFloat(raw.replace(/[^0-9.]/g, ''));
+              if (!Number.isNaN(val)) setRate(val);
+            }}
+            onBlur={() => setRateInput(rate.toFixed(2) + '%')}
           />
           <input
             type="range"

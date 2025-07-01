@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Chart } from 'chart.js/auto';
+import { formatMoney } from '../utils.js';
 
 function RepaymentChart({ schedule }) {
   const canvasRef = useRef(null);
@@ -54,7 +55,12 @@ function RepaymentChart({ schedule }) {
         },
         scales: {
           x: { display: false },
-          y: { beginAtZero: true },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: (value) => formatMoney(value),
+            },
+          },
         },
       },
     });
