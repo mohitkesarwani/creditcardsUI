@@ -28,7 +28,7 @@ function generateSchedule(amount, rate, years, interestOnly) {
   return schedule;
 }
 
-function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
+function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
   const [propertyPrice, setPropertyPrice] = useState(1000000);
   const [loanAmount, setLoanAmount] = useState(800000);
   const [rate, setRate] = useState(parseFloat(defaultRate) || 0);
@@ -94,6 +94,12 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const total = monthly ? monthly * term * 12 : null;
   const costPerDollar = total ? total / loanAmount : null;
 
+  useEffect(() => {
+    if (typeof onChange === 'function') {
+      onChange({ monthly, total, costPerDollar });
+    }
+  }, [monthly, total, costPerDollar, onChange]);
+
   return (
     <div className="space-y-4" id="loan-calculator">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -115,7 +121,6 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
           />
         </label>
         <label className="text-sm">Loan Amount
-          <span title="What is LVR? Loan-to-value ratio is the loan amount divided by property price" className="ml-1 cursor-help">?</span>
           <input
             type="text"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
