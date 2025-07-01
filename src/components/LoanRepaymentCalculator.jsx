@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { formatMoney, parseCurrency, formatMoneyWhole } from '../utils.js';
+import { formatMoney, formatMoneyWhole } from '../utils.js';
 import RepaymentChart from './RepaymentChart.jsx';
 
 function calcMonthly(amount, rate, years) {
@@ -37,7 +37,9 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const [propertyPriceInput, setPropertyPriceInput] = useState(
     formatMoneyWhole(1000000)
   );
-  const [loanAmountInput, setLoanAmountInput] = useState(formatMoney(800000));
+  const [loanAmountInput, setLoanAmountInput] = useState(
+    formatMoneyWhole(800000)
+  );
   const [rateInput, setRateInput] = useState(rate.toFixed(2) + '%');
 
   // Update rate if defaultRate prop changes
@@ -55,7 +57,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   }, [propertyPrice]);
 
   useEffect(() => {
-    setLoanAmountInput(formatMoney(loanAmount));
+    setLoanAmountInput(formatMoneyWhole(loanAmount));
   }, [loanAmount]);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const suggest = () => {
     const val = Math.round(propertyPrice * 0.8);
     setLoanAmount(val);
-    setLoanAmountInput(formatMoney(val));
+    setLoanAmountInput(formatMoneyWhole(val));
   };
 
   const schedule = useMemo(
@@ -120,11 +122,12 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
             aria-label="Loan Amount"
             value={loanAmountInput}
             onChange={(e) => {
-              setLoanAmountInput(e.target.value);
-              const val = parseCurrency(e.target.value);
-              if (val !== null) setLoanAmount(val);
+              const raw = e.target.value.replace(/[^0-9,]/g, '');
+              setLoanAmountInput(raw);
+              const val = parseInt(raw.replace(/,/g, ''), 10);
+              if (!Number.isNaN(val)) setLoanAmount(val);
             }}
-            onBlur={() => setLoanAmountInput(formatMoney(loanAmount))}
+            onBlur={() => setLoanAmountInput(formatMoneyWhole(loanAmount))}
           />
         </label>
         <label className="text-sm">Interest Rate
