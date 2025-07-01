@@ -1,5 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { formatMoney, parseCurrency } from '../utils.js';
+import { formatMoney } from '../utils.js';
+
+function formatWholeCurrency(value) {
+  const num = parseInt(value, 10);
+  if (Number.isNaN(num)) return '';
+  return `$${num.toLocaleString()}`;
+}
 import RepaymentChart from './RepaymentChart.jsx';
 
 function calcMonthly(amount, rate, years) {
@@ -35,18 +41,27 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const [term, setTerm] = useState(30);
   const [interestOnly, setInterestOnly] = useState(false);
   const [propertyPriceInput, setPropertyPriceInput] = useState(
-    formatMoney(1000000)
+    formatWholeCurrency(1000000)
   );
-  const [loanAmountInput, setLoanAmountInput] = useState(formatMoney(800000));
+  const [loanAmountInput, setLoanAmountInput] = useState(
+    formatWholeCurrency(800000)
+  );
   const [rateInput, setRateInput] = useState(rate.toFixed(2) + '%');
+
+  useEffect(() => {
+    const r = parseFloat(defaultRate);
+    if (!Number.isNaN(r)) {
+      setRate(r);
+    }
+  }, [defaultRate]);
 
   // Keep formatted input fields in sync with numeric values
   useEffect(() => {
-    setPropertyPriceInput(formatMoney(propertyPrice));
+    setPropertyPriceInput(formatWholeCurrency(propertyPrice));
   }, [propertyPrice]);
 
   useEffect(() => {
-    setLoanAmountInput(formatMoney(loanAmount));
+    setLoanAmountInput(formatWholeCurrency(loanAmount));
   }, [loanAmount]);
 
   useEffect(() => {
@@ -64,7 +79,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const suggest = () => {
     const val = Math.round(propertyPrice * 0.8);
     setLoanAmount(val);
-    setLoanAmountInput(formatMoney(val));
+    setLoanAmountInput(formatWholeCurrency(val));
   };
 
   const schedule = useMemo(
@@ -89,36 +104,46 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
         <label className="text-sm">Property Price
           <input
             type="text"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className={`mt-1 w-full border rounded-md px-2 py-1 text-sm ${propertyPriceInput && !/^\$?[0-9,]+$/.test(propertyPriceInput) ? 'border-red-500' : ''}`}
             aria-label="Property Price"
             value={propertyPriceInput}
             onChange={(e) => {
-              setPropertyPriceInput(e.target.value);
-              const val = parseCurrency(e.target.value);
-              if (val !== null) setPropertyPrice(val);
+              const raw = e.target.value;
+              const numeric = raw.replace(/[^0-9]/g, '');
+              if (/^\d*$/.test(numeric)) {
+                setPropertyPrice(parseInt(numeric || '0', 10));
+                setPropertyPriceInput(numeric ? parseInt(numeric, 10).toLocaleString() : '');
+              } else {
+                setPropertyPriceInput(raw);
+              }
             }}
-            onBlur={() => setPropertyPriceInput(formatMoney(propertyPrice))}
+            onBlur={() => setPropertyPriceInput(propertyPrice ? formatWholeCurrency(propertyPrice) : '')}
           />
         </label>
         <label className="text-sm">Loan Amount
           <span title="What is LVR? Loan-to-value ratio is the loan amount divided by property price" className="ml-1 cursor-help">?</span>
           <input
             type="text"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className={`mt-1 w-full border rounded-md px-2 py-1 text-sm ${loanAmountInput && !/^\$?[0-9,]+$/.test(loanAmountInput) ? 'border-red-500' : ''}`}
             aria-label="Loan Amount"
             value={loanAmountInput}
             onChange={(e) => {
-              setLoanAmountInput(e.target.value);
-              const val = parseCurrency(e.target.value);
-              if (val !== null) setLoanAmount(val);
+              const raw = e.target.value;
+              const numeric = raw.replace(/[^0-9]/g, '');
+              if (/^\d*$/.test(numeric)) {
+                setLoanAmount(parseInt(numeric || '0', 10));
+                setLoanAmountInput(numeric ? parseInt(numeric, 10).toLocaleString() : '');
+              } else {
+                setLoanAmountInput(raw);
+              }
             }}
-            onBlur={() => setLoanAmountInput(formatMoney(loanAmount))}
+            onBlur={() => setLoanAmountInput(loanAmount ? formatWholeCurrency(loanAmount) : '')}
           />
         </label>
         <label className="text-sm">Interest Rate
           <input
             type="text"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full border rounded-md px-2 py-1 text-sm"
             aria-label="Interest Rate"
             value={rateInput}
             onChange={(e) => {
@@ -142,7 +167,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
         </label>
         <label className="text-sm">Term (years)
           <select
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full border rounded-md px-2 py-1 text-sm"
             aria-label="Term (years)"
             value={term}
             onChange={(e) => setTerm(parseInt(e.target.value, 10))}
