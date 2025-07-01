@@ -11,6 +11,7 @@ import {
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import LoanRepaymentCalculator from '../components/LoanRepaymentCalculator.jsx';
+import CompareRatesModal from '../components/CompareRatesModal.jsx';
 
 function calcRepayments(amount, rate, years) {
   const r = parseFloat(rate);
@@ -28,12 +29,13 @@ function Section({ title, children }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex justify-between items-center w-full sm:cursor-default"
+        className="flex justify-between items-center w-full cursor-pointer"
+        aria-expanded={open}
       >
         <h3 className="font-semibold">{title}</h3>
-        <span className="sm:hidden">{open ? '▾' : '▸'}</span>
+        <span>{open ? '▾' : '▸'}</span>
       </button>
-      <div className={`${open ? 'block' : 'hidden sm:block'} mt-2 text-sm`}>{children}</div>
+      <div className={`${open ? 'block' : 'hidden'} mt-2 text-sm`}>{children}</div>
     </div>
   );
 }
@@ -45,6 +47,7 @@ function HomeLoanDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAllRates, setShowAllRates] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
   const { selected, toggleMortgage } = useSelectedMortgages();
 
   useEffect(() => {
@@ -129,11 +132,12 @@ function HomeLoanDetailsPage() {
         <button onClick={() => navigate(-1)} className="text-accent underline mb-4 text-sm">
           &larr; Go Back
         </button>
-        <div className="bg-white rounded-xl shadow p-4 md:p-6 space-y-6">
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-4 md:p-6 space-y-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold">
+            <h2 className="font-bold" style={{ fontSize: '1.5em' }}>
               {loan.bankName || loan.brandName} – {loan.name}
             </h2>
+            <p className="text-xs text-gray-500">Last Updated: July 01, 2025, 03:55 PM AEST</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
               <div>
                 <span className="font-semibold">Interest Type:</span>{' '}
@@ -143,12 +147,19 @@ function HomeLoanDetailsPage() {
                 <span className="font-semibold">Rate:</span>{' '}
                 {rate ? formatPercent(rate) : 'N/A'}
               </div>
-              <div>
+              <div className="flex items-center gap-2">
                 <span className="font-semibold flex items-center gap-1">
                   Comparison
                   <span title="Based on a standard $150k loan over 25 years" className="cursor-help">?</span>:
                 </span>
                 {comparisonRate ? formatPercent(comparisonRate) : 'N/A'}
+                <button
+                  type="button"
+                  onClick={() => setShowCompare(true)}
+                  className="text-xs border border-accent text-accent rounded px-2 py-0.5 hover:bg-accent/10"
+                >
+                  Compare Rates
+                </button>
               </div>
               <div>
                 <span className="font-semibold">Loan Term:</span> Up to 30 years
@@ -320,6 +331,11 @@ function HomeLoanDetailsPage() {
           </div>
         </div>
       </div>
+      <CompareRatesModal
+        open={showCompare}
+        onClose={() => setShowCompare(false)}
+        rates={displayRates}
+      />
     </div>
   );
 }
