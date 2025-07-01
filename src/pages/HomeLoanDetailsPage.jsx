@@ -22,8 +22,8 @@ function calcRepayments(amount, rate, years) {
   return { monthly: payment, total: payment * n };
 }
 
-function Section({ title, children, initialOpen = false }) {
-  const [open, setOpen] = useState(initialOpen);
+function Section({ title, children }) {
+  const [open, setOpen] = useState(false);
   return (
     <div className="border-b pb-4">
       <button
@@ -156,7 +156,7 @@ function HomeLoanDetailsPage() {
                 <button
                   type="button"
                   onClick={() => setShowCompare(true)}
-                  className="ml-auto text-xs border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10"
+                  className="text-xs border border-accent text-accent rounded px-2 py-0.5 hover:bg-accent/10"
                 >
                   Compare Rates
                 </button>
@@ -186,7 +186,7 @@ function HomeLoanDetailsPage() {
             )}
           </Section>
 
-          <Section title="Loan Features" initialOpen>
+          <Section title="Loan Features">
             <div className="flex flex-wrap gap-1">
               {featureLabels.map((f) => (
                 <span
@@ -199,7 +199,7 @@ function HomeLoanDetailsPage() {
             </div>
           </Section>
 
-          <Section title="Fees & Charges" initialOpen>
+          <Section title="Fees & Charges">
             <table className="w-full text-sm border-collapse">
               <tbody>
                 <tr>
@@ -224,7 +224,7 @@ function HomeLoanDetailsPage() {
             </Section>
           )}
 
-          <Section title="Helpful Insights" initialOpen>
+          <Section title="Helpful Insights">
             {repaymentInfo && bumpInfo ? (
               <div className="space-y-1 text-sm">
                 <p>
@@ -241,7 +241,7 @@ function HomeLoanDetailsPage() {
           </Section>
 
           {(purposes.length || repayments.length || rateTypes.length || maxLvr) && (
-            <Section title="Available Options" initialOpen>
+            <Section title="Available Options">
               {purposes.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-sm mb-1">Purposes</h4>
