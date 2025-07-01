@@ -35,6 +35,18 @@ export function formatMoney(value) {
   });
 }
 
+// Format currency without cents for whole number displays
+export function formatMoneyWhole(value) {
+  const num = parseCurrency(value);
+  if (num === null) return value;
+  return num.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
 export function getMinimumAnnualFee(card) {
   const fees = card.details?.fees || card.fees || [];
 

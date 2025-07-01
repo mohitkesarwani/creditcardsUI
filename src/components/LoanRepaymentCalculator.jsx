@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { formatMoney, parseCurrency } from '../utils.js';
+import { formatMoney, parseCurrency, formatMoneyWhole } from '../utils.js';
 import RepaymentChart from './RepaymentChart.jsx';
 
 function calcMonthly(amount, rate, years) {
@@ -35,14 +35,23 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const [term, setTerm] = useState(30);
   const [interestOnly, setInterestOnly] = useState(false);
   const [propertyPriceInput, setPropertyPriceInput] = useState(
-    formatMoney(1000000)
+    formatMoneyWhole(1000000)
   );
   const [loanAmountInput, setLoanAmountInput] = useState(formatMoney(800000));
   const [rateInput, setRateInput] = useState(rate.toFixed(2) + '%');
 
+  // Update rate if defaultRate prop changes
+  useEffect(() => {
+    const parsed = parseFloat(defaultRate);
+    if (!Number.isNaN(parsed)) {
+      setRate(parsed);
+      setRateInput(parsed.toFixed(2) + '%');
+    }
+  }, [defaultRate]);
+
   // Keep formatted input fields in sync with numeric values
   useEffect(() => {
-    setPropertyPriceInput(formatMoney(propertyPrice));
+    setPropertyPriceInput(formatMoneyWhole(propertyPrice));
   }, [propertyPrice]);
 
   useEffect(() => {
@@ -93,11 +102,14 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
             aria-label="Property Price"
             value={propertyPriceInput}
             onChange={(e) => {
-              setPropertyPriceInput(e.target.value);
-              const val = parseCurrency(e.target.value);
-              if (val !== null) setPropertyPrice(val);
+              const raw = e.target.value.replace(/[^0-9,]/g, '');
+              setPropertyPriceInput(raw);
+              const val = parseInt(raw.replace(/,/g, ''), 10);
+              if (!Number.isNaN(val)) setPropertyPrice(val);
             }}
-            onBlur={() => setPropertyPriceInput(formatMoney(propertyPrice))}
+            onBlur={() =>
+              setPropertyPriceInput(formatMoneyWhole(propertyPrice))
+            }
           />
         </label>
         <label className="text-sm">Loan Amount
