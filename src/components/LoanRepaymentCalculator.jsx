@@ -35,21 +35,30 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
   const [rate, setRate] = useState(parseFloat(defaultRate) || 0);
   const [interestOnly, setInterestOnly] = useState(false);
 
+  const validInputs =
+    propertyPrice > 0 &&
+    propertyPrice <= 10000000 &&
+    loanAmount > 0 &&
+    loanAmount <= 10000000 &&
+    rate > 0 &&
+    term > 0;
+
   const suggest = () => {
     setLoanAmount(Math.round(propertyPrice * 0.8));
   };
 
   const schedule = useMemo(
-    () => generateSchedule(loanAmount, rate, term, interestOnly),
-    [loanAmount, rate, term, interestOnly]
+    () =>
+      validInputs ? generateSchedule(loanAmount, rate, term, interestOnly) : [],
+    [loanAmount, rate, term, interestOnly, validInputs]
   );
 
   const monthly = useMemo(() => {
-    if (!rate) return null;
+    if (!validInputs) return null;
     return interestOnly
       ? loanAmount * (rate / 100 / 12)
       : calcMonthly(loanAmount, rate, term);
-  }, [loanAmount, rate, term, interestOnly]);
+  }, [loanAmount, rate, term, interestOnly, validInputs]);
 
   const total = monthly ? monthly * term * 12 : null;
   const costPerDollar = total ? total / loanAmount : null;
@@ -60,7 +69,10 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
         <label className="text-sm">Property Price
           <input
             type="number"
+            min="1"
+            max="10000000"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            aria-label="Property Price"
             value={propertyPrice}
             onChange={(e) => setPropertyPrice(parseFloat(e.target.value) || 0)}
           />
@@ -69,7 +81,10 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
           <span title="What is LVR? Loan-to-value ratio is the loan amount divided by property price" className="ml-1 cursor-help">?</span>
           <input
             type="number"
+            min="1"
+            max="10000000"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            aria-label="Loan Amount"
             value={loanAmount}
             onChange={(e) => setLoanAmount(parseFloat(e.target.value) || 0)}
           />
@@ -78,14 +93,28 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
           <input
             type="number"
             step="0.01"
+            min="0"
+            max="20"
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            aria-label="Interest Rate"
             value={rate}
-            onChange={(e) => setRate(e.target.value)}
+            onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
+          />
+          <input
+            type="range"
+            min="0"
+            max="20"
+            step="0.05"
+            className="w-full mt-1"
+            value={rate}
+            aria-label="Adjust Interest Rate"
+            onChange={(e) => setRate(parseFloat(e.target.value))}
           />
         </label>
         <label className="text-sm">Term (years)
           <select
             className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            aria-label="Term (years)"
             value={term}
             onChange={(e) => setTerm(parseInt(e.target.value, 10))}
           >
@@ -93,6 +122,16 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
             <option value={20}>20</option>
             <option value={30}>30</option>
           </select>
+          <input
+            type="range"
+            min="1"
+            max="30"
+            step="1"
+            className="w-full mt-1"
+            value={term}
+            aria-label="Adjust Term"
+            onChange={(e) => setTerm(parseInt(e.target.value, 10))}
+          />
         </label>
       </div>
       <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -105,6 +144,11 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
           />
           Interest Only
         </label>
+        {interestOnly && (
+          <p className="text-red-600 text-xs" role="alert">
+            Interest-only loans may increase total repayment costs.
+          </p>
+        )}
         <button type="button" onClick={suggest} className="text-xs text-accent underline">
           Use 80% of Price
         </button>
@@ -114,7 +158,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
         </span>
         <span className="cursor-help text-xs" title="These values come from CoreLogic's 2025 median property data">?</span>
       </div>
-      {monthly && (
+      {monthly ? (
         <div className="grid grid-cols-2 gap-2 text-sm">
           <p>Monthly Repayment: {formatMoney(monthly)}</p>
           <p>Total Repayment: {formatMoney(total)}</p>
@@ -122,6 +166,8 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0 }) {
             Cost per $1 borrowed: {formatMoney(costPerDollar)}
           </p>
         </div>
+      ) : (
+        <p className="text-red-600 text-sm" role="alert">Please enter valid values for calculation</p>
       )}
       <RepaymentChart schedule={schedule} />
     </div>
