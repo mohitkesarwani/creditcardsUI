@@ -96,6 +96,10 @@ function HomeLoanDetailsPage() {
   const comparisonRate = comparisonRateRaw
     ? parseFloat(comparisonRateRaw)
     : null;
+  // Convert values less than 1 from decimal (e.g. 0.0624) to percentage form
+  const ratePercent = rate !== null ? (rate <= 1 ? rate * 100 : rate) : null;
+  const comparisonRatePercent =
+    comparisonRate !== null ? (comparisonRate <= 1 ? comparisonRate * 100 : comparisonRate) : null;
   const fees = loan.feesAndPricing?.fees || [];
   const tags = getMortgageFeatureTags(loan);
   const isSelected = selected.some((m) => m.id === loan.id);
@@ -118,7 +122,12 @@ function HomeLoanDetailsPage() {
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
 
-  const bumpInfo = calcRepayments(150000, rate !== null ? rate + 1 : null, 30);
+
+  const bumpInfo = calcRepayments(
+    150000,
+    ratePercent !== null ? ratePercent + 1 : null,
+    30
+  );
 
   const setupFee = fees.find((f) => /(establishment|application|setup)/i.test(f.name || ''));
   const ongoingFee = fees.find((f) => /(ongoing|monthly|annual|service)/i.test(f.name || ''));
@@ -147,11 +156,11 @@ function HomeLoanDetailsPage() {
               </div>
               <div>
                 <span className="font-semibold">Rate:</span>{' '}
-                {rate ? formatPercent(rate) : 'N/A'}
+                {ratePercent ? formatPercent(ratePercent) : 'N/A'}
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold">Comparison:</span>
-                {comparisonRate ? formatPercent(comparisonRate) : 'N/A'}
+                {comparisonRatePercent ? formatPercent(comparisonRatePercent) : 'N/A'}
               </div>
               <div>
                 <span className="font-semibold">Loan Term:</span> Up to 30 years
@@ -159,7 +168,7 @@ function HomeLoanDetailsPage() {
           </div>
         </div>
 
-        <LoanRepaymentCalculator rate={rate} onChange={setPreview} />
+        <LoanRepaymentCalculator rate={ratePercent} onChange={setPreview} />
 
         <Section title="Estimated Cost (Preview)">
             {preview.monthly !== null ? (
