@@ -11,7 +11,6 @@ import {
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import LoanRepaymentCalculator from '../components/LoanRepaymentCalculator.jsx';
-import CompareRatesModal from '../components/CompareRatesModal.jsx';
 
 function calcRepayments(amount, rate, years) {
   const r = parseFloat(rate);
@@ -47,7 +46,7 @@ function HomeLoanDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAllRates, setShowAllRates] = useState(false);
-  const [showCompare, setShowCompare] = useState(false);
+  const [preview, setPreview] = useState({ monthly: null, total: null, costPerDollar: null });
   const { selected, toggleMortgage } = useSelectedMortgages();
 
   useEffect(() => {
@@ -115,7 +114,6 @@ function HomeLoanDetailsPage() {
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
 
-  const repaymentInfo = calcRepayments(150000, rate, 30);
   const bumpInfo = calcRepayments(150000, rate ? parseFloat(rate) + 1 : null, 30);
 
   const setupFee = fees.find((f) => /(establishment|application|setup)/i.test(f.name || ''));
@@ -148,18 +146,8 @@ function HomeLoanDetailsPage() {
                 {rate ? formatPercent(rate) : 'N/A'}
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold flex items-center gap-1">
-                  Comparison
-                  <span title="Based on a standard $150k loan over 25 years" className="cursor-help">?</span>:
-                </span>
+                <span className="font-semibold">Comparison:</span>
                 {comparisonRate ? formatPercent(comparisonRate) : 'N/A'}
-                <button
-                  type="button"
-                  onClick={() => setShowCompare(true)}
-                  className="text-xs border border-accent text-accent rounded px-2 py-0.5 hover:bg-accent/10"
-                >
-                  Compare Rates
-                </button>
               </div>
               <div>
                 <span className="font-semibold">Loan Term:</span> Up to 30 years
@@ -167,15 +155,15 @@ function HomeLoanDetailsPage() {
           </div>
         </div>
 
-        <LoanRepaymentCalculator rate={rate} />
+        <LoanRepaymentCalculator rate={rate} onChange={setPreview} />
 
         <Section title="Estimated Cost (Preview)">
-            {repaymentInfo ? (
+            {preview.monthly !== null ? (
               <div className="grid grid-cols-2 gap-2">
-                <p>Monthly Repayment: {formatMoney(repaymentInfo.monthly)}</p>
-                <p>Total Repayment: {formatMoney(repaymentInfo.total)}</p>
+                <p>Monthly Repayment: {formatMoney(preview.monthly)}</p>
+                <p>Total Repayment: {formatMoney(preview.total)}</p>
                 <p className="col-span-2 text-xs text-gray-600">
-                  Cost per $1 borrowed: {formatMoney(repaymentInfo.total / 150000)}
+                  Cost per $1 borrowed: {formatMoney(preview.costPerDollar)}
                 </p>
                 <p className="col-span-2 text-xs text-gray-600">
                   Estimate based on standard loan assumptions
@@ -225,7 +213,7 @@ function HomeLoanDetailsPage() {
           )}
 
           <Section title="Helpful Insights">
-            {repaymentInfo && bumpInfo ? (
+            {preview.monthly !== null && bumpInfo ? (
               <div className="space-y-1 text-sm">
                 <p>
                   If the rate increases by 1%, your monthly repayment could be around{' '}
@@ -331,11 +319,6 @@ function HomeLoanDetailsPage() {
           </div>
         </div>
       </div>
-      <CompareRatesModal
-        open={showCompare}
-        onClose={() => setShowCompare(false)}
-        rates={displayRates}
-      />
     </div>
   );
 }
