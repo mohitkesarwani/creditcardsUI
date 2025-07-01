@@ -122,6 +122,7 @@ function HomeLoanDetailsPage() {
     .filter((n) => !Number.isNaN(n));
   const maxLvr = lvrValues.length ? Math.max(...lvrValues) : null;
 
+
   const bumpInfo = calcRepayments(
     150000,
     ratePercent !== null ? ratePercent + 1 : null,
