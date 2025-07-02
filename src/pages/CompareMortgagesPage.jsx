@@ -56,12 +56,13 @@ function CompareMortgagesPage() {
       <div className="flex justify-end mb-4">
         <button onClick={clearSelected} className="text-sm text-accent underline">Clear All</button>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 flex flex-wrap gap-4 items-end max-w-xl">
-        <label className="flex-1 text-sm">
-          <span className="block font-medium mb-1">Property Price</span>
-          <input
-            type="text"
-            className="w-full border rounded px-2 py-1 text-sm"
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 max-w-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+          <label className="flex flex-col text-sm">
+            <span className="block font-medium mb-1">Property Price</span>
+            <input
+              type="text"
+              className="w-full border rounded px-2 py-1 text-sm"
             value={propertyPriceInput}
             onChange={(e) => {
               const digits = e.target.value.replace(/[^0-9]/g, '');
@@ -78,42 +79,45 @@ function CompareMortgagesPage() {
             onBlur={() => setPropertyPriceInput(formatMoneyWhole(propertyPrice))}
             onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
             aria-label="Property Price"
-          />
-        </label>
-        <label className="flex-1 text-sm">
-          <span className="block font-medium mb-1">Loan Amount</span>
-          <input
-            type="text"
-            className="w-full border rounded px-2 py-1 text-sm"
-            value={loanAmountInput}
-            disabled={useEighty}
-            onChange={(e) => {
-              if (useEighty) return;
-              const digits = e.target.value.replace(/[^0-9]/g, '');
-              if (digits === '') {
-                setLoanAmountInput('');
-                return;
-              }
-              const val = parseInt(digits, 10);
-              if (!Number.isNaN(val) && val > 0) {
-                setLoanAmount(val);
-                setLoanAmountInput(formatMoneyWhole(val));
-              }
-            }}
-            onBlur={() => setLoanAmountInput(formatMoneyWhole(loanAmount))}
-            onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-            aria-label="Loan Amount"
-          />
-          <label className="flex items-center gap-2 mt-2 text-xs">
-            <input
-              type="checkbox"
-              className="rounded text-accent focus:ring-accent"
-              checked={useEighty}
-              onChange={(e) => setUseEighty(e.target.checked)}
             />
-            Use 80% of Property Price
           </label>
-        </label>
+          <div className="flex flex-col">
+            <label className="flex items-center gap-2 text-xs mb-1">
+              <input
+                type="checkbox"
+                className="rounded text-accent focus:ring-accent"
+                checked={useEighty}
+                onChange={(e) => setUseEighty(e.target.checked)}
+              />
+              Use 80% of Property Price
+            </label>
+            <label className="text-sm flex-1">
+              <span className="block font-medium mb-1">Loan Amount</span>
+              <input
+                type="text"
+                className="w-full border rounded px-2 py-1 text-sm"
+                value={loanAmountInput}
+                disabled={useEighty}
+                onChange={(e) => {
+                  if (useEighty) return;
+                  const digits = e.target.value.replace(/[^0-9]/g, '');
+                  if (digits === '') {
+                    setLoanAmountInput('');
+                    return;
+                  }
+                  const val = parseInt(digits, 10);
+                  if (!Number.isNaN(val) && val > 0) {
+                    setLoanAmount(val);
+                    setLoanAmountInput(formatMoneyWhole(val));
+                  }
+                }}
+                onBlur={() => setLoanAmountInput(formatMoneyWhole(loanAmount))}
+                onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
+                aria-label="Loan Amount"
+              />
+            </label>
+          </div>
+        </div>
       </div>
       <MortgageCompareTable mortgages={selected} loanAmount={loanAmount} />
     </div>

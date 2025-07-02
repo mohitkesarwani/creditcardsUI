@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import {
   formatMoney,
@@ -211,8 +212,12 @@ function ChartRow({ label, mortgages, amount }) {
         {label}
       </th>
       {schedules.map((s, i) => (
-        <td key={i} className="md:table-cell block px-4 py-3 text-left max-w-xs font-medium">
-          <RepaymentChart schedule={s} />
+        <td key={i} className="md:table-cell block px-4 py-3 text-left font-medium">
+          <div className="w-full overflow-x-auto max-w-full p-2">
+            <div className="min-w-[16rem]">
+              <RepaymentChart schedule={s} />
+            </div>
+          </div>
         </td>
       ))}
     </tr>
@@ -264,6 +269,10 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
             <p className="font-semibold flex-1" title={m.name}>{m.name}</p>
             <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">Remove</button>
           </div>
+          <div className="flex gap-2 p-4 pt-2 border-b">
+            <Link to={`/home-loans/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition text-center flex-1">Go to Details</Link>
+            <Link to={`/apply/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition text-center flex-1">Apply</Link>
+          </div>
           <table className="w-full text-sm">
             <tbody>
               {getRowDefs(loanAmount).map((r) => {
@@ -273,7 +282,13 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                   return (
                     <tr key={r.key} className="border-t">
                       <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
-                      <td className="px-4 py-2"><RepaymentChart schedule={schedule} /></td>
+                      <td className="px-4 py-2">
+                        <div className="w-full overflow-x-auto max-w-full p-2">
+                          <div className="min-w-[16rem]">
+                            <RepaymentChart schedule={schedule} />
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   );
                 }
@@ -313,6 +328,10 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                   <div className="flex flex-col items-center gap-3 p-4 rounded-lg" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                     <p className="font-semibold text-[1.1rem] leading-snug truncate" title={m.name}>{m.name}</p>
                     <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">Remove</button>
+                    <div className="flex gap-2 mt-1">
+                      <Link to={`/home-loans/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition">Go to Details</Link>
+                      <Link to={`/apply/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition">Apply</Link>
+                    </div>
                   </div>
                 </th>
               ))}
