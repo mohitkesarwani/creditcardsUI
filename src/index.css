@@ -216,6 +216,9 @@ html {
   @apply text-[15px] py-2;
 }
 
+.btn {
+
+
 .app-footer {
   @apply bg-navy text-white px-4 md:px-8 py-4 mt-12;
 }
