@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom';
 function Footer() {
   return (
     <footer className="app-footer">
-      <div className="max-w-6xl mx-auto px-4 text-center md:text-left">
-        <nav className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-          <Link to="/how-we-make-money" className="hover:underline hover:text-accent">Important Information</Link>
-          <Link to="/terms" className="hover:underline hover:text-accent">Terms &amp; Conditions</Link>
-          <Link to="/faqs" className="hover:underline hover:text-accent">Help/FAQs</Link>
-          <Link to="/privacy" className="hover:underline hover:text-accent">Privacy Policy</Link>
+      <div className="max-w-6xl mx-auto px-4 md:px-8 text-center md:text-left">
+        <nav className="flex flex-col md:flex-row md:gap-6 md:items-center mb-4">
+          <Link to="/how-we-make-money" className="hover:underline">Important Information</Link>
+          <Link to="/terms" className="hover:underline">Terms &amp; Conditions</Link>
+          <Link to="/faqs" className="hover:underline">Help/FAQs</Link>
+          <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
         </nav>
         <p className="text-xs opacity-80 mb-4">
           We provide general information only. Please consider your circumstances and the product disclosure statements.
