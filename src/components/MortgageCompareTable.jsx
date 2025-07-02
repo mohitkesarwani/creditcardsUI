@@ -135,12 +135,12 @@ function getRowDefs(amount) {
 function Row({ label, values }) {
   if (values.every((v) => !v)) return null;
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
-      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
+    <tr className="md:table-row block even:bg-slate-50 dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-slate-200 dark:border-gray-700">
+      <th className="md:table-cell block text-left md:border-r border border-slate-200 px-4 py-2 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => (
-        <td key={i} className="md:table-cell block px-4 py-3 text-left max-w-xs font-medium">
+        <td key={i} className="md:table-cell block px-4 py-2 text-left max-w-xs font-medium border border-slate-200">
           {v || '–'}
         </td>
       ))}
@@ -153,15 +153,15 @@ function RateRow({ label, values }) {
   const nums = values.map((v) => parseFloat(String(v).replace(/[^0-9.]/g, '')));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
-      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
+    <tr className="md:table-row block even:bg-slate-50 dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-slate-200 dark:border-gray-700">
+      <th className="md:table-cell block text-left md:border-r border border-slate-200 px-4 py-2 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => {
         const num = nums[i];
         const highlight = !Number.isNaN(num) && num === min;
         return (
-          <td key={i} className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}>
+          <td key={i} className={`md:table-cell block px-4 py-2 text-left max-w-xs font-medium border border-slate-200 ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}>
             {v ? formatPercent(v) : '–'}
           </td>
         );
@@ -181,8 +181,8 @@ function MoneyRow({
   const nums = values.map((v) => parseFloat(v));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
-      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
+    <tr className="md:table-row block even:bg-slate-50 dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-slate-200 dark:border-gray-700">
+      <th className="md:table-cell block text-left md:border-r border border-slate-200 px-4 py-2 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => {
@@ -191,7 +191,7 @@ function MoneyRow({
         return (
           <td
             key={i}
-            className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}
+            className={`md:table-cell block px-4 py-2 text-left max-w-xs font-medium border border-slate-200 ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}
             title={tooltips[i] || undefined}
           >
             {v != null ? formatFn(v) : 'N/A'}
@@ -206,16 +206,26 @@ function ChartRow({ label, mortgages, amount }) {
   const schedules = mortgages.map((m) => getRepaymentInfo(m, amount)?.schedule || []);
   if (schedules.every((s) => !s.length)) return null;
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
-      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
-        {label}
-      </th>
-      {schedules.map((s, i) => (
-        <td key={i} className="md:table-cell block px-4 py-3 text-left max-w-xs font-medium">
-          <RepaymentChart schedule={s} />
-        </td>
-      ))}
-    </tr>
+    <>
+      <tr>
+        <th
+          colSpan={mortgages.length + 1}
+          className="border border-slate-200 px-4 py-2 text-center text-gray-600 font-medium bg-slate-50 dark:bg-gray-800"
+        >
+          {label}
+        </th>
+      </tr>
+      <tr className="md:table-row block even:bg-slate-50 dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-slate-200 dark:border-gray-700">
+        {schedules.map((s, i) => (
+          <td
+            key={i}
+            className="md:table-cell block px-4 py-2 text-left max-w-xs font-medium border border-slate-200 align-bottom"
+          >
+            <RepaymentChart schedule={s} />
+          </td>
+        ))}
+      </tr>
+    </>
   );
 }
 
@@ -271,9 +281,9 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                   const schedule = getRepaymentInfo(m, loanAmount)?.schedule || [];
                   if (!schedule.length) return null;
                   return (
-                    <tr key={r.key} className="border-t">
+                    <tr key={r.key} className="border-t border-slate-200">
                       <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
-                      <td className="px-4 py-2"><RepaymentChart schedule={schedule} /></td>
+                      <td className="px-4 py-2 border-l border-slate-200"><RepaymentChart schedule={schedule} /></td>
                     </tr>
                   );
                 }
@@ -286,9 +296,9 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                   ? (r.formatFn || formatMoney)(val)
                   : val;
                 return (
-                  <tr key={r.key} className="border-t">
+                  <tr key={r.key} className="border-t border-slate-200">
                     <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
-                    <td className="px-4 py-2" title={tooltip || undefined}>{content}</td>
+                    <td className="px-4 py-2 border-l border-slate-200" title={tooltip || undefined}>{content}</td>
                   </tr>
                 );
               })}
@@ -306,10 +316,10 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
       <div className="inline-block min-w-full align-middle shadow rounded-xl border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 p-4 md:p-6">
         <table className="min-w-full text-sm leading-relaxed block md:table">
           <thead className="hidden md:table-header-group">
-            <tr className="bg-gray-50 dark:bg-gray-700">
-              <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
+            <tr className="bg-gray-50 dark:bg-gray-700 border-b border-slate-200">
+              <th className="border border-slate-200 px-4 py-2 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
               {mortgages.map((m) => (
-                <th key={m.id} className="border px-4 py-3 bg-white dark:bg-gray-800 text-center max-w-[12rem]">
+                <th key={m.id} className="border border-slate-200 px-4 py-2 bg-white dark:bg-gray-800 text-center max-w-[12rem] font-semibold">
                   <div className="flex flex-col items-center gap-3 p-4 rounded-lg" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                     <p className="font-semibold text-[1.1rem] leading-snug truncate" title={m.name}>{m.name}</p>
                     <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">Remove</button>
