@@ -47,12 +47,6 @@ export function formatMoneyWhole(value) {
   });
 }
 
-// Format currency without symbol for use inside inputs
-export function formatMoneyWholeNoSymbol(value) {
-  const formatted = formatMoneyWhole(value);
-  return typeof formatted === 'string' ? formatted.replace(/\$/g, '') : formatted;
-}
-
 // Format currency for mortgage pages without triggering bonus point text
 // Inserts a zero-width space after the dollar sign to avoid regex matches
 export function formatMoneyClean(value, digits = 0) {
