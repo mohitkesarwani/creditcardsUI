@@ -216,10 +216,10 @@ html {
 }
 
 .app-footer {
-  @apply bg-navy text-white text-sm px-4 py-8 mt-12;
+  @apply bg-navy text-white px-4 md:px-8 py-4 mt-12;
 }
 .app-footer a {
-  @apply text-white pb-2 block hover:underline hover:text-accent;
+  @apply text-white text-sm leading-snug pb-3 block hover:underline;
 }
 
 /* Icon group inside hero selector */
@@ -236,16 +236,14 @@ html {
 
 /* Comparison card styles */
 .comparison-card {
-  @apply flex flex-col justify-between text-center p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 h-full;
+  @apply flex flex-col items-center justify-between text-center p-4 rounded-lg h-full;
   width: 100%;
-  min-height: 160px;
-  min-width: 240px;
+  min-height: 140px;
   white-space: normal;
   word-wrap: break-word;
 }
 
 .comparison-column {
-  @apply flex-grow;
   width: 300px;
   min-width: 300px;
 }

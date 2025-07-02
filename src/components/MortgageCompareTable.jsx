@@ -216,8 +216,8 @@ function ChartRow({ label, mortgages, amount }) {
       </th>
       {schedules.map((s, i) => (
         <td key={i} className="comparison-column w-[300px] md:table-cell block px-4 py-3 text-left font-medium">
-          <div className="overflow-x-auto max-w-full">
-            <div className="min-w-[320px] md:min-w-[400px] aspect-[2/1]">
+          <div className="w-full overflow-x-auto max-w-full p-2">
+            <div className="min-w-[16rem]">
               <RepaymentChart schedule={s} />
             </div>
           </div>
@@ -266,64 +266,54 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
 
   const mobileView = (
     <div className="space-y-4 md:hidden">
-      {mortgages.map((m) => {
-        const info = getRepaymentInfo(m, loanAmount);
-        const rate = getRatePercent(m.lendingRates?.[0]?.rate);
-        return (
-          <details key={m.id} className="bg-white text-gray-800 dark:bg-gray-800 rounded-lg shadow-md">
-            <summary className="p-4 cursor-pointer">
-              <p className="font-semibold" title={m.name}>{m.name}</p>
-              <div className="mt-2 flex gap-4 text-sm">
-                {rate != null && <span className="font-semibold text-accent">Rate: {formatPercent(rate)}</span>}
-                {info && <span className="font-semibold text-accent">Monthly: {formatMoney(info.monthly)}</span>}
-              </div>
-            </summary>
-            <div className="border-t p-4 pt-2">
-              <div className="flex gap-2 mb-2 justify-center">
-                <Link to={`/home-loans/${m.id}`} className="bg-accent text-white rounded-lg shadow-md hover:shadow-lg transition duration-300 px-3 py-1 text-xs">Go to Details</Link>
-                <Link to={`/apply/${m.id}`} className="bg-accent text-white rounded-lg shadow-md hover:shadow-lg transition duration-300 px-3 py-1 text-xs">Apply</Link>
-                <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline ml-auto">Remove</button>
-              </div>
-              <table className="w-full text-sm">
-                <tbody>
-                  {getRowDefs(loanAmount).map((r) => {
-                    if (r.chart) {
-                      const schedule = getRepaymentInfo(m, loanAmount)?.schedule || [];
-                      if (!schedule.length) return null;
-                      return (
-                        <tr key={r.key} className="border-t">
-                          <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
-                          <td className="px-4 py-2">
-                            <div className="overflow-x-auto max-w-full">
-                              <div className="min-w-[320px] md:min-w-[400px] aspect-[2/1]">
-                                <RepaymentChart schedule={schedule} />
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    }
-                    const val = r.fn(m);
-                    if (val == null) return null;
-                    const tooltip = r.tooltipFn ? r.tooltipFn(m) : null;
-                    const content = r.rate
-                      ? formatPercent(val)
-                      : r.money
-                      ? (r.formatFn || formatMoney)(val)
-                      : val;
-                    return (
-                      <tr key={r.key} className="border-t">
-                        <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
-                        <td className="px-4 py-2" title={tooltip || undefined}>{content}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </details>
-        );
-      })}
+      {mortgages.map((m) => (
+        <div key={m.id} className="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div className="flex items-center gap-3 p-4 border-b">
+            <p className="font-semibold flex-1" title={m.name}>{m.name}</p>
+            <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">Remove</button>
+          </div>
+          <div className="flex gap-2 p-4 pt-2 border-b">
+            <Link to={`/home-loans/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition text-center flex-1">Go to Details</Link>
+            <Link to={`/apply/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition text-center flex-1">Apply</Link>
+          </div>
+          <table className="w-full text-sm">
+            <tbody>
+              {getRowDefs(loanAmount).map((r) => {
+                if (r.chart) {
+                  const schedule = getRepaymentInfo(m, loanAmount)?.schedule || [];
+                  if (!schedule.length) return null;
+                  return (
+                    <tr key={r.key} className="border-t">
+                      <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
+                      <td className="px-4 py-2">
+                        <div className="w-full overflow-x-auto max-w-full p-2">
+                          <div className="min-w-[16rem]">
+                            <RepaymentChart schedule={schedule} />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                }
+                const val = r.fn(m);
+                if (val == null) return null;
+                const tooltip = r.tooltipFn ? r.tooltipFn(m) : null;
+                const content = r.rate
+                  ? formatPercent(val)
+                  : r.money
+                  ? (r.formatFn || formatMoney)(val)
+                  : val;
+                return (
+                  <tr key={r.key} className="border-t">
+                    <th className="text-left px-4 py-2 w-1/2 font-normal text-gray-600">{r.label}</th>
+                    <td className="px-4 py-2" title={tooltip || undefined}>{content}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ))}
     </div>
   );
 
@@ -332,33 +322,33 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
   return (
     <div className="overflow-x-auto">
       <div className="min-w-[768px]">
-        <div className="inline-block min-w-full align-middle shadow-md rounded-xl border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 p-6">
+        <div className="inline-block min-w-full align-middle shadow rounded-xl border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 p-4 md:p-6">
           <table className="min-w-full table-fixed text-sm leading-relaxed block md:table">
-            <thead className="hidden md:block">
-              <tr className="flex flex-nowrap overflow-x-scroll">
-                <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700 flex-shrink-0 min-w-[300px]"></th>
+            <thead className="hidden md:table-header-group">
+              <tr className="bg-gray-50 dark:bg-gray-700">
+                <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
                 {mortgages.map((m) => (
                   <th
                     key={m.id}
-                    className="comparison-column border px-4 py-3 bg-white dark:bg-gray-800 text-center align-top flex-shrink-0 min-w-[300px]"
+                    className="comparison-column border px-4 py-3 bg-white dark:bg-gray-800 text-center align-top w-[300px]"
                   >
-                    <div className="comparison-card gap-2">
+                    <div className="comparison-card gap-2" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                       <p className="font-semibold text-[1.1rem] leading-snug truncate" title={m.name}>
                         {m.name}
                       </p>
                       <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">
                         Remove
                       </button>
-                      <div className="flex gap-2 justify-center">
+                      <div className="flex gap-2">
                         <Link
                           to={`/home-loans/${m.id}`}
-                          className="bg-accent text-white rounded-lg shadow-md hover:shadow-lg transition duration-300 px-3 py-1 text-xs"
+                          className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition"
                         >
                           Go to Details
                         </Link>
                         <Link
                           to={`/apply/${m.id}`}
-                          className="bg-accent text-white rounded-lg shadow-md hover:shadow-lg transition duration-300 px-3 py-1 text-xs"
+                          className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition"
                         >
                           Apply
                         </Link>
