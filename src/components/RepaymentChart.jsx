@@ -20,6 +20,7 @@ function RepaymentChart({ schedule }) {
       principal.push(s.principal);
       interest.push(s.interest);
     });
+    const maxY = Math.max(...principal, ...interest);
     chartRef.current = new Chart(canvasRef.current, {
       type: 'line',
       data: {
@@ -60,6 +61,7 @@ function RepaymentChart({ schedule }) {
           x: { display: false },
           y: {
             beginAtZero: true,
+            suggestedMax: maxY,
             ticks: {
               callback: (value) => formatMoney(value),
             },
@@ -73,7 +75,7 @@ function RepaymentChart({ schedule }) {
   if (!schedule || !schedule.length) return null;
 
   return (
-    <div className="w-full" style={{ height: '200px' }}>
+    <div className="w-full" style={{ height: '120px' }}>
       <canvas ref={canvasRef} aria-label="Repayment chart" />
       <div className="text-xs flex gap-4 mt-2">
         <div className="flex items-center gap-1">
