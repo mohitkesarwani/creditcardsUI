@@ -9,13 +9,13 @@ function NavBar() {
   const { authed, logout } = useAuth();
 
   return (
-    <header className="bg-navy text-white shadow-md">
+    <header className="bg-white text-body-text border-b-2 border-gray-200">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="RewardRadar home">
-          <AnimatedRadarLogo className="w-8 h-8 text-white" />
+          <AnimatedRadarLogo className="w-8 h-8 text-accent" />
           <span className="text-xl font-bold">RewardRadar</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
+        <nav className="hidden md:flex items-center gap-6 text-[15px] font-bold">
           <Link to="/" className="hover:underline">Home</Link>
           <Link to="/credit-cards" className="hover:underline">Credit Cards</Link>
           <Link to="/home-loans" className="hover:underline">Home Loans</Link>

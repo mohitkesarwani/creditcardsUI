@@ -332,8 +332,8 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                     key={m.id}
                     className="comparison-column border px-4 py-3 bg-white dark:bg-gray-800 text-center align-top w-[300px]"
                   >
-                    <div className="comparison-card gap-2" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-                      <p className="font-semibold text-[1.1rem] leading-snug truncate" title={m.name}>
+                  <div className="comparison-card gap-2">
+                      <p className="font-bold text-[16px] text-navy leading-snug truncate" title={m.name}>
                         {m.name}
                       </p>
                       <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">
