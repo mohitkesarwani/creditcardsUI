@@ -57,19 +57,19 @@ function CompareMortgagesPage() {
         <button onClick={clearSelected} className="text-sm text-accent underline">Clear All</button>
       </div>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 max-w-xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-          <label className="flex flex-col text-sm">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-start">
+          <label className="flex flex-col text-sm w-full sm:w-60">
             <span className="block font-medium mb-1">Property Price</span>
             <input
               type="text"
               className="w-full border rounded px-2 py-1 text-sm"
-            value={propertyPriceInput}
-            onChange={(e) => {
-              const digits = e.target.value.replace(/[^0-9]/g, '');
-              if (digits === '') {
-                setPropertyPriceInput('');
-                return;
-              }
+              value={propertyPriceInput}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/[^0-9]/g, '');
+                if (digits === '') {
+                  setPropertyPriceInput('');
+                  return;
+                }
               const val = parseInt(digits, 10);
               if (!Number.isNaN(val) && val > 0) {
                 setPropertyPrice(val);
@@ -81,8 +81,8 @@ function CompareMortgagesPage() {
             aria-label="Property Price"
             />
           </label>
-          <div className="flex flex-col">
-            <label className="flex items-center gap-2 text-xs mb-1">
+          <div className="flex flex-col w-full sm:w-60">
+            <label className="flex items-center gap-2 text-xs mb-1 self-start">
               <input
                 type="checkbox"
                 className="rounded text-accent focus:ring-accent"
