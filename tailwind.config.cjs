@@ -7,12 +7,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        accent: '#0071c2',
-        navy: '#002147',
-        'light-bg': '#ffffff',
+        accent: '#0066b3',
+        navy: '#003e6b',
+        'light-bg': '#f5f5f5',
+        'body-text': '#000000',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Arial', 'Helvetica', 'sans-serif'],
       },
     },
   },
