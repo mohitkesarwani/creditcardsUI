@@ -19,10 +19,16 @@ function calcMonthly(amount, rate, years) {
   return (amount * monthly) / (1 - Math.pow(1 + monthly, -n));
 }
 
-function generateSchedule(amount, rate, years) {
-  const payment = calcMonthly(amount, rate, years);
+function getRatePercent(raw) {
+  const r = parseFloat(raw);
+  if (Number.isNaN(r)) return null;
+  return r <= 1 ? r * 100 : r;
+}
+
+function generateSchedule(amount, ratePercent, years) {
+  const payment = calcMonthly(amount, ratePercent, years);
   if (!payment) return [];
-  const monthlyRate = parseFloat(rate) / 100 / 12;
+  const monthlyRate = parseFloat(ratePercent) / 100 / 12;
   let balance = amount;
   const schedule = [];
   for (let m = 1; m <= years * 12; m++) {
@@ -35,14 +41,15 @@ function generateSchedule(amount, rate, years) {
 }
 
 function getRepaymentInfo(mortgage, amount = DEFAULT_AMOUNT) {
-  const rate = mortgage.lendingRates?.[0]?.rate;
-  if (!rate) return null;
-  const monthly = calcMonthly(amount, rate, DEFAULT_TERM);
+  const rawRate = mortgage.lendingRates?.[0]?.rate;
+  const ratePercent = getRatePercent(rawRate);
+  if (ratePercent === null) return null;
+  const monthly = calcMonthly(amount, ratePercent, DEFAULT_TERM);
   if (!monthly) return null;
   const total = monthly * DEFAULT_TERM * 12;
   const costPerDollar = total / amount;
-  const schedule = generateSchedule(amount, rate, DEFAULT_TERM);
-  return { monthly, total, costPerDollar, schedule, rate };
+  const schedule = generateSchedule(amount, ratePercent, DEFAULT_TERM);
+  return { monthly, total, costPerDollar, schedule, rate: ratePercent };
 }
 
 function getRowDefs(amount) {
@@ -51,13 +58,13 @@ function getRowDefs(amount) {
     {
       key: 'interestRate',
       label: 'Interest Rate',
-      fn: (m) => m.lendingRates?.[0]?.rate,
+      fn: (m) => getRatePercent(m.lendingRates?.[0]?.rate),
       rate: true,
     },
     {
       key: 'comparisonRate',
       label: 'Comparison Rate',
-      fn: (m) => m.lendingRates?.[0]?.comparisonRate,
+      fn: (m) => getRatePercent(m.lendingRates?.[0]?.comparisonRate),
       rate: true,
     },
     {
