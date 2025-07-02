@@ -32,16 +32,18 @@ function RepaymentChart({ schedule }) {
           {
             label: 'Principal',
             data: principal,
-            borderColor: '#2563eb',
+            borderColor: '#3b82f6',
             backgroundColor: 'transparent',
             pointRadius: 0,
+            tension: 0.3,
           },
           {
             label: 'Interest',
             data: interest,
-            borderColor: '#dc2626',
+            borderColor: '#ef4444',
             backgroundColor: 'transparent',
             pointRadius: 0,
+            tension: 0.3,
           },
         ],
       },
@@ -51,7 +53,12 @@ function RepaymentChart({ schedule }) {
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: true },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}`,
+            },
+          },
         },
         scales: {
           x: { display: false },
