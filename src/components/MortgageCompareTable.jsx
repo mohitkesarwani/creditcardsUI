@@ -321,11 +321,11 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
       <div className="inline-block min-w-full align-middle shadow rounded-xl border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 p-4 md:p-6">
         <table className="min-w-full text-sm leading-relaxed block md:table">
           <thead className="hidden md:table-header-group">
-            <tr className="bg-gray-50 dark:bg-gray-700">
+            <tr className="bg-gray-50 dark:bg-gray-700 comparison-cards">
               <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
               {mortgages.map((m) => (
-                <th key={m.id} className="border px-4 py-3 bg-white dark:bg-gray-800 text-center max-w-[12rem]">
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-lg" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                <th key={m.id} className="border px-4 py-3 bg-white dark:bg-gray-800 text-center">
+                  <div className="comparison-card" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                     <p className="font-semibold text-[1.1rem] leading-snug truncate" title={m.name}>{m.name}</p>
                     <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">Remove</button>
                     <div className="flex gap-2 mt-1">
