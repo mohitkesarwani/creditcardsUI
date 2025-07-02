@@ -225,3 +225,23 @@ html {
     height: 20px;
   }
 }
+
+/* Comparison card styles */
+.comparison-cards {
+  @apply flex flex-wrap gap-4 justify-center;
+}
+
+.comparison-card {
+  @apply flex flex-col justify-between items-center text-center p-4 rounded-lg;
+  width: 300px;
+  height: 160px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+@media (max-width: 640px) {
+  .comparison-card {
+    width: 100%;
+    height: auto;
+  }
+}
