@@ -74,10 +74,6 @@ function CompareMortgagesPage() {
                 setPropertyPrice(val);
                 setPropertyPriceInput(formatMoneyWhole(val));
               }
-              const raw = e.target.value.replace(/[^0-9,]/g, '');
-              setPropertyPriceInput(raw);
-              const val = parseInt(raw.replace(/,/g, ''), 10);
-              if (!Number.isNaN(val) && val > 0) setPropertyPrice(val);
             }}
             onBlur={() => setPropertyPriceInput(formatMoneyWhole(propertyPrice))}
             onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
@@ -103,10 +99,6 @@ function CompareMortgagesPage() {
                 setLoanAmount(val);
                 setLoanAmountInput(formatMoneyWhole(val));
               }
-              const raw = e.target.value.replace(/[^0-9,]/g, '');
-              setLoanAmountInput(raw);
-              const val = parseInt(raw.replace(/,/g, ''), 10);
-              if (!Number.isNaN(val) && val > 0) setLoanAmount(val);
             }}
             onBlur={() => setLoanAmountInput(formatMoneyWhole(loanAmount))}
             onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
