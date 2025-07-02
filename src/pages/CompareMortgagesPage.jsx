@@ -45,20 +45,20 @@ function CompareMortgagesPage() {
   }
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen overflow-auto">
+    <div className="p-6 md:p-8 bg-navy text-white min-h-screen overflow-auto">
       <button
         onClick={() => navigate('/home-loans')}
         className="text-accent underline mb-4 text-sm text-left"
       >
         &larr; Go Back
       </button>
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">Compare Home Loans</h1>
+      <h1 className="text-4xl md:text-5xl font-semibold tracking-wide mb-6 text-center">Compare Home Loans</h1>
       <div className="flex justify-end mb-4">
         <button onClick={clearSelected} className="text-sm text-accent underline">Clear All</button>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 max-w-xl">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-start">
-          <label className="flex flex-col text-sm w-full sm:w-60">
+      <div className="bg-white text-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 max-w-xl">
+        <div className="grid grid-cols-2 gap-4">
+          <label className="flex flex-col text-sm">
             <span className="block font-medium mb-1">Property Price</span>
             <input
               type="text"
@@ -81,8 +81,8 @@ function CompareMortgagesPage() {
             aria-label="Property Price"
             />
           </label>
-          <div className="flex flex-col w-full sm:w-60">
-            <label className="flex items-center gap-2 text-xs mb-1 self-start">
+          <div className="flex flex-col">
+            <label className="flex items-center gap-2 text-xs self-start mt-6">
               <input
                 type="checkbox"
                 className="rounded text-accent focus:ring-accent"
@@ -91,7 +91,7 @@ function CompareMortgagesPage() {
               />
               Use 80% of Property Price
             </label>
-            <label className="text-sm flex-1">
+            <label className="text-sm flex flex-col flex-1">
               <span className="block font-medium mb-1">Loan Amount</span>
               <input
                 type="text"
