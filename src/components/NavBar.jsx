@@ -10,18 +10,18 @@ function NavBar() {
 
   return (
     <header className="bg-navy text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="RewardRadar home">
           <AnimatedRadarLogo className="w-8 h-8 text-white" />
           <span className="text-xl font-bold">RewardRadar</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
-          <Link to="/">Home</Link>
-          <Link to="/credit-cards">Credit Cards</Link>
-          <Link to="/home-loans">Home Loans</Link>
-          <Link to="/deposits">Deposits</Link>
-          <Link to="/faqs">FAQs</Link>
-          <Link to="/contact">Contact Us</Link>
+          <Link to="/" className="hover:underline">Home</Link>
+          <Link to="/credit-cards" className="hover:underline">Credit Cards</Link>
+          <Link to="/home-loans" className="hover:underline">Home Loans</Link>
+          <Link to="/deposits" className="hover:underline">Deposits</Link>
+          <Link to="/faqs" className="hover:underline">FAQs</Link>
+          <Link to="/contact" className="hover:underline">Contact Us</Link>
         </nav>
         <div className="flex items-center gap-2">
           <button
