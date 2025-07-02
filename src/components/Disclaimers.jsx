@@ -15,7 +15,7 @@ function Disclaimers({ className = '' }) {
       <div className="font-semibold flex items-center gap-1 mb-1">
         <span>ⓘ</span> Important Information
       </div>
-      <ul className="list-disc ml-4 space-y-1">
+      <ul className="list-disc ml-4 space-y-1 text-[14px]">
         {disclaimers.map((d, i) => (
           <li key={i}>{d}</li>
         ))}

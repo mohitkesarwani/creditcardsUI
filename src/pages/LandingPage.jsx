@@ -9,7 +9,7 @@ import BenefitsSection from '../components/BenefitsSection';
 function LandingPage() {
   return (
     <div>
-      <section className="bg-gray-50 px-4 py-20 text-center">
+      <section className="bg-accent text-white px-4 py-20 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="text-center px-4 pt-10 pb-6">
             <motion.h1
@@ -20,14 +20,14 @@ function LandingPage() {
             >
               Clarity in Every Comparison.
             </motion.h1>
-            <p className="text-lg md:text-xl font-medium text-slate-600 max-w-xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl font-medium text-white/90 max-w-xl mx-auto leading-relaxed">
               Explore credit cards, mortgages, deposits, and more with tools that help you compare, not guess.
             </p>
           </div>
           <HeroInfographic />
           <a
             href="#how-it-works"
-            className="inline-flex items-center font-semibold text-[#007aff] mt-6"
+            className="inline-flex items-center font-semibold text-white underline mt-6"
           >
             <span>See How It Works</span>
             <svg

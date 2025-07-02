@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply font-sans bg-white text-gray-800 leading-snug dark:bg-gray-900 dark:text-gray-100;
+  @apply font-sans bg-white text-body-text leading-relaxed dark:bg-gray-900 dark:text-gray-100;
 }
 
 @keyframes orbit {
@@ -68,14 +68,14 @@ body {
 .disclaimer-box {
   text-align: left;
   padding: 16px;
-  background-color: #f9f9fc;
-  border-radius: 10px;
+  background-color: #f2f2f2;
+  border-radius: 6px;
   font-size: 0.95rem;
   color: #333;
   line-height: 1.6;
   max-width: 40rem;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 input[type='text'],
@@ -84,16 +84,30 @@ input[type='number'],
 input[type='email'],
 select,
 textarea {
-  @apply rounded-md border border-gray-300 p-2;
+  @apply rounded-md border border-gray-300 p-2 bg-white;
+}
+input[type='text']:focus,
+input[type='password']:focus,
+input[type='number']:focus,
+input[type='email']:focus,
+select:focus,
+textarea:focus {
+  @apply outline-none border-2 border-accent;
 }
 .btn {
-  @apply px-4 py-2 rounded-md font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
+  @apply px-4 py-2 rounded-full font-bold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
 }
 .btn-primary {
   @apply bg-accent text-white hover:bg-[#005fa3];
 }
 .btn-secondary {
   @apply border border-accent text-accent hover:bg-accent hover:text-white;
+}
+.btn-outline {
+  @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+}
+.btn-pill {
+  @apply bg-accent text-white rounded-full hover:bg-[#005fa3];
 }
 
 html {
@@ -202,19 +216,6 @@ html {
   @apply text-[15px] py-2;
 }
 
-.btn {
-  @apply px-4 py-2 rounded-md font-semibold transition shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 min-h-[44px];
-}
-.btn-primary {
-  @apply bg-accent text-white hover:bg-[#005fa3];
-}
-.btn-outline {
-  @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
-}
-.btn-pill {
-  @apply bg-accent text-white rounded-full hover:bg-[#005fa3];
-}
-
 .app-footer {
   @apply bg-navy text-white px-4 md:px-8 py-4 mt-12;
 }
@@ -236,7 +237,7 @@ html {
 
 /* Comparison card styles */
 .comparison-card {
-  @apply flex flex-col items-center justify-between text-center p-4 rounded-lg h-full;
+  @apply flex flex-col items-center justify-between text-center p-4 rounded-lg h-full bg-light-bg shadow transition hover:shadow-md;
   width: 100%;
   min-height: 140px;
   white-space: normal;

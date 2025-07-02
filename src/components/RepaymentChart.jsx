@@ -73,7 +73,7 @@ function RepaymentChart({ schedule }) {
   if (!schedule || !schedule.length) return null;
 
   return (
-    <div className="w-full" style={{ height: '200px' }}>
+    <div className="w-full overflow-x-auto" style={{ height: '200px', minWidth: '300px', maxWidth: '100%' }}>
       <canvas ref={canvasRef} aria-label="Repayment chart" />
       <div className="text-xs flex gap-4 mt-2">
         <div className="flex items-center gap-1">
