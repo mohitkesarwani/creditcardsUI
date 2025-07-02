@@ -1,6 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
-import { formatMoney, formatPercent, getMortgageFeatureTags } from '../utils.js';
+import {
+  formatMoney,
+  formatMoneyClean,
+  formatPercent,
+  getMortgageFeatureTags,
+} from '../utils.js';
 import RepaymentChart from './RepaymentChart.jsx';
 
 const DEFAULT_AMOUNT = 800000;
@@ -14,10 +19,16 @@ function calcMonthly(amount, rate, years) {
   return (amount * monthly) / (1 - Math.pow(1 + monthly, -n));
 }
 
-function generateSchedule(amount, rate, years) {
-  const payment = calcMonthly(amount, rate, years);
+function getRatePercent(raw) {
+  const r = parseFloat(raw);
+  if (Number.isNaN(r)) return null;
+  return r <= 1 ? r * 100 : r;
+}
+
+function generateSchedule(amount, ratePercent, years) {
+  const payment = calcMonthly(amount, ratePercent, years);
   if (!payment) return [];
-  const monthlyRate = parseFloat(rate) / 100 / 12;
+  const monthlyRate = parseFloat(ratePercent) / 100 / 12;
   let balance = amount;
   const schedule = [];
   for (let m = 1; m <= years * 12; m++) {
@@ -29,70 +40,97 @@ function generateSchedule(amount, rate, years) {
   return schedule;
 }
 
-function getRepaymentInfo(mortgage) {
-  const rate = mortgage.lendingRates?.[0]?.rate;
-  if (!rate) return null;
-  const monthly = calcMonthly(DEFAULT_AMOUNT, rate, DEFAULT_TERM);
+function getRepaymentInfo(mortgage, amount = DEFAULT_AMOUNT) {
+  const rawRate = mortgage.lendingRates?.[0]?.rate;
+  const ratePercent = getRatePercent(rawRate);
+  if (ratePercent === null) return null;
+  const monthly = calcMonthly(amount, ratePercent, DEFAULT_TERM);
   if (!monthly) return null;
   const total = monthly * DEFAULT_TERM * 12;
-  const costPerDollar = total / DEFAULT_AMOUNT;
-  const schedule = generateSchedule(DEFAULT_AMOUNT, rate, DEFAULT_TERM);
-  return { monthly, total, costPerDollar, schedule, rate };
+  const costPerDollar = total / amount;
+  const schedule = generateSchedule(amount, ratePercent, DEFAULT_TERM);
+  return { monthly, total, costPerDollar, schedule, rate: ratePercent };
 }
 
-const rowDefs = [
-  { key: 'bank', label: 'Bank', fn: (m) => m.bankName || m.brandName },
-  { key: 'interestRate', label: 'Interest Rate', fn: (m) => m.lendingRates?.[0]?.rate, rate: true },
-  { key: 'comparisonRate', label: 'Comparison Rate', fn: (m) => m.lendingRates?.[0]?.comparisonRate, rate: true },
-  {
-    key: 'monthly',
-    label: 'Monthly Repayment',
-    fn: (m) => getRepaymentInfo(m)?.monthly,
-    money: true,
-    tooltipFn: (m) => {
-      const info = getRepaymentInfo(m);
-      return info ? `Based on $${DEFAULT_AMOUNT.toLocaleString()} over ${DEFAULT_TERM}yrs at ${info.rate}%` : null;
+function getRowDefs(amount) {
+  return [
+    { key: 'bank', label: 'Bank', fn: (m) => m.bankName || m.brandName },
+    {
+      key: 'interestRate',
+      label: 'Interest Rate',
+      fn: (m) => getRatePercent(m.lendingRates?.[0]?.rate),
+      rate: true,
     },
-  },
-  {
-    key: 'total',
-    label: 'Total Repayment',
-    fn: (m) => getRepaymentInfo(m)?.total,
-    money: true,
-    highlightMin: true,
-  },
-  {
-    key: 'costPerDollar',
-    label: 'Cost Per $1 Borrowed',
-    fn: (m) => getRepaymentInfo(m)?.costPerDollar,
-    money: true,
-  },
-  { key: 'loanTerm', label: 'Loan Term', fn: () => `Up to ${DEFAULT_TERM} Years` },
-  { key: 'repaymentType', label: 'Repayment Type', fn: (m) => m.lendingRates?.[0]?.repaymentType },
-  {
-    key: 'setupFee',
-    label: 'Setup Fee',
-    fn: (m) => (m.feesAndPricing?.fees || []).find((f) => /(establishment|application|setup)/i.test(f.name || ''))?.amount,
-    money: true,
-  },
-  {
-    key: 'ongoingFee',
-    label: 'Ongoing Fee',
-    fn: (m) => (m.feesAndPricing?.fees || []).find((f) => /(ongoing|monthly|annual|service)/i.test(f.name || ''))?.amount,
-    money: true,
-  },
-  {
-    key: 'fees',
-    label: 'Key Fees',
-    fn: (m) =>
-      (m.feesAndPricing?.fees || [])
-        .slice(0, 2)
-        .map((f) => `${f.name}: ${formatMoney(f.amount)}`)
-        .join(', '),
-  },
-  { key: 'features', label: 'Features', fn: (m) => getMortgageFeatureTags(m).join(', ') },
-  { key: 'chart', label: 'Repayment Breakdown', chart: true },
-];
+    {
+      key: 'comparisonRate',
+      label: 'Comparison Rate',
+      fn: (m) => getRatePercent(m.lendingRates?.[0]?.comparisonRate),
+      rate: true,
+    },
+    {
+      key: 'monthly',
+      label: 'Monthly Repayment',
+      fn: (m) => getRepaymentInfo(m, amount)?.monthly,
+      money: true,
+      tooltipFn: (m) => {
+        const info = getRepaymentInfo(m, amount);
+        return info
+          ? `Based on $${amount.toLocaleString()} over ${DEFAULT_TERM}yrs at ${info.rate}%`
+          : null;
+      },
+    },
+    {
+      key: 'total',
+      label: 'Total Repayment',
+      fn: (m) => getRepaymentInfo(m, amount)?.total,
+      money: true,
+      highlightMin: true,
+      formatFn: (v) => formatMoneyClean(v, 0),
+    },
+    {
+      key: 'costPerDollar',
+      label: 'Cost Per $1 Borrowed',
+      fn: (m) => getRepaymentInfo(m, amount)?.costPerDollar,
+      money: true,
+    },
+    { key: 'loanTerm', label: 'Loan Term', fn: () => `Up to ${DEFAULT_TERM} Years` },
+    {
+      key: 'repaymentType',
+      label: 'Repayment Type',
+      fn: (m) => m.lendingRates?.[0]?.repaymentType,
+    },
+    {
+      key: 'setupFee',
+      label: 'Setup Fee',
+      fn: (m) =>
+        (m.feesAndPricing?.fees || []).find((f) => /(establishment|application|setup)/i.test(f.name || ''))?.amount,
+      money: true,
+    },
+    {
+      key: 'ongoingFee',
+      label: 'Ongoing Fee',
+      fn: (m) =>
+        (m.feesAndPricing?.fees || []).find((f) => /(ongoing|monthly|annual|service)/i.test(f.name || ''))?.amount,
+      money: true,
+    },
+    {
+      key: 'fees',
+      label: 'Key Fees',
+      fn: (m) =>
+        (m.feesAndPricing?.fees || [])
+          .slice(0, 2)
+          .map((f) => `${f.name}: ${formatMoney(f.amount)}`)
+          .join(', '),
+    },
+    {
+      key: 'features',
+      label: 'Features',
+      fn: (m) => getMortgageFeatureTags(m).join(', '),
+    },
+    { key: 'chart', label: 'Repayment Breakdown', chart: true },
+  ];
+}
+
 
 function Row({ label, values }) {
   if (values.every((v) => !v)) return null;
@@ -132,7 +170,13 @@ function RateRow({ label, values }) {
   );
 }
 
-function MoneyRow({ label, values, highlightMin = false, tooltips = [] }) {
+function MoneyRow({
+  label,
+  values,
+  highlightMin = false,
+  tooltips = [],
+  formatFn = formatMoney,
+}) {
   if (values.every((v) => v == null)) return null;
   const nums = values.map((v) => parseFloat(v));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
@@ -150,7 +194,7 @@ function MoneyRow({ label, values, highlightMin = false, tooltips = [] }) {
             className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}
             title={tooltips[i] || undefined}
           >
-            {v != null ? formatMoney(v) : 'N/A'}
+            {v != null ? formatFn(v) : 'N/A'}
           </td>
         );
       })}
@@ -158,8 +202,8 @@ function MoneyRow({ label, values, highlightMin = false, tooltips = [] }) {
   );
 }
 
-function ChartRow({ label, mortgages }) {
-  const schedules = mortgages.map((m) => getRepaymentInfo(m)?.schedule || []);
+function ChartRow({ label, mortgages, amount }) {
+  const schedules = mortgages.map((m) => getRepaymentInfo(m, amount)?.schedule || []);
   if (schedules.every((s) => !s.length)) return null;
   return (
     <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
@@ -175,7 +219,7 @@ function ChartRow({ label, mortgages }) {
   );
 }
 
-function MortgageCompareTable({ mortgages }) {
+function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
   const [isMobile, setIsMobile] = useState(false);
   const { toggleMortgage } = useSelectedMortgages();
 
@@ -187,8 +231,12 @@ function MortgageCompareTable({ mortgages }) {
   }, []);
 
   const rows = useMemo(() => {
-    return rowDefs.map((r) => {
-      if (r.chart) return <ChartRow key={r.key} label={r.label} mortgages={mortgages} />;
+    const defs = getRowDefs(loanAmount);
+    return defs.map((r) => {
+      if (r.chart)
+        return (
+          <ChartRow key={r.key} label={r.label} mortgages={mortgages} amount={loanAmount} />
+        );
       const values = mortgages.map((m) => r.fn(m));
       if (r.rate) return <RateRow key={r.key} label={r.label} values={values} />;
       if (r.money) {
@@ -200,12 +248,13 @@ function MortgageCompareTable({ mortgages }) {
             values={values}
             highlightMin={r.highlightMin}
             tooltips={tips}
+            formatFn={r.formatFn || formatMoney}
           />
         );
       }
       return <Row key={r.key} label={r.label} values={values} />;
     });
-  }, [mortgages]);
+  }, [mortgages, loanAmount]);
 
   const mobileView = (
     <div className="space-y-4 md:hidden">
@@ -217,9 +266,9 @@ function MortgageCompareTable({ mortgages }) {
           </div>
           <table className="w-full text-sm">
             <tbody>
-              {rowDefs.map((r) => {
+              {getRowDefs(loanAmount).map((r) => {
                 if (r.chart) {
-                  const schedule = getRepaymentInfo(m)?.schedule || [];
+                  const schedule = getRepaymentInfo(m, loanAmount)?.schedule || [];
                   if (!schedule.length) return null;
                   return (
                     <tr key={r.key} className="border-t">
@@ -234,7 +283,7 @@ function MortgageCompareTable({ mortgages }) {
                 const content = r.rate
                   ? formatPercent(val)
                   : r.money
-                  ? formatMoney(val)
+                  ? (r.formatFn || formatMoney)(val)
                   : val;
                 return (
                   <tr key={r.key} className="border-t">

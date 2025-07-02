@@ -3,7 +3,8 @@ export function setupBonusPointsFormatting() {
   const pattern = /\$([0-9][0-9,]*)/g;
 
   function isCreditCardRoute(pathname = window.location.pathname) {
-    return /^\/credit-cards/.test(pathname) || /^\/compare/.test(pathname);
+    if (/^\/compare-mortgages/.test(pathname)) return false;
+    return /^\/credit-cards/.test(pathname) || /^\/compare(\/|$)/.test(pathname);
   }
 
   let enabled = isCreditCardRoute();
