@@ -12,17 +12,13 @@ function RepaymentChart({ schedule }) {
       chartRef.current.destroy();
     }
     if (!schedule || !schedule.length) return;
-    let cumP = 0;
-    let cumI = 0;
     const labels = [];
     const principal = [];
     const interest = [];
     schedule.forEach((s) => {
-      cumP += s.principal;
-      cumI += s.interest;
       labels.push(s.month);
-      principal.push(cumP);
-      interest.push(cumI);
+      principal.push(s.principal);
+      interest.push(s.interest);
     });
     chartRef.current = new Chart(canvasRef.current, {
       type: 'line',

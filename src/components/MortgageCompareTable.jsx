@@ -1,6 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
-import { formatMoney, formatPercent, getMortgageFeatureTags } from '../utils.js';
+import {
+  formatMoney,
+  formatMoneyClean,
+  formatPercent,
+  getMortgageFeatureTags,
+} from '../utils.js';
 import RepaymentChart from './RepaymentChart.jsx';
 
 const DEFAULT_AMOUNT = 800000;
@@ -73,6 +78,7 @@ function getRowDefs(amount) {
       fn: (m) => getRepaymentInfo(m, amount)?.total,
       money: true,
       highlightMin: true,
+      formatFn: (v) => formatMoneyClean(v, 0),
     },
     {
       key: 'costPerDollar',
@@ -157,7 +163,13 @@ function RateRow({ label, values }) {
   );
 }
 
-function MoneyRow({ label, values, highlightMin = false, tooltips = [] }) {
+function MoneyRow({
+  label,
+  values,
+  highlightMin = false,
+  tooltips = [],
+  formatFn = formatMoney,
+}) {
   if (values.every((v) => v == null)) return null;
   const nums = values.map((v) => parseFloat(v));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
@@ -175,7 +187,7 @@ function MoneyRow({ label, values, highlightMin = false, tooltips = [] }) {
             className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}
             title={tooltips[i] || undefined}
           >
-            {v != null ? formatMoney(v) : 'N/A'}
+            {v != null ? formatFn(v) : 'N/A'}
           </td>
         );
       })}
@@ -229,6 +241,7 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
             values={values}
             highlightMin={r.highlightMin}
             tooltips={tips}
+            formatFn={r.formatFn || formatMoney}
           />
         );
       }
@@ -263,7 +276,7 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                 const content = r.rate
                   ? formatPercent(val)
                   : r.money
-                  ? formatMoney(val)
+                  ? (r.formatFn || formatMoney)(val)
                   : val;
                 return (
                   <tr key={r.key} className="border-t">
