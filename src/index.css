@@ -241,16 +241,19 @@ html {
   word-wrap: break-word;
 }
 
+
 .comparison-column {
   width: 300px;
   min-width: 300px;
 }
+
 
 @media (max-width: 640px) {
   .comparison-card {
     width: 100%;
     height: auto;
   }
+
   .comparison-column {
     width: 100%;
     min-width: 0;
