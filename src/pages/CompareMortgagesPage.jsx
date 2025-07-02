@@ -64,6 +64,16 @@ function CompareMortgagesPage() {
             className="w-full border rounded px-2 py-1 text-sm"
             value={propertyPriceInput}
             onChange={(e) => {
+              const digits = e.target.value.replace(/[^0-9]/g, '');
+              if (digits === '') {
+                setPropertyPriceInput('');
+                return;
+              }
+              const val = parseInt(digits, 10);
+              if (!Number.isNaN(val) && val > 0) {
+                setPropertyPrice(val);
+                setPropertyPriceInput(formatMoneyWhole(val));
+              }
               const raw = e.target.value.replace(/[^0-9,]/g, '');
               setPropertyPriceInput(raw);
               const val = parseInt(raw.replace(/,/g, ''), 10);
@@ -83,6 +93,16 @@ function CompareMortgagesPage() {
             disabled={useEighty}
             onChange={(e) => {
               if (useEighty) return;
+              const digits = e.target.value.replace(/[^0-9]/g, '');
+              if (digits === '') {
+                setLoanAmountInput('');
+                return;
+              }
+              const val = parseInt(digits, 10);
+              if (!Number.isNaN(val) && val > 0) {
+                setLoanAmount(val);
+                setLoanAmountInput(formatMoneyWhole(val));
+              }
               const raw = e.target.value.replace(/[^0-9,]/g, '');
               setLoanAmountInput(raw);
               const val = parseInt(raw.replace(/,/g, ''), 10);
