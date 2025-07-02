@@ -225,3 +225,34 @@ html {
     height: 20px;
   }
 }
+
+/* Comparison card styles */
+.comparison-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.comparison-card {
+  @apply flex flex-col justify-between items-center text-center p-4 rounded-lg;
+  height: 160px;
+  width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.comparison-column {
+  width: 300px;
+  min-width: 300px;
+}
+
+@media (max-width: 640px) {
+  .comparison-card {
+    width: 100%;
+    height: auto;
+  }
+  .comparison-column {
+    width: 100%;
+    min-width: 0;
+  }
+}
