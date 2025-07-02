@@ -12,17 +12,13 @@ function RepaymentChart({ schedule }) {
       chartRef.current.destroy();
     }
     if (!schedule || !schedule.length) return;
-    let cumP = 0;
-    let cumI = 0;
     const labels = [];
     const principal = [];
     const interest = [];
     schedule.forEach((s) => {
-      cumP += s.principal;
-      cumI += s.interest;
       labels.push(s.month);
-      principal.push(cumP);
-      interest.push(cumI);
+      principal.push(s.principal);
+      interest.push(s.interest);
     });
     chartRef.current = new Chart(canvasRef.current, {
       type: 'line',
@@ -32,16 +28,18 @@ function RepaymentChart({ schedule }) {
           {
             label: 'Principal',
             data: principal,
-            borderColor: '#2563eb',
+            borderColor: '#3b82f6',
             backgroundColor: 'transparent',
             pointRadius: 0,
+            tension: 0.3,
           },
           {
             label: 'Interest',
             data: interest,
-            borderColor: '#dc2626',
+            borderColor: '#ef4444',
             backgroundColor: 'transparent',
             pointRadius: 0,
+            tension: 0.3,
           },
         ],
       },
@@ -51,7 +49,12 @@ function RepaymentChart({ schedule }) {
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: true },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}`,
+            },
+          },
         },
         scales: {
           x: { display: false },

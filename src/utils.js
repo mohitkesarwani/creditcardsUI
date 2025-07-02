@@ -47,6 +47,21 @@ export function formatMoneyWhole(value) {
   });
 }
 
+// Format currency for mortgage pages without triggering bonus point text
+// Inserts a zero-width space after the dollar sign to avoid regex matches
+export function formatMoneyClean(value, digits = 0) {
+  const num = parseCurrency(value);
+  if (num === null) return value;
+  const options = {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  };
+  const formatted = num.toLocaleString('en-US', options);
+  return formatted.replace('$', '$\u200B');
+}
+
 export function getMinimumAnnualFee(card) {
   const fees = card.details?.fees || card.fees || [];
 
