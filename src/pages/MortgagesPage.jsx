@@ -7,6 +7,7 @@ import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
 
 function MortgagesPage() {
+  const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [mortgages, setMortgages] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
@@ -148,7 +149,11 @@ function MortgagesPage() {
             </button>
           </div>
           <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4" data-testid="mortgage-scroll">
-            <MortgageCardGrid mortgages={filtered.slice(0, visibleCount)} selectedTags={filters.features} />
+            <MortgageCardGrid
+              mortgages={filtered.slice(0, visibleCount)}
+              selectedTags={filters.features}
+              adFrequency={adFrequency}
+            />
             <div ref={loadMoreRef} className="h-10" />
           </div>
         </div>
