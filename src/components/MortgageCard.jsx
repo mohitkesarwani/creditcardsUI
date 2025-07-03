@@ -18,7 +18,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
 
   return (
     <div
-      className="relative flex flex-col bg-white border border-gray-200 shadow-sm rounded-xl p-4 md:p-6 min-h-[420px] hover:shadow-md transition"
+      className="relative flex flex-col bg-white border border-gray-200 rounded-2xl p-5 shadow-sm min-h-[460px] hover:shadow-md hover:scale-[1.01] transition"
       data-testid="mortgage-card"
     >
       <img
@@ -31,9 +31,9 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           }
         }}
       />
-      <p className="text-xs text-gray-500 mb-1">{mortgage.bankName || mortgage.brandName}</p>
-      <h3 className="card-title mb-2">{mortgage.name}</h3>
-      <div className="grid gap-1 mb-2 text-sm">
+      <p className="text-xs text-gray-500 mb-1 leading-snug">{mortgage.bankName || mortgage.brandName}</p>
+      <h3 className="card-title mb-2 font-semibold leading-snug">{mortgage.name}</h3>
+      <div className="grid gap-1 mb-2 text-sm leading-relaxed">
         {rate && (
           <p className="card-subtext">
             <span className="font-bold">Interest Rate:</span> {formatPercent(rate)}
@@ -54,14 +54,14 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           </p>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2 mb-2">
+      <div className="flex flex-wrap gap-2 mb-3">
         {tags.map((t) => {
           const match = highlightTags.includes(t);
           return (
             <span
               key={t}
               data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
-              className={`inline-flex items-center text-xs px-2 rounded-full ${match ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}
+              className={`inline-flex items-center px-3 py-1 text-[13px] rounded-full transition ${match ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow'}`}
             >
               {t}
             </span>
@@ -77,21 +77,23 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
               </svg>
               Selected
             </span>
-            <button onClick={() => toggleMortgage(mortgage)} className="text-xs text-accent underline">
+            <button onClick={() => toggleMortgage(mortgage)} className="text-xs text-accent underline" aria-label="Deselect loan">
               Deselect
             </button>
           </div>
         ) : (
           <button
             onClick={() => toggleMortgage(mortgage)}
-            className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
+            className="btn btn-outline flex-1 h-10"
+            aria-label="Compare loan"
           >
             Compare
           </button>
         )}
         <button
           onClick={() => navigate(`/home-loans/${mortgage.id}`)}
-          className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
+          className="btn btn-outline flex-1 h-10"
+          aria-label="View loan details"
         >
           Details
         </button>
@@ -100,7 +102,8 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         href={mortgage.applicationUri}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 text-sm font-semibold w-full flex items-center justify-center gap-1"
+        className="mt-2 btn btn-primary w-full h-10 flex items-center justify-center gap-1"
+        aria-label="Apply for this loan"
       >
         Apply Now
       </a>
