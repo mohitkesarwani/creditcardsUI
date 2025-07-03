@@ -14,11 +14,11 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
 
   return (
     <div
-      className="space-y-4 bg-white p-4 rounded-xl shadow-md"
+      className="bg-white rounded-2xl shadow-md divide-y divide-gray-100"
       data-testid="mortgage-filters"
     >
-      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
-        <summary className="text-lg font-semibold mb-4 cursor-pointer">Bank / Brand</summary>
+      <details open className="p-4" aria-label="Filter by bank or brand">
+        <summary className="text-lg font-semibold mb-2 cursor-pointer">Bank / Brand</summary>
         <input
           type="text"
           list="bank-list"
@@ -48,8 +48,8 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           </div>
         )}
       </details>
-      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
-        <summary className="text-lg font-semibold mb-4 cursor-pointer">Interest Rate Range</summary>
+      <details open className="p-4" aria-label="Filter by interest rate">
+        <summary className="text-lg font-semibold mb-2 cursor-pointer">Interest Rate Range</summary>
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
@@ -62,8 +62,8 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           Showing: {formatPercent(filters.rate[0], 3)} – {formatPercent(filters.rate[1], 3)}
         </div>
       </details>
-      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
-        <summary className="text-lg font-semibold mb-4 cursor-pointer">Filter Features</summary>
+      <details open className="p-4" aria-label="Filter by features">
+        <summary className="text-lg font-semibold mb-2 cursor-pointer">Filter Features</summary>
         <FeatureFilter
           active={filters.features}
           setActive={setFeatures}
@@ -73,8 +73,9 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
       <button
         type="button"
         onClick={clear}
-        className="text-sm underline text-gray-500 hover:text-gray-800"
+        className="block w-full text-sm underline text-gray-500 hover:text-gray-800 px-4 py-4 text-left"
         data-testid="clear-all-filters"
+        aria-label="Reset all filters"
       >
         Reset All Filters
       </button>
