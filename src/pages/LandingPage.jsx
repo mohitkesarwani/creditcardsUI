@@ -4,34 +4,48 @@ import { motion } from 'framer-motion';
 import HeroInfographic from '../components/HeroInfographic';
 import HowItWorksSection from '../components/HowItWorksSection';
 import BenefitsSection from '../components/BenefitsSection';
+import TestimonialsSection from '../components/TestimonialsSection';
+import TrustedBySection from '../components/TrustedBySection';
 // Landing page hero focuses on clear messaging without busy animation
 
 function LandingPage() {
   return (
     <div>
-      <section className="bg-accent text-white px-4 py-20 text-center">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center px-4 pt-10 pb-6">
-            <motion.h1
-              className="text-4xl md:text-6xl font-extrabold text-center leading-tight mb-4"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+      <section className="bg-gradient-to-b from-accent to-white text-white px-4 py-24 text-center flex items-center justify-center">
+        <div className="max-w-2xl mx-auto">
+          <motion.h1
+            className="text-4xl md:text-6xl font-extrabold leading-tight mb-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            Clarity in Every Comparison.
+          </motion.h1>
+          <p className="text-lg md:text-xl font-medium text-white/90 max-w-xl mx-auto leading-relaxed mb-8">
+            Explore credit cards and home loans with tools that help you compare,
+            not guess.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link
+              to="/credit-cards"
+              className="btn btn-primary text-lg px-8 py-3 rounded-xl shadow-lg hover:scale-105"
             >
-              Clarity in Every Comparison.
-            </motion.h1>
-            <p className="text-lg md:text-xl font-medium text-white/90 max-w-xl mx-auto leading-relaxed">
-              Explore credit cards, mortgages, deposits, and more with tools that help you compare, not guess.
-            </p>
+              Compare Credit Cards
+            </Link>
+            <Link
+              to="/home-loans"
+              className="btn btn-secondary text-lg px-8 py-3 rounded-xl shadow-lg hover:scale-105"
+            >
+              Compare Home Loans
+            </Link>
           </div>
-          <HeroInfographic />
           <a
             href="#how-it-works"
-            className="inline-flex items-center font-semibold text-white underline mt-6"
+            className="inline-flex items-center font-semibold text-white underline mt-8"
           >
             <span>See How It Works</span>
             <svg
-              className="w-4 h-4 ml-[6px]"
+              className="w-4 h-4 ml-1"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -43,23 +57,12 @@ function LandingPage() {
               <path d="M12 5l7 7-7 7" />
             </svg>
           </a>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-            <Link
-              to="/credit-cards"
-              className="bg-[#007aff] text-white rounded-[12px] text-[16px] font-semibold px-6 py-3"
-            >
-              Compare Credit Cards
-            </Link>
-            <Link to="/home-loans" className="btn btn-secondary">Compare Home Loans</Link>
-            <Link to="/deposits" className="btn btn-secondary">Compare Deposit Accounts</Link>
-          </div>
-          <div className="mt-6 text-xs text-gray-500">
-            Information is general only. Compare options based on your needs. We don’t promote sponsored products.
-          </div>
         </div>
       </section>
       <HowItWorksSection />
       <BenefitsSection />
+      <TrustedBySection />
+      <TestimonialsSection />
 
       <section id="features" className="py-16 px-4 text-center">
         <h2 className="text-3xl font-bold mb-8">Why RewardRadar?</h2>
