@@ -37,12 +37,22 @@ function MortgageCompareStickyButton() {
   if (selected.length < 2) return null;
 
   return (
-    <button
-      onClick={() => navigate('/compare-mortgages')}
-      className="fixed bottom-4 right-4 md:bottom-6 md:right-6 bg-accent text-white px-4 py-2 rounded shadow-lg z-50"
-    >
-      Compare Now ({selected.length})
-    </button>
+    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 flex items-center gap-3 z-50">
+      <button
+        onClick={() => navigate('/compare-mortgages')}
+        className="bg-accent text-white px-4 py-2 rounded shadow-lg"
+        aria-label={`Compare ${selected.length} selected home loans`}
+      >
+        Compare Now ({selected.length})
+      </button>
+      <button
+        onClick={clearSelected}
+        className="text-sm underline text-accent focus:outline-none"
+        aria-label="Clear all selected home loans"
+      >
+        Clear All
+      </button>
+    </div>
   );
 }
 
