@@ -17,6 +17,15 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
       className="bg-white rounded-2xl shadow-md divide-y divide-gray-100"
       data-testid="mortgage-filters"
     >
+      <button
+        type="button"
+        onClick={clear}
+        className="w-full text-sm underline text-gray-500 hover:text-gray-800 px-4 py-4 text-left"
+        data-testid="clear-all-filters"
+        aria-label="Reset all filters"
+      >
+        Clear Filters
+      </button>
       <details open className="p-4" aria-label="Filter by bank or brand">
         <summary className="text-lg font-semibold mb-2 cursor-pointer">Bank / Brand</summary>
         <input
@@ -70,15 +79,6 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           tags={availableFeatures}
         />
       </details>
-      <button
-        type="button"
-        onClick={clear}
-        className="block w-full text-sm underline text-gray-500 hover:text-gray-800 px-4 py-4 text-left"
-        data-testid="clear-all-filters"
-        aria-label="Reset all filters"
-      >
-        Reset All Filters
-      </button>
     </div>
   );
 }
