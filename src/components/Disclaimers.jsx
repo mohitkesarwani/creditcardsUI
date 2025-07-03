@@ -11,14 +11,42 @@ export const disclaimers = [
 
 function Disclaimers({ className = '' }) {
   return (
-    <div className={`disclaimer-box ${className}`.trim()}>
-      <div className="font-semibold flex items-center gap-1 mb-1">
-        <span>ⓘ</span> Important Information
+    <div
+      className={`bg-gray-100 text-gray-600 text-sm rounded-xl px-6 py-4 ${className}`.trim()}
+    >
+      <div className="font-semibold flex items-center gap-2 mb-3">
+        <svg
+          className="w-4 h-4 text-gray-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fillRule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM9 9a1 1 0 102 0V7a1 1 0 10-2 0v2zm0 4a1 1 0 102 0 1 1 0 00-2 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+        Important Information
       </div>
-      <ul className="list-disc ml-4 space-y-1 text-[14px]">
-        {disclaimers.map((d, i) => (
-          <li key={i}>{d}</li>
-        ))}
+      <ul className="list-disc pl-5">
+        {disclaimers.map((d, i) => {
+          if (d.startsWith('RewardRadar may receive')) {
+            const phrase = 'RewardRadar may receive a commission';
+            const rest = d.replace(phrase, '');
+            return (
+              <li key={i} className="mb-2">
+                <strong>{phrase}</strong>
+                {rest}
+              </li>
+            );
+          }
+          return (
+            <li key={i} className="mb-2">
+              {d}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
