@@ -13,7 +13,7 @@ module.exports = {
         'body-text': '#000000',
       },
       fontFamily: {
-        sans: ['Arial', 'Helvetica', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
       },
     },
   },

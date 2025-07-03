@@ -123,7 +123,7 @@ function MortgagesPage() {
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
-            className="md:hidden mb-2 btn btn-outline self-start"
+            className="md:hidden mb-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out self-start"
             onClick={() => setShowFilters(true)}
           >
             Filters
@@ -135,7 +135,7 @@ function MortgagesPage() {
             />
           )}
           <div
-            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-4 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-20 flex-shrink-0 rounded-xl shadow-md ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
           >
             <MortgageFilters
               filters={filters}
@@ -144,7 +144,10 @@ function MortgagesPage() {
               rateBounds={rateBounds}
               banks={availableBanks}
             />
-            <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
+            <button
+              className="md:hidden mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out text-sm"
+              onClick={() => setShowFilters(false)}
+            >
               Close
             </button>
           </div>
