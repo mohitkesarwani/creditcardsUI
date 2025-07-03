@@ -129,7 +129,7 @@ function CardsPage() {
             />
           )}
           <div
-            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-20 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 overflow-y-auto md:max-h-screen transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-20 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
           >
             <AdvancedFilters
               filters={filters}
