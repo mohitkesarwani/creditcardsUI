@@ -85,12 +85,12 @@ function Row({ label, values }) {
   if (values.every((v) => v === undefined || v === null || v === '')) return null;
   const first = values[0];
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
-      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
+    <tr className="odd:bg-white even:bg-gray-50">
+      <th className="text-left p-3 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => (
-        <td key={i} className="md:table-cell block px-4 py-3 text-left max-w-xs font-medium">
+        <td key={i} className="text-left p-3 text-sm text-gray-700">
           {formatValue(label, safeDisplay(v, 'Not available'))}
         </td>
       ))}
@@ -103,8 +103,8 @@ function RateRow({ label, values }) {
   const nums = values.map((v) => parseFloat(String(v).replace(/[^0-9.]/g, '')));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
-      <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
+    <tr className="odd:bg-white even:bg-gray-50">
+      <th className="text-left p-3 font-normal text-gray-600">
         {label}
       </th>
       {values.map((v, i) => {
@@ -113,7 +113,7 @@ function RateRow({ label, values }) {
         return (
           <td
             key={i}
-            className={`md:table-cell block px-4 py-3 text-left max-w-xs font-medium ${highlight ? 'bg-green-50 dark:bg-green-900' : ''}`}
+            className={`text-left p-3 text-sm text-gray-700 ${highlight ? 'bg-green-50' : ''}`}
           >
             {formatValue(label, safeDisplay(v, 'Not available'))}
           </td>
@@ -213,13 +213,13 @@ function CompareTable({ cards }) {
   if (isMobile) return mobileView;
 
   return (
-    <div className="overflow-x-auto">
-      <div className="p-2 flex gap-2 items-center bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+    <div className="overflow-x-auto bg-white rounded-xl shadow-sm p-6">
+      <div className="mb-4 flex gap-2 items-center">
         <label className="text-sm">Sort by:</label>
         <select
           value={sort.by}
           onChange={(e) => setSort((s) => ({ ...s, by: e.target.value }))}
-          className="border rounded px-2 py-1 text-sm"
+          className="border rounded px-3 py-2 text-sm"
         >
           <option value="annualFee">Annual Fee</option>
           <option value="interestRate">Interest Rate</option>
@@ -234,13 +234,13 @@ function CompareTable({ cards }) {
           {sort.dir === 'asc' ? '▲' : '▼'}
         </button>
       </div>
-      <div className="inline-block min-w-full align-middle shadow-md rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700">
-        <table className="min-w-full text-sm leading-relaxed block md:table">
-          <thead className="hidden md:table-header-group">
-            <tr className="bg-gray-50 dark:bg-gray-700">
-              <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
+      <div className="inline-block min-w-full align-middle">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr>
+              <th className="bg-gray-50 text-sm font-semibold p-3 text-left"></th>
               {sortedCards.map((c) => (
-                <th key={c.id} className="border px-4 py-3 bg-white dark:bg-gray-800 text-center max-w-[12rem]">
+                <th key={c.id} className="bg-gray-50 text-sm font-semibold p-3 text-left border-t-4 border-blue-600">
                   <div
                     className="flex flex-col items-center gap-3 p-4 rounded-lg"
                     style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
@@ -282,7 +282,7 @@ function CompareTable({ cards }) {
               ))}
             </tr>
           </thead>
-          <tbody className="block md:table-row-group">
+          <tbody>
             {rows.map((row, idx) => (isMobile && !showMore && idx >= 5 ? null : row))}
           </tbody>
           {isMobile && !showMore && (
