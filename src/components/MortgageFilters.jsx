@@ -1,19 +1,11 @@
 import React from 'react';
 import RangeSlider from './RangeSlider';
+import FeatureFilter from './FeatureFilter';
 import { formatPercent } from '../utils.js';
 
 function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBounds = [0,0], banks = [] }) {
   const update = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
-
-  const toggle = (key, val) => {
-    setFilters(prev => {
-      const arr = prev[key];
-      if (arr.includes(val)) {
-        return { ...prev, [key]: arr.filter(v => v !== val) };
-      }
-      return { ...prev, [key]: [...arr, val] };
-    });
-  };
+  const setFeatures = (features) => update('features', features);
 
   const clear = () => {
     localStorage.removeItem('mortgageFilters');
@@ -22,11 +14,11 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
 
   return (
     <div
-      className="mb-4 space-y-4 bg-white p-4 rounded-xl shadow-md sticky top-20"
+      className="space-y-4 bg-white p-4 rounded-xl shadow-md"
       data-testid="mortgage-filters"
     >
-      <h4 className="font-bold">Filters</h4>
-      <label className="block text-sm">Bank / Brand
+      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
+        <summary className="text-lg font-semibold mb-4 cursor-pointer">Bank / Brand</summary>
         <input
           type="text"
           list="bank-list"
@@ -40,24 +32,24 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
             <option key={b} value={b} />
           ))}
         </datalist>
-      </label>
-      {filters.bank && (
-        <div className="flex items-center gap-1 mt-1" data-testid="bank-chip">
-          <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">
-            {filters.bank}
-          </span>
-          <button
-            type="button"
-            onClick={() => update('bank', '')}
-            aria-label="Clear bank"
-            className="text-xs text-accent"
-          >
-            ×
-          </button>
-        </div>
-      )}
-      <div>
-        <label className="block text-sm font-semibold mb-2">Interest Rate Range</label>
+        {filters.bank && (
+          <div className="flex items-center gap-1 mt-2" data-testid="bank-chip">
+            <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">
+              {filters.bank}
+            </span>
+            <button
+              type="button"
+              onClick={() => update('bank', '')}
+              aria-label="Clear bank"
+              className="text-xs text-accent"
+            >
+              ×
+            </button>
+          </div>
+        )}
+      </details>
+      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
+        <summary className="text-lg font-semibold mb-4 cursor-pointer">Interest Rate Range</summary>
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
@@ -69,32 +61,22 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
         <div className="text-xs text-gray-600 mt-1">
           Showing: {formatPercent(filters.rate[0], 3)} – {formatPercent(filters.rate[1], 3)}
         </div>
-      </div>
-      <div>
-        <h5 className="font-semibold text-sm">Features</h5>
-        {availableFeatures.map(f => (
-          <label
-            key={f}
-            className={`flex items-center text-sm font-medium space-x-2 py-1 cursor-pointer ${filters.features.includes(f) ? 'text-blue-700' : 'text-gray-700'}`}
-          >
-            <input
-              type="checkbox"
-              checked={filters.features.includes(f)}
-              onChange={() => toggle('features', f)}
-              className="rounded text-blue-600 focus:ring-blue-500"
-              data-testid={`filter-${f.toLowerCase().replace(/\s+/g,'-')}`}
-            />
-            <span>{f}</span>
-          </label>
-        ))}
-      </div>
+      </details>
+      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
+        <summary className="text-lg font-semibold mb-4 cursor-pointer">Filter Features</summary>
+        <FeatureFilter
+          active={filters.features}
+          setActive={setFeatures}
+          tags={availableFeatures}
+        />
+      </details>
       <button
         type="button"
         onClick={clear}
-        className="text-sm text-blue-600 underline"
+        className="text-sm underline text-gray-500 hover:text-gray-800"
         data-testid="clear-all-filters"
       >
-        Clear All Filters
+        Reset All Filters
       </button>
     </div>
   );

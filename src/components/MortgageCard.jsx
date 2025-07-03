@@ -18,44 +18,55 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
 
   return (
     <div
-      className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in mb-4"
+      className="relative flex flex-col bg-white border border-gray-200 shadow-sm rounded-xl p-4 md:p-6 min-h-[420px] hover:shadow-md transition"
       data-testid="mortgage-card"
     >
-      {mortgage.cardArt?.imageUri ? (
-        <img src={mortgage.cardArt.imageUri} alt="" className="mb-2 rounded" />
-      ) : (
-        <div className="h-12 mb-2 rounded bg-gradient-to-r from-accent to-accent/80 text-white flex items-center justify-center font-semibold">
-          {mortgage.bankName || mortgage.brandName}
-        </div>
-      )}
-      <h3 className="card-title mb-1">{mortgage.name}</h3>
-      <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-2">
+      <img
+        src={mortgage.cardArt?.imageUri || '/assets/image-not-available.svg'}
+        alt={mortgage.bankName || mortgage.brandName}
+        className="w-full h-20 object-contain mb-2"
+        onError={(e) => {
+          if (e.currentTarget.src !== '/assets/image-not-available.svg') {
+            e.currentTarget.src = '/assets/image-not-available.svg';
+          }
+        }}
+      />
+      <p className="text-xs text-gray-500 mb-1">{mortgage.bankName || mortgage.brandName}</p>
+      <h3 className="card-title mb-2">{mortgage.name}</h3>
+      <div className="grid gap-1 mb-2 text-sm">
         {rate && (
-          <span>
-            <span className="font-semibold">Rate:</span> {formatPercent(rate)}
-          </span>
+          <p className="card-subtext">
+            <span className="font-bold">Interest Rate:</span> {formatPercent(rate)}
+          </p>
         )}
         {comparisonRate && (
-          <span>
-            <span className="font-semibold">Comparison:</span> {formatPercent(comparisonRate)}
-          </span>
+          <p className="card-subtext">
+            <span className="font-bold">Comparison Rate:</span> {formatPercent(comparisonRate)}
+          </p>
         )}
-        {fees.map(f => (
-          <span key={f.name} className="flex items-center gap-1" data-testid={`fee-${f.name.toLowerCase().replace(/\s+/g,'-')}`}> 
-            <span className="font-semibold">{f.name}:</span> {formatMoney(f.amount)}
-          </span>
+        {fees.map((f) => (
+          <p
+            key={f.name}
+            className="card-subtext flex items-center gap-1"
+            data-testid={`fee-${f.name.toLowerCase().replace(/\s+/g, '-')}`}
+          >
+            <span className="font-bold">{f.name}:</span> {formatMoney(f.amount)}
+          </p>
         ))}
       </div>
-      <div className="flex flex-wrap gap-1 mb-2">
-        {tags.map(t => (
-          <span
-            key={t}
-            className={`feature-label ${highlightTags.includes(t) ? 'ring-2 ring-blue-600' : ''}`}
-            data-testid={`tag-${t.toLowerCase().replace(/\s+/g,'-')}`}
-          >
-            {t}
-          </span>
-        ))}
+      <div className="flex flex-wrap gap-2 mb-2">
+        {tags.map((t) => {
+          const match = highlightTags.includes(t);
+          return (
+            <span
+              key={t}
+              data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
+              className={`inline-flex items-center text-xs px-2 rounded-full ${match ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}
+            >
+              {t}
+            </span>
+          );
+        })}
       </div>
       <div className="mt-auto flex flex-wrap items-center gap-2">
         {isSelected ? (
@@ -73,26 +84,26 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         ) : (
           <button
             onClick={() => toggleMortgage(mortgage)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 flex-1 transition-all duration-300 ease-in-out"
+            className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
           >
             Compare
           </button>
         )}
-        <a
-          href={mortgage.applicationUri}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 flex-1 text-center transition-all duration-300 ease-in-out"
+        <button
+          onClick={() => navigate(`/home-loans/${mortgage.id}`)}
+          className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
         >
-          Apply
-        </a>
+          Details
+        </button>
       </div>
-      <button
-        onClick={() => navigate(`/home-loans/${mortgage.id}`)}
-        className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
+      <a
+        href={mortgage.applicationUri}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 text-sm font-semibold w-full flex items-center justify-center gap-1"
       >
-        View Details
-      </button>
+        Apply Now
+      </a>
     </div>
   );
 }
