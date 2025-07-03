@@ -32,17 +32,6 @@ function CardDetailPage() {
     load();
   }, [id]);
 
-  if (loading) return <LoaderSkeleton rows={6} />;
-  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
-  if (!card) return <p>Card not found.</p>;
-
-  const annualFee = card.annualFee ?? getMinimumAnnualFee(card);
-  const interestRate = card.interestRate ?? card.feesAndPricing?.interestRates?.[0]?.rate;
-  const comparisonRate = card.comparisonRate ?? card.lendingRates?.[0]?.comparisonRate;
-  const interestFree = card.interestFree ?? card.feesAndPricing?.interestFreePeriod;
-  const tags = getFeatureTags(card);
-  const featureGroups = categorizeFeatures(card.features);
-
   useEffect(() => {
     if (!card) return;
     document.title = `${card.name} - RewardRadar`;
@@ -57,6 +46,17 @@ function CardDetailPage() {
       document.head.appendChild(el);
     }
   }, [card]);
+
+  if (loading) return <LoaderSkeleton rows={6} />;
+  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
+  if (!card) return <p>Card not found.</p>;
+
+  const annualFee = card.annualFee ?? getMinimumAnnualFee(card);
+  const interestRate = card.interestRate ?? card.feesAndPricing?.interestRates?.[0]?.rate;
+  const comparisonRate = card.comparisonRate ?? card.lendingRates?.[0]?.comparisonRate;
+  const interestFree = card.interestFree ?? card.feesAndPricing?.interestFreePeriod;
+  const tags = getFeatureTags(card);
+  const featureGroups = categorizeFeatures(card.features);
 
   return (
     <div className="p-4">
