@@ -20,7 +20,11 @@ function FeatureFilter({ active, setActive, tags = [] }) {
             key={f}
             type="button"
             onClick={() => toggle(f)}
-            className={`inline-flex bg-gray-100 text-sm rounded-full px-3 py-1 mb-2 cursor-pointer hover:bg-blue-100 ${active.includes(f) ? 'bg-blue-600 text-white' : ''}`}
+            className={`px-3 py-1 text-sm rounded-full cursor-pointer transition-all duration-150 ease-in-out ${
+              active.includes(f)
+                ? 'bg-blue-600 text-white font-medium border border-blue-700 shadow-sm dark:bg-blue-500 dark:text-white dark:border-blue-400'
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            }`}
             data-testid={`filter-${f.toLowerCase().replace(/\s+/g, '-')}`}
           >
             {f}
