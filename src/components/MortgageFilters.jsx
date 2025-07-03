@@ -21,7 +21,10 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
   };
 
   return (
-    <div className="mb-4 space-y-4 bg-white p-4 rounded-xl shadow" data-testid="mortgage-filters">
+    <div
+      className="mb-4 space-y-4 bg-white p-4 rounded-xl shadow-md sticky top-20"
+      data-testid="mortgage-filters"
+    >
       <h4 className="font-bold">Filters</h4>
       <label className="block text-sm">Bank / Brand
         <input
@@ -70,19 +73,29 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
       <div>
         <h5 className="font-semibold text-sm">Features</h5>
         {availableFeatures.map(f => (
-          <label key={f} className="flex items-center text-sm space-x-2 py-1">
+          <label
+            key={f}
+            className={`flex items-center text-sm font-medium space-x-2 py-1 cursor-pointer ${filters.features.includes(f) ? 'text-blue-700' : 'text-gray-700'}`}
+          >
             <input
               type="checkbox"
               checked={filters.features.includes(f)}
               onChange={() => toggle('features', f)}
-              className="rounded text-accent focus:ring-accent"
+              className="rounded text-blue-600 focus:ring-blue-500"
               data-testid={`filter-${f.toLowerCase().replace(/\s+/g,'-')}`}
             />
             <span>{f}</span>
           </label>
         ))}
       </div>
-      <button type="button" onClick={clear} className="text-sm text-accent underline" data-testid="clear-all-filters">Clear All Filters</button>
+      <button
+        type="button"
+        onClick={clear}
+        className="text-sm text-blue-600 underline"
+        data-testid="clear-all-filters"
+      >
+        Clear All Filters
+      </button>
     </div>
   );
 }

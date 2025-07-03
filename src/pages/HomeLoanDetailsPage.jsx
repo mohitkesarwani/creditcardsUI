@@ -140,10 +140,10 @@ function HomeLoanDetailsPage() {
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen">
       <div className="max-w-2xl mx-auto">
-        <button onClick={() => navigate(-1)} className="text-accent underline mb-4 text-sm">
+        <button onClick={() => navigate(-1)} className="text-blue-600 underline mb-4 text-sm">
           &larr; Go Back
         </button>
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-4 md:p-6 space-y-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-3xl mx-auto space-y-6">
           <div className="space-y-2">
             <h2 className="font-bold" style={{ fontSize: '1.5em' }}>
               {loan.bankName || loan.brandName} – {loan.name}
@@ -190,10 +190,7 @@ function HomeLoanDetailsPage() {
           <Section title="Loan Features">
             <div className="flex flex-wrap gap-1">
               {featureLabels.map((f) => (
-                <span
-                  key={f}
-                  className={`text-xs px-2 py-0.5 rounded-full border ${featureSet.has(f) ? 'bg-accent/10 border-accent text-accent' : 'bg-gray-50 border-gray-200 text-gray-500'}`}
-                >
+                <span key={f} className="feature-label">
                   {f}
                 </span>
               ))}
@@ -315,7 +312,10 @@ function HomeLoanDetailsPage() {
                 </button>
               </div>
             ) : (
-              <button onClick={() => toggleMortgage(loan)} className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition">
+              <button
+                onClick={() => toggleMortgage(loan)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
+              >
                 Compare
               </button>
             )}
@@ -324,7 +324,7 @@ function HomeLoanDetailsPage() {
                 href={loan.applicationUri}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
               >
                 Apply
               </a>

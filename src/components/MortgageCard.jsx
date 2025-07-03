@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   formatMoney,
   formatPercent,
-  getTagColor,
   getMortgageFeatureTags,
 } from '../utils.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
@@ -19,7 +18,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
 
   return (
     <div
-      className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in"
+      className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in mb-4"
       data-testid="mortgage-card"
     >
       {mortgage.cardArt?.imageUri ? (
@@ -49,7 +48,13 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
       </div>
       <div className="flex flex-wrap gap-1 mb-2">
         {tags.map(t => (
-          <span key={t} className={`text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} ${highlightTags.includes(t) ? 'ring-2 ring-accent' : ''}`} data-testid={`tag-${t.toLowerCase().replace(/\s+/g,'-')}`}>{t}</span>
+          <span
+            key={t}
+            className={`feature-label ${highlightTags.includes(t) ? 'ring-2 ring-blue-600' : ''}`}
+            data-testid={`tag-${t.toLowerCase().replace(/\s+/g,'-')}`}
+          >
+            {t}
+          </span>
         ))}
       </div>
       <div className="mt-auto flex flex-wrap items-center gap-2">
@@ -66,17 +71,25 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
             </button>
           </div>
         ) : (
-          <button onClick={() => toggleMortgage(mortgage)} className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition flex-1">
+          <button
+            onClick={() => toggleMortgage(mortgage)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 flex-1 transition-all duration-300 ease-in-out"
+          >
             Compare
           </button>
         )}
-        <a href={mortgage.applicationUri} target="_blank" rel="noopener noreferrer" className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition flex-1 text-center">
+        <a
+          href={mortgage.applicationUri}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 flex-1 text-center transition-all duration-300 ease-in-out"
+        >
           Apply
         </a>
       </div>
       <button
         onClick={() => navigate(`/home-loans/${mortgage.id}`)}
-        className="mt-2 w-full text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition"
+        className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
       >
         View Details
       </button>

@@ -106,7 +106,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
         <label className="text-sm">Property Price
           <input
             type="text"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full text-sm"
             aria-label="Property Price"
             value={propertyPriceInput}
             onChange={(e) => {
@@ -123,7 +123,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
         <label className="text-sm">Loan Amount
           <input
             type="text"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full text-sm"
             aria-label="Loan Amount"
             value={loanAmountInput}
             onChange={(e) => {
@@ -138,7 +138,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
         <label className="text-sm">Interest Rate
           <input
             type="text"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full text-sm"
             aria-label="Interest Rate"
             value={rateInput}
             onChange={(e) => {
@@ -162,7 +162,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
         </label>
         <label className="text-sm">Term (years)
           <select
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full text-sm"
             aria-label="Term (years)"
             value={term}
             onChange={(e) => setTerm(parseInt(e.target.value, 10))}
@@ -189,7 +189,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
             type="checkbox"
             checked={interestOnly}
             onChange={(e) => setInterestOnly(e.target.checked)}
-            className="rounded text-accent focus:ring-accent"
+            className="rounded text-blue-600 focus:ring-blue-500"
           />
           Interest Only
         </label>
@@ -198,7 +198,7 @@ function LoanRepaymentCalculator({ rate: defaultRate = 0, onChange }) {
             Interest-only loans may increase total repayment costs.
           </p>
         )}
-        <button type="button" onClick={suggest} className="text-xs text-accent underline">
+        <button type="button" onClick={suggest} className="text-xs text-blue-600 underline">
           Use 80% of Price
         </button>
         <span className="cursor-help" title="We assume an 80% LVR as a common lending benchmark">?</span>

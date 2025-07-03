@@ -37,7 +37,10 @@ function CompareMortgagesPage() {
     return (
       <div className="p-4">
         <p>No mortgages selected for comparison.</p>
-        <button className="mt-2 px-3 py-1 text-blue-600 underline" onClick={() => navigate('/home-loans')}>
+        <button
+          className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
+          onClick={() => navigate('/home-loans')}
+        >
           Back to mortgages
         </button>
       </div>
@@ -48,21 +51,21 @@ function CompareMortgagesPage() {
     <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen overflow-auto">
       <button
         onClick={() => navigate('/home-loans')}
-        className="text-accent underline mb-4 text-sm text-left"
+        className="text-blue-600 underline mb-4 text-sm text-left"
       >
         &larr; Go Back
       </button>
       <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">Compare Home Loans</h1>
       <div className="flex justify-end mb-4">
-        <button onClick={clearSelected} className="text-sm text-accent underline">Clear All</button>
+        <button onClick={clearSelected} className="text-sm text-blue-600 underline">Clear All</button>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 max-w-xl">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 w-full max-w-3xl mx-auto">
         <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-start">
           <label className="flex flex-col text-sm w-full sm:w-60">
             <span className="block font-medium mb-1">Property Price</span>
             <input
               type="text"
-              className="w-full border rounded px-2 py-1 text-sm"
+              className="w-full text-sm"
               value={propertyPriceInput}
               onChange={(e) => {
                 const digits = e.target.value.replace(/[^0-9]/g, '');
@@ -85,7 +88,7 @@ function CompareMortgagesPage() {
             <label className="flex items-center gap-2 text-xs mb-1 self-start">
               <input
                 type="checkbox"
-                className="rounded text-accent focus:ring-accent"
+                className="rounded text-blue-600 focus:ring-blue-500"
                 checked={useEighty}
                 onChange={(e) => setUseEighty(e.target.checked)}
               />
@@ -95,7 +98,7 @@ function CompareMortgagesPage() {
               <span className="block font-medium mb-1">Loan Amount</span>
               <input
                 type="text"
-                className="w-full border rounded px-2 py-1 text-sm"
+                className="w-full text-sm"
                 value={loanAmountInput}
                 disabled={useEighty}
                 onChange={(e) => {

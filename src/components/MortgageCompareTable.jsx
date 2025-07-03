@@ -136,7 +136,7 @@ function getRowDefs(amount) {
 function Row({ label, values }) {
   if (values.every((v) => !v)) return null;
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
+    <tr className="md:table-row block odd:bg-white even:bg-gray-50 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
       <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
@@ -154,7 +154,7 @@ function RateRow({ label, values }) {
   const nums = values.map((v) => parseFloat(String(v).replace(/[^0-9.]/g, '')));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
+    <tr className="md:table-row block odd:bg-white even:bg-gray-50 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
       <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
@@ -185,7 +185,7 @@ function MoneyRow({
   const nums = values.map((v) => parseFloat(v));
   const min = Math.min(...nums.filter((n) => !Number.isNaN(n)));
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
+    <tr className="md:table-row block odd:bg-white even:bg-gray-50 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
       <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
@@ -210,7 +210,7 @@ function ChartRow({ label, mortgages, amount }) {
   const schedules = mortgages.map((m) => getRepaymentInfo(m, amount)?.schedule || []);
   if (schedules.every((s) => !s.length)) return null;
   return (
-    <tr className="md:table-row block even:bg-[#f9f9f9] dark:even:bg-gray-800 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
+    <tr className="md:table-row block odd:bg-white even:bg-gray-50 hover:bg-accent/5 dark:hover:bg-accent/10 border-b border-gray-200 dark:border-gray-700">
       <th className="md:table-cell block text-left md:border-r px-4 py-3 bg-white md:sticky md:left-0 z-10 font-normal text-gray-600">
         {label}
       </th>
@@ -273,8 +273,18 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
             <button onClick={() => toggleMortgage(m)} className="text-xs text-accent underline">Remove</button>
           </div>
           <div className="flex gap-2 p-4 pt-2 border-b">
-            <Link to={`/home-loans/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition text-center flex-1">Go to Details</Link>
-            <Link to={`/apply/${m.id}`} className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition text-center flex-1">Apply</Link>
+            <Link
+              to={`/home-loans/${m.id}`}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 text-xs transition-all duration-300 ease-in-out text-center flex-1"
+            >
+              Go to Details
+            </Link>
+            <Link
+              to={`/apply/${m.id}`}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 text-xs transition-all duration-300 ease-in-out text-center flex-1"
+            >
+              Apply
+            </Link>
           </div>
           <table className="w-full text-sm">
             <tbody>
@@ -324,7 +334,7 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
       <div className="min-w-[768px]">
         <div className="inline-block min-w-full align-middle shadow rounded-xl border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 p-4 md:p-6">
           <table className="min-w-full table-fixed text-sm leading-relaxed block md:table">
-            <thead className="hidden md:table-header-group">
+            <thead className="hidden md:table-header-group sticky top-0 bg-white z-10">
               <tr className="bg-gray-50 dark:bg-gray-700">
                 <th className="border px-4 py-3 sticky left-0 z-20 bg-gray-50 dark:bg-gray-700"></th>
                 {mortgages.map((m) => (
@@ -342,13 +352,13 @@ function MortgageCompareTable({ mortgages, loanAmount = DEFAULT_AMOUNT }) {
                       <div className="flex gap-2">
                         <Link
                           to={`/home-loans/${m.id}`}
-                          className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition"
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 text-xs transition-all duration-300 ease-in-out"
                         >
                           Go to Details
                         </Link>
                         <Link
                           to={`/apply/${m.id}`}
-                          className="bg-accent text-white rounded-md px-3 py-1 text-xs hover:bg-accent/90 transition"
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 text-xs transition-all duration-300 ease-in-out"
                         >
                           Apply
                         </Link>
