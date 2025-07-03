@@ -4,7 +4,7 @@ import CompareTable from '../components/CompareTable';
 import { useNavigate } from 'react-router-dom';
 
 function ComparePage() {
-  const { selected } = useSelectedCards();
+  const { selected, clearSelected } = useSelectedCards();
   const navigate = useNavigate();
 
   if (!selected.length) {
@@ -22,9 +22,14 @@ function ComparePage() {
   }
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen overflow-auto">
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">Browse &amp; Compare Credit Cards</h1>
-      <CompareTable cards={selected} />
+    <div className="min-h-screen bg-gray-50">
+      <div className="sticky top-0 z-10 bg-white shadow-sm px-4 py-3 flex justify-between items-center">
+        <span className="font-semibold">Compare Credit Cards</span>
+        <button onClick={clearSelected} className="text-sm underline text-gray-600 hover:text-gray-800">Clear All</button>
+      </div>
+      <div className="p-4 md:p-8">
+        <CompareTable cards={selected} />
+      </div>
     </div>
   );
 }

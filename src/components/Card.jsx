@@ -141,7 +141,7 @@ function Card({ card, selectedTags = [] }) {
 
   return (
     <div
-      className="card-tile relative transition transform hover:-translate-y-1 hover:shadow-lg hover:scale-105 flex flex-col fade-in"
+      className="relative flex flex-col bg-white border border-gray-200 shadow-sm rounded-xl p-4 md:p-6 min-h-[420px] hover:shadow-md transition"
     >
       <img
         src={
@@ -150,7 +150,7 @@ function Card({ card, selectedTags = [] }) {
           '/assets/image-not-available.svg'
         }
         alt={card.brandName || card.brand}
-        className="w-full h-32 object-contain mb-2 cursor-pointer"
+        className="w-full h-20 object-contain mb-4 cursor-pointer"
         onError={(e) => {
           if (e.currentTarget.src !== '/assets/image-not-available.svg') {
             e.currentTarget.src = '/assets/image-not-available.svg';
@@ -167,16 +167,17 @@ function Card({ card, selectedTags = [] }) {
         </span>
       )}
       <h3 className="card-title mb-1">{card.name}</h3>
-      <div className="flex flex-wrap gap-1 mb-2">
+      <div className="flex flex-wrap gap-2 mb-2">
         {tags.map((t) => {
           const match = selectedTags.includes(t);
           return (
             <span
               key={t}
               data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
-              className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded ${getTagColor(t)} hover:animate-pulse ${match ? 'ring-2 ring-accent' : ''}`}
+              title={t}
+              className={`inline-flex items-center text-xs px-2 rounded-full ${match ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'} `}
             >
-              {TAG_ICONS[t]} {t}
+              {t}
             </span>
           );
         })}
@@ -247,14 +248,14 @@ function Card({ card, selectedTags = [] }) {
         ) : (
           <button
             onClick={() => toggleCard(card)}
-            className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition flex-1"
+            className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
           >
             Compare
           </button>
         )}
         <button
           onClick={() => navigate(`/credit-cards/${card.id}`)}
-          className="text-sm border border-accent text-accent rounded-md px-3 py-1 hover:bg-accent/10 transition flex-1"
+          className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
         >
           Details
         </button>
@@ -264,7 +265,7 @@ function Card({ card, selectedTags = [] }) {
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleApply}
-        className="mt-2 bg-accent hover:bg-accent/90 text-white rounded-md px-4 py-2 text-sm font-semibold transition transform hover:scale-105 w-full flex items-center justify-center gap-1"
+        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 text-sm font-semibold w-full flex items-center justify-center gap-1"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-8 8a1 1 0 01-.707.293H5a1 1 0 01-1-1v-4a1 1 0 01.293-.707l8-8z" />
