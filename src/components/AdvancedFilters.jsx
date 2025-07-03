@@ -11,6 +11,14 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
 
   return (
     <div className="space-y-4">
+      <button
+        type="button"
+        onClick={clearAll}
+        className="text-sm underline text-gray-500 hover:text-gray-800"
+        data-testid="clear-all-filters"
+      >
+        Clear Filters
+      </button>
       <details open className="border border-gray-200 rounded-xl p-4 shadow-sm">
         <summary className="text-lg font-semibold mb-4 cursor-pointer">Features</summary>
         <FeatureFilter
@@ -54,14 +62,6 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
           ))}
         </select>
       </details>
-      <button
-        type="button"
-        onClick={clearAll}
-        className="text-sm underline text-gray-500 hover:text-gray-800"
-        data-testid="clear-all-filters"
-      >
-        Reset All Filters
-      </button>
     </div>
   );
 }

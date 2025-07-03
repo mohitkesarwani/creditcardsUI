@@ -168,7 +168,7 @@ html {
 }
 
 .range-slider .tooltip {
-  @apply absolute px-2 py-0.5 rounded bg-gray-700 text-white text-xs transform -translate-x-1/2 whitespace-nowrap transition-opacity;
+  @apply absolute px-2 py-0.5 rounded bg-gray-700 text-white text-xs transform -translate-x-1/2 whitespace-nowrap transition-opacity z-10;
 }
 /* Skyscanner inspired components */
 .card-tile {
@@ -186,6 +186,18 @@ html {
 
 .feature-label {
   @apply bg-blue-100 text-blue-700 text-xs font-medium px-2 py-1 rounded-full mr-1 mb-1;
+}
+
+.filter-option {
+  @apply px-3 py-1 text-sm rounded-full transition-all duration-150 ease-in-out max-w-[150px] break-words whitespace-normal text-center;
+}
+
+.filter-option-active {
+  @apply bg-blue-600 text-white font-semibold border border-blue-700 shadow-sm dark:bg-blue-500 dark:text-white dark:border-blue-400;
+}
+
+.filter-option-inactive {
+  @apply bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
 }
 
 .pill-tab {
