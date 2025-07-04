@@ -16,6 +16,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
 import { SelectedMortgagesProvider } from './hooks/useSelectedMortgages.jsx';
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
+import { ToastProvider } from './hooks/useToast.tsx';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage.jsx';
@@ -53,11 +54,13 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <SelectedCardsProvider>
-        <SelectedMortgagesProvider>
-          <AppContent />
-        </SelectedMortgagesProvider>
-      </SelectedCardsProvider>
+      <ToastProvider>
+        <SelectedCardsProvider>
+          <SelectedMortgagesProvider>
+            <AppContent />
+          </SelectedMortgagesProvider>
+        </SelectedCardsProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }
