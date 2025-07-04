@@ -5,14 +5,19 @@ import App from './App';
 import './index.css';
 import { setupAutoTitleCase } from './autoTitleCase';
 import { setupBonusPointsFormatting } from './bonusPoints';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 setupAutoTitleCase();
 setupBonusPointsFormatting();
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -11,12 +11,16 @@ import {
 } from '../utils.js';
 import Disclaimers from '../components/Disclaimers';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
+import SocialStats from '../components/SocialStats.tsx';
+import ReviewsSection from '../components/ReviewsSection.tsx';
+import useEngagement from '../hooks/useEngagement.ts';
 
 function CardDetailPage() {
   const { id } = useParams();
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { data: engagement, like, share, review } = useEngagement(id);
 
   useEffect(() => {
     const load = async () => {
@@ -97,6 +101,17 @@ function CardDetailPage() {
                 </span>
               ))}
             </div>
+            {engagement && (
+              <SocialStats
+                likes={engagement.likes}
+                comments={engagement.comments}
+                shares={engagement.shares}
+                rating={engagement.rating}
+                onLike={() => like.mutate()}
+                onShare={() => share.mutate()}
+                onComment={() => {}}
+              />
+            )}
             <a
               href={card.applicationUrl || card.applicationUri}
               target="_blank"
@@ -198,12 +213,9 @@ function CardDetailPage() {
           </section>
         )}
 
-        <section className="mt-10 border-t pt-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">User Reviews</h3>
-          <div className="bg-gray-50 border rounded-xl p-4 text-center text-sm text-gray-400 italic">
-            Coming soon...
-          </div>
-        </section>
+        {engagement && (
+          <ReviewsSection reviews={engagement.reviews} onAdd={(r) => review.mutate(r)} />
+        )}
 
         <Disclaimers className="mt-10" />
       </div>

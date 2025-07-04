@@ -12,6 +12,9 @@ import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import LoanRepaymentCalculator from '../components/LoanRepaymentCalculator.jsx';
 import FeatureTags from '../components/FeatureTags.tsx';
+import SocialStats from '../components/SocialStats.tsx';
+import ReviewsSection from '../components/ReviewsSection.tsx';
+import useEngagement from '../hooks/useEngagement.ts';
 
 function calcRepayments(amount, rate, years) {
   const r = parseFloat(rate);
@@ -49,6 +52,7 @@ function HomeLoanDetailsPage() {
   const [showAllRates, setShowAllRates] = useState(false);
   const [preview, setPreview] = useState({ monthly: null, total: null, costPerDollar: null });
   const { selected, toggleMortgage } = useSelectedMortgages();
+  const { data: engagement, like, share, review } = useEngagement(loanId);
 
   useEffect(() => {
     const load = async () => {
@@ -293,6 +297,17 @@ function HomeLoanDetailsPage() {
             </div>
           )}
 
+          {engagement && (
+            <SocialStats
+              likes={engagement.likes}
+              comments={engagement.comments}
+              shares={engagement.shares}
+              rating={engagement.rating}
+              onLike={() => like.mutate()}
+              onShare={() => share.mutate()}
+            />
+          )}
+
           <div className="flex flex-wrap gap-2">
             {isSelected ? (
               <div className="flex items-center gap-2">
@@ -325,6 +340,9 @@ function HomeLoanDetailsPage() {
               </a>
             )}
           </div>
+          {engagement && (
+            <ReviewsSection reviews={engagement.reviews} onAdd={(r) => review.mutate(r)} />
+          )}
         </div>
       </div>
     </div>

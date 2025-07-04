@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
-import SocialBar from './SocialBar.jsx';
+import SocialStats from './SocialStats.tsx';
+import useEngagement from '../hooks/useEngagement.ts';
 import FeatureTags from './FeatureTags.tsx';
 import ActionButtons from './ActionButtons.tsx';
 import apiClient from '../api/apiClient.js';
@@ -20,6 +21,7 @@ function Card({ card, selectedTags = [] }) {
   const isSelected = selected.some((c) => c.id === card.id);
   const [showDetails, setShowDetails] = useState(false);
   const navigate = useNavigate();
+  const { data: engagement, like, share } = useEngagement(card.id);
 
 
   const annualFee = card.annualFee ?? findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
@@ -247,7 +249,16 @@ function Card({ card, selectedTags = [] }) {
           applyHref={card.applicationUrl || card.applicationUri}
         />
       </div>
-      <SocialBar itemId={card.id} type="card" />
+      {engagement && (
+        <SocialStats
+          likes={engagement.likes}
+          comments={engagement.comments}
+          shares={engagement.shares}
+          rating={engagement.rating}
+          onLike={() => like.mutate()}
+          onShare={() => share.mutate()}
+        />
+      )}
       <CardDetailsModal
         open={showDetails}
         onClose={() => setShowDetails(false)}

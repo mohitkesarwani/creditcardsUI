@@ -17,6 +17,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(requestLogger);
 
+const engagements = {};
+
 const normalizeCard = (card) => {
   const interestRateRaw = card.feesAndPricing?.interestRates?.[0]?.rate;
   const interestRate = interestRateRaw ? formatPercent(parseFloat(interestRateRaw)) : null;
@@ -116,6 +118,39 @@ app.post('/api/email-events', async (req, res) => {
     console.error('Error saving email event:', err.message);
     res.status(500).send('Server error');
   }
+});
+
+app.get('/api/products/:id/engagement', (req, res) => {
+  const { id } = req.params;
+  if (!engagements[id]) {
+    engagements[id] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  }
+  res.json(engagements[id]);
+});
+
+app.post('/api/products/:id/like', (req, res) => {
+  const { id } = req.params;
+  if (!engagements[id]) engagements[id] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  engagements[id].likes += 1;
+  res.json(engagements[id]);
+});
+
+app.post('/api/products/:id/share', (req, res) => {
+  const { id } = req.params;
+  if (!engagements[id]) engagements[id] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  engagements[id].shares += 1;
+  res.json(engagements[id]);
+});
+
+app.post('/api/products/:id/review', (req, res) => {
+  const { id } = req.params;
+  const review = req.body;
+  if (!engagements[id]) engagements[id] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  engagements[id].reviews.push(review);
+  engagements[id].comments = engagements[id].reviews.length;
+  const avg = engagements[id].reviews.reduce((a, r) => a + (r.stars || 0), 0) / engagements[id].reviews.length;
+  engagements[id].rating = Number(avg.toFixed(2));
+  res.json(engagements[id]);
 });
 
 const start = async () => {
