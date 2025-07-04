@@ -20,7 +20,7 @@ function CardDetailPage() {
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { data: engagement, like, share, review } = useEngagement(id);
+  const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(id);
 
   useEffect(() => {
     const load = async () => {
@@ -101,17 +101,16 @@ function CardDetailPage() {
                 </span>
               ))}
             </div>
-            {engagement && (
-              <SocialStats
-                likes={engagement.likes}
-                comments={engagement.comments}
-                shares={engagement.shares}
-                rating={engagement.rating}
-                onLike={() => like.mutate()}
-                onShare={() => share.mutate()}
-                onComment={() => {}}
-              />
-            )}
+            <SocialStats
+              likes={engagement?.likes ?? 0}
+              comments={engagement?.comments ?? 0}
+              shares={engagement?.shares ?? 0}
+              rating={engagement?.rating ?? 0}
+              loading={engagementLoading && !engagement}
+              onLike={() => like.mutate()}
+              onShare={() => share.mutate()}
+              onComment={() => {}}
+            />
             <a
               href={card.applicationUrl || card.applicationUri}
               target="_blank"

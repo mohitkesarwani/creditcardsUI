@@ -4,7 +4,7 @@ import { Review } from '../types';
 
 export default function useEngagement(productId: string) {
   const queryClient = useQueryClient();
-  const { data } = useQuery(['product', productId], () => getEngagement(productId));
+  const { data, isLoading } = useQuery(['product', productId], () => getEngagement(productId));
 
   const like = useMutation(() => likeProduct(productId), {
     onMutate: async () => {
@@ -40,5 +40,5 @@ export default function useEngagement(productId: string) {
     onSettled: () => queryClient.invalidateQueries(['product', productId])
   });
 
-  return { data, like, share, review };
+  return { data, isLoading, like, share, review };
 }

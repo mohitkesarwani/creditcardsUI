@@ -21,7 +21,7 @@ function Card({ card, selectedTags = [] }) {
   const isSelected = selected.some((c) => c.id === card.id);
   const [showDetails, setShowDetails] = useState(false);
   const navigate = useNavigate();
-  const { data: engagement, like, share } = useEngagement(card.id);
+  const { data: engagement, isLoading: engagementLoading, like, share } = useEngagement(card.id);
 
 
   const annualFee = card.annualFee ?? findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
@@ -249,16 +249,15 @@ function Card({ card, selectedTags = [] }) {
           applyHref={card.applicationUrl || card.applicationUri}
         />
       </div>
-      {engagement && (
-        <SocialStats
-          likes={engagement.likes}
-          comments={engagement.comments}
-          shares={engagement.shares}
-          rating={engagement.rating}
-          onLike={() => like.mutate()}
-          onShare={() => share.mutate()}
-        />
-      )}
+      <SocialStats
+        likes={engagement?.likes ?? 0}
+        comments={engagement?.comments ?? 0}
+        shares={engagement?.shares ?? 0}
+        rating={engagement?.rating ?? 0}
+        loading={engagementLoading && !engagement}
+        onLike={() => like.mutate()}
+        onShare={() => share.mutate()}
+      />
       <CardDetailsModal
         open={showDetails}
         onClose={() => setShowDetails(false)}

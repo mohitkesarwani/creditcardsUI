@@ -19,7 +19,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
   const tags = getMortgageFeatureTags(mortgage);
   const { selected, toggleMortgage } = useSelectedMortgages();
   const isSelected = selected.some((m) => m.id === mortgage.id);
-  const { data: engagement, like, share } = useEngagement(mortgage.id);
+  const { data: engagement, isLoading: engagementLoading, like, share } = useEngagement(mortgage.id);
 
   return (
     <div
@@ -82,16 +82,15 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           applyHref={mortgage.applicationUri}
         />
       </div>
-      {engagement && (
-        <SocialStats
-          likes={engagement.likes}
-          comments={engagement.comments}
-          shares={engagement.shares}
-          rating={engagement.rating}
-          onLike={() => like.mutate()}
-          onShare={() => share.mutate()}
-        />
-      )}
+      <SocialStats
+        likes={engagement?.likes ?? 0}
+        comments={engagement?.comments ?? 0}
+        shares={engagement?.shares ?? 0}
+        rating={engagement?.rating ?? 0}
+        loading={engagementLoading && !engagement}
+        onLike={() => like.mutate()}
+        onShare={() => share.mutate()}
+      />
     </div>
   );
 }

@@ -7,14 +7,35 @@ interface SocialStatsProps {
   comments: number;
   shares: number;
   rating: number;
+  loading?: boolean;
   onLike?: () => void;
   onShare?: () => void;
   onComment?: () => void;
 }
 
-export default function SocialStats({ likes, comments, shares, rating, onLike, onShare, onComment }: SocialStatsProps) {
+export default function SocialStats({
+  likes,
+  comments,
+  shares,
+  rating,
+  loading = false,
+  onLike,
+  onShare,
+  onComment,
+}: SocialStatsProps) {
   const iconCls = 'w-5 h-5';
   const btnCls = 'flex items-center gap-1 hover:text-blue-500 transition';
+
+  if (loading) {
+    return (
+      <div className="mt-2 flex items-center flex-wrap gap-4 animate-pulse" aria-label="Loading social stats">
+        <div className="w-16 h-4 bg-gray-200 rounded" />
+        <div className="w-16 h-4 bg-gray-200 rounded" />
+        <div className="w-16 h-4 bg-gray-200 rounded" />
+        <div className="w-20 h-4 bg-gray-200 rounded" />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-2 text-sm text-gray-600 flex items-center flex-wrap gap-4">
