@@ -1,6 +1,7 @@
 import React from 'react';
-import { HandThumbUpIcon, ChatBubbleLeftEllipsisIcon, ArrowPathIcon, StarIcon } from '@heroicons/react/24/outline';
+import { HandThumbUpIcon, ChatBubbleLeftEllipsisIcon, StarIcon } from '@heroicons/react/24/outline';
 import StarRating from './StarRating';
+import ShareButton from './ShareButton';
 
 interface SocialStatsProps {
   likes: number;
@@ -11,6 +12,7 @@ interface SocialStatsProps {
   onLike?: () => void;
   onShare?: () => void;
   onComment?: () => void;
+  shareUrl: string;
 }
 
 export default function SocialStats({
@@ -22,6 +24,7 @@ export default function SocialStats({
   onLike,
   onShare,
   onComment,
+  shareUrl,
 }: SocialStatsProps) {
   const iconCls = 'w-5 h-5';
   const btnCls = 'flex items-center gap-1 hover:text-blue-500 transition';
@@ -45,9 +48,7 @@ export default function SocialStats({
       <button onClick={onComment} aria-label="View comments" className={btnCls} tabIndex={0}>
         <ChatBubbleLeftEllipsisIcon className={iconCls} /> {comments}
       </button>
-      <button onClick={onShare} aria-label="Share this product" className={btnCls} tabIndex={0}>
-        <ArrowPathIcon className={iconCls} /> {shares}
-      </button>
+      <ShareButton url={shareUrl} count={shares} onShared={onShare} />
       <div className="flex items-center gap-1" aria-label="Average rating">
         <StarIcon className="w-5 h-5 text-yellow-500" />
         <span className="sr-only">Rating</span>
