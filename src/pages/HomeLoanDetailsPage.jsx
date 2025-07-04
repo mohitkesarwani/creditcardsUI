@@ -53,7 +53,6 @@ function HomeLoanDetailsPage() {
   const [preview, setPreview] = useState({ monthly: null, total: null, costPerDollar: null });
   const { selected, toggleMortgage } = useSelectedMortgages();
   const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(loanId);
-  const shareUrl = `${window.location.origin}/home-loans/${loanId}`;
 
   useEffect(() => {
     const load = async () => {
@@ -303,11 +302,12 @@ function HomeLoanDetailsPage() {
             comments={engagement?.comments ?? 0}
             shares={engagement?.shares ?? 0}
             rating={engagement?.rating ?? 0}
-          loading={engagementLoading && !engagement}
-          onLike={() => like.mutate()}
-          onShare={() => share.mutate()}
-          shareUrl={shareUrl}
-        />
+            loading={engagementLoading && !engagement}
+            onLike={() => like.mutate()}
+            onShare={() => share.mutate()}
+            productId={loanId}
+            productType="home-loans"
+          />
 
           <div className="flex flex-wrap gap-2">
             {isSelected ? (
