@@ -1,5 +1,5 @@
 import React from 'react';
-import Tag from './Tag.tsx';
+import FeatureTag from './FeatureTag.tsx';
 
 interface FeatureTagsProps {
   tags?: string[];
@@ -14,7 +14,7 @@ export default function FeatureTags({ tags = [], highlightTags = [], className =
       {tags.map((t) => {
         const match = highlightTags.includes(t);
         return (
-          <Tag
+          <FeatureTag
             key={t}
             label={t}
             selected={match}

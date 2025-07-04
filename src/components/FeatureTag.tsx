@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface TagProps extends React.HTMLAttributes<HTMLElement> {
+interface FeatureTagProps extends React.HTMLAttributes<HTMLElement> {
   label: string;
   selected?: boolean;
   onClick?: () => void;
@@ -9,7 +9,7 @@ interface TagProps extends React.HTMLAttributes<HTMLElement> {
   icon?: React.ReactNode;
 }
 
-export default function Tag({
+export default function FeatureTag({
   label,
   selected = false,
   onClick,
@@ -17,15 +17,15 @@ export default function Tag({
   className = '',
   icon,
   ...rest
-}: TagProps) {
+}: FeatureTagProps) {
   const clickable = isClickable || typeof onClick === 'function';
   const base =
     'inline-flex items-center px-3 py-1 text-sm font-medium rounded-full';
-  const inactiveStyles = 'bg-gray-100 text-gray-700 hover:bg-gray-200';
+  const inactiveStyles = 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   const activeStyles = 'bg-blue-600 text-white';
 
   const cls = `${base} ${selected ? activeStyles : inactiveStyles} ${
-    clickable ? 'cursor-pointer transition-all' : ''
+    clickable ? 'cursor-pointer transition' : ''
   } ${className}`.trim();
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
