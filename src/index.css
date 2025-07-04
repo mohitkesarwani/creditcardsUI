@@ -157,6 +157,7 @@ html {
   border-radius: 9999px;
   background-color: theme('colors.accent');
   border: 2px solid white;
+  transition: box-shadow 0.2s ease;
 }
 .range-slider input[type='range']::-moz-range-thumb {
   pointer-events: all;
@@ -165,6 +166,13 @@ html {
   border-radius: 9999px;
   background-color: theme('colors.accent');
   border: 2px solid white;
+  transition: box-shadow 0.2s ease;
+}
+.range-slider input[type='range']::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+.range-slider input[type='range']::-moz-range-thumb:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
 }
 
 .range-slider .tooltip {
