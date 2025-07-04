@@ -147,7 +147,8 @@ function Card({ card, selectedTags = [] }) {
   return (
     <div
       id={card.id}
-      className="relative flex flex-col bg-white border border-gray-200 shadow-sm rounded-xl p-4 md:p-6 min-h-[420px] hover:shadow-md transition"
+      className="relative flex flex-col bg-white border border-gray-200 rounded-2xl p-6 min-h-[420px] transition transform hover:-translate-y-1 hover:shadow-lg"
+      style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
     >
       <img
         src={

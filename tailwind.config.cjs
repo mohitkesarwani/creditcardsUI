@@ -11,6 +11,10 @@ module.exports = {
         navy: '#003e6b',
         'light-bg': '#f5f5f5',
         'body-text': '#000000',
+        'primary-blue': '#1556f0',
+        'soft-blue': '#e3efff',
+        'text-dark': '#1c1e21',
+        'gray-bg': '#f7f9fc',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
