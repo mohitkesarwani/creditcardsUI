@@ -4,6 +4,7 @@ import CardGrid from '../components/CardGrid';
 import AdvancedFilters from '../components/AdvancedFilters';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMinimumAnnualFee, getCardTags } from '../utils.js';
+import apiClient from '../api/apiClient.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import CompareStickyButton from '../components/CompareStickyButton.jsx';
@@ -21,12 +22,14 @@ function CardsPage() {
     features: [],
     bank: '',
   });
+  const [sortBy, setSortBy] = useState('featured');
   const resetFilters = () => setFilters({ annualFee: '', features: [], bank: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   const { selected } = useSelectedCards();
   const navigate = useNavigate();
+  const [engagements, setEngagements] = useState({});
 
   useEffect(() => {
     const load = async () => {
@@ -41,6 +44,18 @@ function CardsPage() {
         setAvailableBanks([
           ...new Set(withTags.map((c) => c.brandName || c.brand).filter(Boolean)),
         ]);
+        const eng = {};
+        await Promise.all(
+          withTags.map(async (c) => {
+            try {
+              const res = await apiClient.get(`/api/products/${c.id}/engagement`);
+              eng[c.id] = res.data;
+            } catch {
+              eng[c.id] = { likes: 0, shares: 0, comments: 0, rating: 0 };
+            }
+          })
+        );
+        setEngagements(eng);
       } catch (err) {
         setError('Failed to load cards');
       } finally {
@@ -82,8 +97,19 @@ function CardsPage() {
       );
     }
 
+    if (sortBy !== 'featured') {
+      result = result.slice().sort((a, b) => {
+        const ea = engagements[a.id] || { likes: 0, comments: 0, rating: 0 };
+        const eb = engagements[b.id] || { likes: 0, comments: 0, rating: 0 };
+        if (sortBy === 'mostLiked') return eb.likes - ea.likes;
+        if (sortBy === 'mostCommented') return eb.comments - ea.comments;
+        if (sortBy === 'topRated') return eb.rating - ea.rating;
+        return 0;
+      });
+    }
+
     setFiltered(result);
-  }, [filters, cards]);
+  }, [filters, cards, sortBy, engagements]);
 
   // reset visible count when filters change
   useEffect(() => {
@@ -149,6 +175,19 @@ function CardsPage() {
             </button>
           </div>
           <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
+            <div className="mb-2 text-right">
+              <label className="text-sm mr-2">Sort by</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="border rounded px-2 py-1 text-sm"
+              >
+                <option value="featured">Featured</option>
+                <option value="mostLiked">Most Liked</option>
+                <option value="topRated">Top Rated</option>
+                <option value="mostCommented">Most Commented</option>
+              </select>
+            </div>
             <CardGrid
               cards={filtered.slice(0, visibleCount)}
               selectedTags={filters.features}

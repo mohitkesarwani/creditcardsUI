@@ -6,7 +6,8 @@ import {
   getMortgageFeatureTags,
 } from '../utils.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
-import SocialBar from './SocialBar.jsx';
+import SocialStats from './SocialStats.tsx';
+import useEngagement from '../hooks/useEngagement.ts';
 import FeatureTags from './FeatureTags.tsx';
 import ActionButtons from './ActionButtons.tsx';
 
@@ -18,6 +19,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
   const tags = getMortgageFeatureTags(mortgage);
   const { selected, toggleMortgage } = useSelectedMortgages();
   const isSelected = selected.some((m) => m.id === mortgage.id);
+  const { data: engagement, like, share } = useEngagement(mortgage.id);
 
   return (
     <div
@@ -80,7 +82,16 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           applyHref={mortgage.applicationUri}
         />
       </div>
-      <SocialBar itemId={mortgage.id} type="mortgage" />
+      {engagement && (
+        <SocialStats
+          likes={engagement.likes}
+          comments={engagement.comments}
+          shares={engagement.shares}
+          rating={engagement.rating}
+          onLike={() => like.mutate()}
+          onShare={() => share.mutate()}
+        />
+      )}
     </div>
   );
 }

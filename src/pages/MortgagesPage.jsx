@@ -5,6 +5,7 @@ import MortgageFilters from '../components/MortgageFilters';
 import MortgageCompareStickyButton from '../components/MortgageCompareStickyButton.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
+import apiClient from '../api/apiClient.js';
 
 function MortgagesPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
@@ -19,6 +20,8 @@ function MortgagesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('featured');
+  const [engagements, setEngagements] = useState({});
 
   useEffect(() => {
     const load = async () => {
@@ -54,6 +57,18 @@ function MortgagesPage() {
           ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
         setAvailableBanks([...new Set(data.map(m => m.bankName || m.brandName).filter(Boolean))]);
+        const eng = {};
+        await Promise.all(
+          data.map(async (m) => {
+            try {
+              const res = await apiClient.get(`/api/products/${m.id}/engagement`);
+              eng[m.id] = res.data;
+            } catch {
+              eng[m.id] = { likes: 0, comments: 0, rating: 0 };
+            }
+          })
+        );
+        setEngagements(eng);
       } catch (err) {
         console.error(err);
         setError('Failed to load mortgages');
@@ -85,11 +100,21 @@ function MortgagesPage() {
           (m.brandName && m.brandName.toLowerCase().includes(term))
         );
       }
+      if (sortBy !== 'featured') {
+        result = result.slice().sort((a, b) => {
+          const ea = engagements[a.id] || { likes: 0, comments: 0, rating: 0 };
+          const eb = engagements[b.id] || { likes: 0, comments: 0, rating: 0 };
+          if (sortBy === 'mostLiked') return eb.likes - ea.likes;
+          if (sortBy === 'mostCommented') return eb.comments - ea.comments;
+          if (sortBy === 'topRated') return eb.rating - ea.rating;
+          return 0;
+        });
+      }
       setAvailableBanks([...new Set(result.map(m => m.bankName || m.brandName).filter(Boolean))]);
       setFiltered(result);
     }, 200);
     return () => clearTimeout(handle);
-  }, [filters, mortgages]);
+  }, [filters, mortgages, sortBy, engagements]);
 
   useEffect(() => {
     if (rateBounds[0] === 0 && rateBounds[1] === 0) return;
@@ -149,6 +174,19 @@ function MortgagesPage() {
             </button>
           </div>
           <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4" data-testid="mortgage-scroll">
+            <div className="mb-2 text-right">
+              <label className="text-sm mr-2">Sort by</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="border rounded px-2 py-1 text-sm"
+              >
+                <option value="featured">Featured</option>
+                <option value="mostLiked">Most Liked</option>
+                <option value="topRated">Top Rated</option>
+                <option value="mostCommented">Most Commented</option>
+              </select>
+            </div>
             <MortgageCardGrid
               mortgages={filtered.slice(0, visibleCount)}
               selectedTags={filters.features}
