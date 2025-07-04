@@ -8,6 +8,7 @@ import {
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import SocialBar from './SocialBar.jsx';
 import FeatureTags from './FeatureTags.tsx';
+import ActionButtons from './ActionButtons.tsx';
 
 function MortgageCard({ mortgage, highlightTags = [] }) {
   const navigate = useNavigate();
@@ -58,9 +59,9 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         ))}
       </div>
       <FeatureTags tags={tags} highlightTags={highlightTags} className="mb-3" />
-      <div className="mt-auto flex flex-wrap items-center gap-2">
-        {isSelected ? (
-          <div className="flex items-center gap-2">
+      <div className="mt-auto">
+        {isSelected && (
+          <div className="flex items-center gap-2 mb-2">
             <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -71,32 +72,14 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
               Deselect
             </button>
           </div>
-        ) : (
-          <button
-            onClick={() => toggleMortgage(mortgage)}
-            className="btn btn-outline flex-1 h-10"
-            aria-label="Compare loan"
-          >
-            Compare
-          </button>
         )}
-        <button
-          onClick={() => navigate(`/home-loans/${mortgage.id}`)}
-          className="btn btn-outline flex-1 h-10"
-          aria-label="View loan details"
-        >
-          Details
-        </button>
+        <ActionButtons
+          showCompare={!isSelected}
+          onCompare={() => toggleMortgage(mortgage)}
+          onDetails={() => navigate(`/home-loans/${mortgage.id}`)}
+          applyHref={mortgage.applicationUri}
+        />
       </div>
-      <a
-        href={mortgage.applicationUri}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-2 btn btn-primary w-full h-10 flex items-center justify-center gap-1"
-        aria-label="Apply for this loan"
-      >
-        Apply Now
-      </a>
       <SocialBar itemId={mortgage.id} type="mortgage" />
     </div>
   );

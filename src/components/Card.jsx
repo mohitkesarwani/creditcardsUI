@@ -4,6 +4,7 @@ import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import SocialBar from './SocialBar.jsx';
 import FeatureTags from './FeatureTags.tsx';
+import ActionButtons from './ActionButtons.tsx';
 import apiClient from '../api/apiClient.js';
 import {
   getMinimumAnnualFee,
@@ -215,9 +216,9 @@ function Card({ card, selectedTags = [] }) {
           </p>
         )}
       </div>
-      <div className="mt-auto flex flex-wrap items-center gap-2">
-        {isSelected ? (
-          <div className="flex items-center gap-2">
+      <div className="mt-auto">
+        {isSelected && (
+          <div className="flex items-center gap-2 mb-2">
             <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
               <svg
                 className="w-4 h-4"
@@ -237,34 +238,15 @@ function Card({ card, selectedTags = [] }) {
               Deselect
             </button>
           </div>
-        ) : (
-          <button
-            onClick={() => toggleCard(card)}
-            className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
-          >
-            Compare
-          </button>
         )}
-        <button
-          onClick={() => navigate(`/credit-cards/${card.id}`)}
-          className="text-sm border rounded px-4 py-2 hover:bg-gray-100 flex-1"
-        >
-          Details
-        </button>
+        <ActionButtons
+          showCompare={!isSelected}
+          onCompare={() => toggleCard(card)}
+          onDetails={() => navigate(`/credit-cards/${card.id}`)}
+          onApply={handleApply}
+          applyHref={card.applicationUrl || card.applicationUri}
+        />
       </div>
-      <a
-        href={card.applicationUrl || card.applicationUri}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleApply}
-        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 text-sm font-semibold w-full flex items-center justify-center gap-1"
-      >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-8 8a1 1 0 01-.707.293H5a1 1 0 01-1-1v-4a1 1 0 01.293-.707l8-8z" />
-          <path d="M11 3l6 6" stroke="#fff" strokeWidth="2" />
-        </svg>
-        Apply Now
-      </a>
       <SocialBar itemId={card.id} type="card" />
       <CardDetailsModal
         open={showDetails}
