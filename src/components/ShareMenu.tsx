@@ -122,7 +122,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
   const btnCls =
     'flex items-center gap-1 rounded-full p-1 bg-white/70 shadow hover:bg-[#007aff]/20 text-gray-700 transition';
   const menuItemCls =
-    'flex items-center w-full gap-2 px-3 py-2 hover:bg-sky-50 active:bg-sky-100 rounded-md text-left transition-colors min-h-[44px]';
+    'share-menu-item ripple group';
 
   return (
     <div className="relative inline-block" ref={menuRef}>
@@ -140,14 +140,19 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
             className={`${
               isMobile
                 ? 'fixed inset-x-0 bottom-0 mx-4 mb-4'
-                : 'absolute right-0 mt-1'
-            } bg-gradient-to-b from-[#0066cc] to-[#e0f0ff] rounded-xl p-4 shadow-[0_4px_16px_rgba(0,0,0,0.08)] z-30 text-sm`}
+                : 'absolute left-1/2 -translate-x-1/2 mt-2'
+            } share-menu z-30 text-sm`}
             role="menu"
             aria-label="Share Options"
             onKeyDown={handleMenuKey}
           >
             <div className="flex items-center justify-between mb-3 border-b pb-2">
-              <span className="font-semibold text-base">Share This Card</span>
+              <span
+                className="font-semibold text-[15px] text-white"
+                style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
+              >
+                Share This Card
+              </span>
               {isMobile && (
                 <button onClick={() => setOpen(false)} aria-label="Close share menu">
                   <XMarkIcon className="w-5 h-5" />
@@ -161,7 +166,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <WhatsAppIcon className="w-5 h-5 text-[#25D366] transition-transform group-hover:scale-110" />
-              <span className="font-medium text-[14px]">WhatsApp</span>
+              <span className="font-medium text-[14px] text-white tracking-[0.3px]">WhatsApp</span>
             </button>
             <button
               ref={(el) => (itemRefs.current[1] = el!)}
@@ -170,7 +175,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <FacebookIcon className="w-5 h-5 text-[#1877F2] transition-transform group-hover:scale-110" />
-              <span className="font-medium text-[14px]">Facebook</span>
+              <span className="font-medium text-[14px] text-white tracking-[0.3px]">Facebook</span>
             </button>
             <button
               ref={(el) => (itemRefs.current[2] = el!)}
@@ -179,7 +184,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <LinkedinIcon className="w-5 h-5 text-[#0A66C2] transition-transform group-hover:scale-110" />
-              <span className="font-medium text-[14px]">LinkedIn</span>
+              <span className="font-medium text-[14px] text-white tracking-[0.3px]">LinkedIn</span>
             </button>
             <button
               ref={(el) => (itemRefs.current[3] = el!)}
@@ -187,8 +192,8 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               onClick={handleCopy}
               role="menuitem"
             >
-              <ClipboardIcon className="w-5 h-5 text-[#666] transition-transform group-hover:scale-110" />
-              <span className="font-medium text-[14px]">Copy Link</span>
+              <ClipboardIcon className="w-5 h-5 text-[#ffffff] transition-transform group-hover:scale-110" />
+              <span className="font-medium text-[14px] text-white tracking-[0.3px]">Copy Link</span>
               {copied && (
                 <span className="absolute right-2 -top-2 bg-gray-800 text-white text-xs px-2 py-0.5 rounded opacity-0 animate-fade-up">
                   Copied!
