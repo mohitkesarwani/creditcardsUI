@@ -147,6 +147,8 @@ html {
   -webkit-appearance: none;
   appearance: none;
   pointer-events: none;
+  background: transparent;
+  border: none;
 }
 .range-slider input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;

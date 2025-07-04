@@ -12,8 +12,7 @@ function FeatureFilter({ active, setActive, tags = [] }) {
 
   return (
     <div className="mb-4">
-      <h4 className="text-lg font-semibold mb-4">Filter Features</h4>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {tags.map((f) => (
           <FeatureTag
             key={f}
@@ -21,7 +20,7 @@ function FeatureFilter({ active, setActive, tags = [] }) {
             selected={active.includes(f)}
             onClick={() => toggle(f)}
             isClickable
-            className="text-xs px-2"
+            className="filter-feature text-xs px-2"
             data-testid={`filter-${f.toLowerCase().replace(/\s+/g, '-')}`}
           />
         ))}
