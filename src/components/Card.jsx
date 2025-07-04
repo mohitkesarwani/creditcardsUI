@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import SocialBar from './SocialBar.jsx';
+import FeatureTags from './FeatureTags.tsx';
 import apiClient from '../api/apiClient.js';
 import {
   getMinimumAnnualFee,
   getFeatureTags,
-  getTagColor,
   getSellingPoints,
   formatCategory,
   formatValue,
@@ -169,21 +169,11 @@ function Card({ card, selectedTags = [] }) {
         </span>
       )}
       <h3 className="card-title mb-1">{card.name}</h3>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {tags.map((t) => {
-          const match = selectedTags.includes(t);
-          return (
-            <span
-              key={t}
-              data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
-              title={t}
-              className={`inline-flex items-center text-xs px-2 rounded-full ${match ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'} `}
-            >
-              {t}
-            </span>
-          );
-        })}
-      </div>
+      <FeatureTags
+        tags={tags}
+        highlightTags={selectedTags}
+        className="mb-2"
+      />
       <div className="grid grid-cols-2 gap-2 text-xs mb-2">
         {sellingPoints.map((p) => (
           <span

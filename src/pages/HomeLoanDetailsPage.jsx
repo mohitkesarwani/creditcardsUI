@@ -11,6 +11,7 @@ import {
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import LoanRepaymentCalculator from '../components/LoanRepaymentCalculator.jsx';
+import FeatureTags from '../components/FeatureTags.tsx';
 
 function calcRepayments(amount, rate, years) {
   const r = parseFloat(rate);
@@ -188,13 +189,7 @@ function HomeLoanDetailsPage() {
           </Section>
 
           <Section title="Loan Features">
-            <div className="flex flex-wrap gap-1">
-              {featureLabels.map((f) => (
-                <span key={f} className="feature-label">
-                  {f}
-                </span>
-              ))}
-            </div>
+            <FeatureTags tags={featureLabels} className="mt-2" />
           </Section>
 
           <Section title="Fees & Charges">
