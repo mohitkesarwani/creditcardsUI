@@ -67,9 +67,6 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           onChange={(val) => update('rate', val)}
           asPercent
         />
-        <div className="text-xs text-gray-600 mt-1">
-          Showing: {formatPercent(filters.rate[0], 3)} – {formatPercent(filters.rate[1], 3)}
-        </div>
       </details>
       <details open className="p-4 mt-4" aria-label="Filter by features">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Filter Features</summary>

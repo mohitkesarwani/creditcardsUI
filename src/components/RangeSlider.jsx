@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 function RangeSlider({
   min = 0,
@@ -9,7 +9,6 @@ function RangeSlider({
   asPercent = false,
 }) {
   const [minVal, maxVal] = value;
-  const [activeThumb, setActiveThumb] = useState(null);
 
   const handleMin = (e) => {
     const val = Math.min(Number(e.target.value), maxVal);
@@ -28,58 +27,44 @@ function RangeSlider({
     asPercent ? `${(v * 100).toFixed(3)}%` : `${v.toFixed(3)}%`;
 
   return (
-    <div className="relative w-full range-slider h-8" role="group" aria-label="value range selector">
-      <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 transform -translate-y-1/2" />
-      <div
-        className="absolute h-2 bg-gradient-to-r from-blue-500 to-sky-400 rounded-full top-1/2 transform -translate-y-1/2"
-        style={{ left: `${left}%`, right: `${right}%` }}
-      />
-      <div className="absolute -top-6 left-0 w-full" aria-hidden="true">
-        <span
-          className={`tooltip ${activeThumb === 'min' ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
-          style={{ left: `${left}%` }}
-        >
-          {format(minVal)}
-        </span>
-        <span
-          className={`tooltip ${activeThumb === 'max' ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
-          style={{ left: `${100 - right}%` }}
-        >
-          {format(maxVal)}
-        </span>
+    <div className="flex items-center gap-2 mt-1" role="group" aria-label="value range selector">
+      <span className="text-xs font-medium w-14 text-left">{format(minVal)}</span>
+      <div className="relative w-full range-slider h-2">
+        <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 transform -translate-y-1/2" />
+        <div
+          className="absolute h-2 bg-accent rounded-full top-1/2 transform -translate-y-1/2"
+          style={{ left: `${left}%`, right: `${right}%` }}
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={minVal}
+          onChange={handleMin}
+          onMouseDown={(e) => e.target.focus()}
+          onTouchStart={(e) => e.target.focus()}
+          aria-label="Minimum value"
+          className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none focus:outline-none focus:ring-2 focus:ring-accent"
+          aria-valuetext={format(minVal)}
+          style={{ zIndex: minVal > max - 100 ? 5 : 3 }}
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={maxVal}
+          onChange={handleMax}
+          onMouseDown={(e) => e.target.focus()}
+          onTouchStart={(e) => e.target.focus()}
+          aria-label="Maximum value"
+          className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none focus:outline-none focus:ring-2 focus:ring-accent"
+          aria-valuetext={format(maxVal)}
+          style={{ zIndex: 4 }}
+        />
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={minVal}
-        onChange={handleMin}
-        onMouseDown={() => setActiveThumb('min')}
-        onTouchStart={() => setActiveThumb('min')}
-        onMouseUp={() => setActiveThumb(null)}
-        onTouchEnd={() => setActiveThumb(null)}
-        onBlur={() => setActiveThumb(null)}
-        aria-label="Minimum interest rate"
-        className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none"
-        style={{ zIndex: minVal > max - 100 ? 5 : 3 }}
-      />
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={maxVal}
-        onChange={handleMax}
-        onMouseDown={() => setActiveThumb('max')}
-        onTouchStart={() => setActiveThumb('max')}
-        onMouseUp={() => setActiveThumb(null)}
-        onTouchEnd={() => setActiveThumb(null)}
-        onBlur={() => setActiveThumb(null)}
-        aria-label="Maximum interest rate"
-        className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none"
-        style={{ zIndex: 4 }}
-      />
+      <span className="text-xs font-medium w-14 text-right">{format(maxVal)}</span>
     </div>
   );
 }
