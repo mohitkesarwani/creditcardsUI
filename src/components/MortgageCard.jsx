@@ -7,6 +7,7 @@ import {
 } from '../utils.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import SocialBar from './SocialBar.jsx';
+import FeatureTags from './FeatureTags.tsx';
 
 function MortgageCard({ mortgage, highlightTags = [] }) {
   const navigate = useNavigate();
@@ -56,20 +57,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           </p>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2 mb-3">
-        {tags.map((t) => {
-          const match = highlightTags.includes(t);
-          return (
-            <span
-              key={t}
-              data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
-              className={`inline-flex items-center px-3 py-1 text-[13px] rounded-full transition ${match ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow'}`}
-            >
-              {t}
-            </span>
-          );
-        })}
-      </div>
+      <FeatureTags tags={tags} highlightTags={highlightTags} className="mb-3" />
       <div className="mt-auto flex flex-wrap items-center gap-2">
         {isSelected ? (
           <div className="flex items-center gap-2">

@@ -184,9 +184,6 @@ html {
   @apply text-lg font-bold text-black text-right;
 }
 
-.feature-label {
-  @apply bg-blue-100 text-blue-700 text-xs font-medium px-2 py-1 rounded-full mr-1 mb-1;
-}
 
 .filter-option {
   @apply px-3 py-1 text-sm rounded-full transition-all duration-150 ease-in-out max-w-[150px] break-words whitespace-normal text-center;
