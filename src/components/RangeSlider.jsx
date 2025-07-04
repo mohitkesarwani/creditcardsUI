@@ -27,14 +27,15 @@ function RangeSlider({
     asPercent ? `${(v * 100).toFixed(3)}%` : `${v.toFixed(3)}%`;
 
   return (
-    <div className="flex items-center gap-2 mt-1" role="group" aria-label="value range selector">
-      <span className="text-xs font-medium w-14 text-left">{format(minVal)}</span>
-      <div className="relative w-full range-slider h-2">
-        <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 transform -translate-y-1/2" />
-        <div
-          className="absolute h-2 bg-accent rounded-full top-1/2 transform -translate-y-1/2"
-          style={{ left: `${left}%`, right: `${right}%` }}
-        />
+    <label className="block text-sm" role="group" aria-label="value range selector">
+      <div className="flex items-center gap-2 mt-1">
+        <span className="text-xs font-medium w-12 text-left">{format(minVal)}</span>
+        <div className="relative w-full range-slider h-2">
+          <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 transform -translate-y-1/2" />
+          <div
+            className="absolute h-2 bg-accent rounded-full top-1/2 transform -translate-y-1/2"
+            style={{ left: `${left}%`, right: `${right}%` }}
+          />
         <input
           type="range"
           min={min}
@@ -63,9 +64,10 @@ function RangeSlider({
           aria-valuetext={format(maxVal)}
           style={{ zIndex: 4 }}
         />
+        </div>
+        <span className="text-xs font-medium w-12 text-right">{format(maxVal)}</span>
       </div>
-      <span className="text-xs font-medium w-14 text-right">{format(maxVal)}</span>
-    </div>
+    </label>
   );
 }
 
