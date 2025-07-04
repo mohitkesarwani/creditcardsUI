@@ -52,7 +52,7 @@ function HomeLoanDetailsPage() {
   const [showAllRates, setShowAllRates] = useState(false);
   const [preview, setPreview] = useState({ monthly: null, total: null, costPerDollar: null });
   const { selected, toggleMortgage } = useSelectedMortgages();
-  const { data: engagement, like, share, review } = useEngagement(loanId);
+  const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(loanId);
 
   useEffect(() => {
     const load = async () => {
@@ -297,16 +297,15 @@ function HomeLoanDetailsPage() {
             </div>
           )}
 
-          {engagement && (
-            <SocialStats
-              likes={engagement.likes}
-              comments={engagement.comments}
-              shares={engagement.shares}
-              rating={engagement.rating}
-              onLike={() => like.mutate()}
-              onShare={() => share.mutate()}
-            />
-          )}
+          <SocialStats
+            likes={engagement?.likes ?? 0}
+            comments={engagement?.comments ?? 0}
+            shares={engagement?.shares ?? 0}
+            rating={engagement?.rating ?? 0}
+            loading={engagementLoading && !engagement}
+            onLike={() => like.mutate()}
+            onShare={() => share.mutate()}
+          />
 
           <div className="flex flex-wrap gap-2">
             {isSelected ? (
