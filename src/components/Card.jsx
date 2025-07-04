@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
+import SocialBar from './SocialBar.jsx';
 import apiClient from '../api/apiClient.js';
 import {
   getMinimumAnnualFee,
@@ -141,6 +142,7 @@ function Card({ card, selectedTags = [] }) {
 
   return (
     <div
+      id={card.id}
       className="relative flex flex-col bg-white border border-gray-200 shadow-sm rounded-xl p-4 md:p-6 min-h-[420px] hover:shadow-md transition"
     >
       <img
@@ -273,6 +275,7 @@ function Card({ card, selectedTags = [] }) {
         </svg>
         Apply Now
       </a>
+      <SocialBar itemId={card.id} type="card" />
       <CardDetailsModal
         open={showDetails}
         onClose={() => setShowDetails(false)}

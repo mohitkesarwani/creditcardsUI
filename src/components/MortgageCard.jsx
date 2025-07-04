@@ -6,6 +6,7 @@ import {
   getMortgageFeatureTags,
 } from '../utils.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
+import SocialBar from './SocialBar.jsx';
 
 function MortgageCard({ mortgage, highlightTags = [] }) {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
 
   return (
     <div
+      id={mortgage.id}
       className="relative flex flex-col bg-white border border-gray-200 rounded-2xl p-5 shadow-sm min-h-[460px] hover:shadow-md hover:scale-[1.01] transition"
       data-testid="mortgage-card"
     >
@@ -107,6 +109,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
       >
         Apply Now
       </a>
+      <SocialBar itemId={mortgage.id} type="mortgage" />
     </div>
   );
 }
