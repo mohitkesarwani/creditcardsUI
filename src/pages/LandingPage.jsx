@@ -12,7 +12,7 @@ import HeroBackgroundClouds from '../components/HeroBackgroundClouds.tsx';
 function LandingPage() {
   return (
     <div>
-      <section className="relative overflow-hidden bg-gradient-to-b from-accent to-white text-white px-4 py-24 text-center flex items-center justify-center">
+      <section className="relative overflow-hidden text-white px-4 py-24 text-center flex items-center justify-center" style={{background: 'linear-gradient(180deg,#005ea5 0%,#ffffff 80%)'}}>
         <HeroBackgroundClouds />
         <div className="relative z-10 max-w-2xl mx-auto">
           <motion.h1

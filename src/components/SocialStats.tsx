@@ -29,7 +29,7 @@ export default function SocialStats({
   productType,
 }: SocialStatsProps) {
   const iconCls = 'w-5 h-5';
-  const btnCls = 'flex items-center gap-1 hover:text-blue-500 transition';
+  const btnCls = 'flex items-center gap-1 hover:text-link transition';
 
   if (loading) {
     return (
@@ -43,7 +43,7 @@ export default function SocialStats({
   }
 
   return (
-    <div className="mt-2 text-sm text-gray-600 flex items-center flex-wrap gap-4">
+    <div className="mt-2 text-sm text-gray-600 flex items-center justify-around flex-wrap gap-4 rounded-md bg-light-gray p-2">
       <button onClick={onLike} aria-label="Like this product" className={btnCls} tabIndex={0}>
         <HandThumbUpIcon className={iconCls} /> {likes}
       </button>

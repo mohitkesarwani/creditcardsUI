@@ -20,9 +20,9 @@ export default function FeatureTag({
 }: FeatureTagProps) {
   const clickable = isClickable || typeof onClick === 'function';
   const base =
-    'inline-flex items-center px-3 py-1 text-sm font-medium rounded-full';
-  const inactiveStyles = 'bg-gray-100 text-gray-800 hover:bg-gray-200';
-  const activeStyles = 'bg-blue-600 text-white';
+    'inline-flex items-center px-4 py-1.5 text-sm font-medium rounded-full';
+  const inactiveStyles = 'bg-[#f0f0f0] text-gray-800 hover:shadow hover:border-gray-300 border border-transparent';
+  const activeStyles = 'bg-primary text-white border border-primary';
 
   const cls = `${base} ${selected ? activeStyles : inactiveStyles} ${
     clickable ? 'cursor-pointer transition' : ''

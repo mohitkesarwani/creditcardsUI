@@ -30,7 +30,11 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
       <details open className="border border-gray-200 rounded-xl p-4 shadow-sm mt-4">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Max Annual Fee</summary>
         <label className="block text-sm">
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex justify-between text-xs mb-1">
+            <span>$0</span>
+            <span>$1000+</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1 range-slider">
             <input
               type="range"
               min="0"
@@ -39,7 +43,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
               onChange={(e) =>
                 update('annualFee', e.target.value === '1000' ? '' : e.target.value)
               }
-              className="w-full accent-accent"
+              className="w-full accent-accent bg-transparent"
             />
             <span className="text-xs font-medium w-12 text-right">
               {filters.annualFee ? `$${filters.annualFee}` : 'Any'}
