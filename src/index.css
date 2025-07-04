@@ -344,27 +344,52 @@ html {
 }
 
 .share-menu {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(173, 216, 230, 0.25));
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(180, 210, 255, 0.25));
+  backdrop-filter: blur(16px);
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 16px;
   animation: fade-menu 0.2s ease-out;
 }
 
 .share-menu-item {
   @apply flex items-center w-full gap-3 px-3 py-2 rounded-md text-left transition-all min-h-[44px];
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: #ffffff;
   letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 .share-menu-item:hover {
-  opacity: 0.9;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
-  transform: scale(1.05);
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  transform: scale(1.03);
+  transition: all 0.2s ease;
 }
 .share-menu-item:active {
   transform: scale(0.97);
+}
+
+.share-menu-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-menu-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 8px 0;
+  padding-bottom: 8px;
+}
+
+.share-menu-title {
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
