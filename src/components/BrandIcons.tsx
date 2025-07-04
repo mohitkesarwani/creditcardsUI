@@ -26,3 +26,30 @@ export function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function XIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M4 4l16 16M20 4L4 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <path d="M10 9l5 3-5 3V9z" />
+    </svg>
+  );
+}
+
+export function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="17" cy="7" r="1.5" />
+    </svg>
+  );
+}

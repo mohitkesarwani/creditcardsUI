@@ -278,10 +278,19 @@ html {
 
 
 .app-footer {
-  @apply bg-navy text-white px-4 md:px-8 py-4 mt-12;
+  background-color: #000000;
+  color: #f1f1f1;
+  padding: 48px 64px;
 }
 .app-footer a {
-  @apply text-white text-sm leading-snug pb-3 block hover:underline;
+  color: #f1f1f1;
+  display: block;
+  font-size: 14px;
+  line-height: 1.4;
+  padding-bottom: 12px;
+}
+.app-footer a:hover {
+  text-decoration: underline;
 }
 
 /* Icon group inside hero selector */
