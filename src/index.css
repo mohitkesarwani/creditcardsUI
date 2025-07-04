@@ -265,3 +265,20 @@ html {
     min-width: 0;
   }
 }
+
+@keyframes cloud-drift {
+  from { left: -30%; }
+  to { left: 100%; }
+}
+
+.animate-cloud1 {
+  animation: cloud-drift 60s linear infinite;
+}
+
+.animate-cloud2 {
+  animation: cloud-drift 90s linear infinite;
+}
+
+.animate-cloud3 {
+  animation: cloud-drift 120s linear infinite;
+}
