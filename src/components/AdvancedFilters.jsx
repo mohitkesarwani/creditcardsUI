@@ -10,7 +10,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
   const clearAll = () => setFilters({ annualFee: '', features: [], bank: '' });
 
   return (
-    <div className="space-y-4 p-4 overflow-y-auto max-h-screen shadow-inner">
+    <div className="space-y-4 p-4 overflow-y-auto max-h-screen bg-white">
       <button
         type="button"
         onClick={clearAll}
@@ -19,7 +19,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
       >
         Clear Filters
       </button>
-      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm first:mt-0 mt-4">
+      <details open className="border border-gray-200 rounded-xl p-4 first:mt-0 mt-4">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Features</summary>
         <FeatureFilter
           active={filters.features}
@@ -27,7 +27,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
           tags={availableTags}
         />
       </details>
-      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm mt-4">
+      <details open className="border border-gray-200 rounded-xl p-4 mt-4">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Max Annual Fee</summary>
         <label className="block text-sm">
           <div className="flex items-center gap-2 mt-1">
@@ -47,7 +47,7 @@ function AdvancedFilters({ filters, setFilters, availableTags = [], banks = [] }
           </div>
         </label>
       </details>
-      <details open className="border border-gray-200 rounded-xl p-4 shadow-sm mt-4">
+      <details open className="border border-gray-200 rounded-xl p-4 mt-4">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Bank / Brand</summary>
         <select
           value={filters.bank}

@@ -46,11 +46,12 @@ function Footer() {
             </div>
           </div>
         </div>
-        <div className="text-xs opacity-80 md:col-span-3">
+        <div className="text-xs opacity-80 md:col-span-3 relative">
           <details className="border-t border-white/20 pt-2 mt-6">
             <summary className="cursor-pointer font-semibold">Disclaimers &amp; Disclosures</summary>
             <Disclaimers className="mt-2" />
           </details>
+          <button className="absolute right-0 -top-10 bg-secondary text-white text-xs px-3 py-1 rounded">Give Feedback</button>
         </div>
       </div>
     </footer>

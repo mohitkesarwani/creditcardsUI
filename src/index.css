@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply font-sans bg-slate-50 text-slate-900 leading-relaxed dark:bg-slate-900 dark:text-slate-100;
+  @apply font-sans bg-background text-text leading-relaxed dark:bg-slate-900 dark:text-slate-100;
 }
 
 @keyframes orbit {
@@ -134,21 +134,23 @@ textarea:focus {
   @apply outline-none border-blue-500 ring ring-blue-200;
 }
 .btn {
-  @apply px-5 py-2 rounded-xl font-semibold transition-all duration-300 ease-in-out shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply px-5 py-2 rounded font-semibold transition-all duration-300 ease-in-out shadow-sm focus:outline-none;
 }
 .btn-primary {
-  background-color: #1556f0;
+  background-color: #00813E;
   color: #ffffff;
+  font-size: 16px;
 }
 .btn-primary:hover {
-  background-color: #0d47d2;
+  background-color: #00692F;
 }
 .btn-secondary {
-  @apply border text-blue-600 hover:text-white;
-  border-color: #1556f0;
+  @apply border;
+  border-color: #000000;
+  color: #000000;
 }
 .btn-secondary:hover {
-  background-color: #1556f0;
+  color: #333333;
 }
 .btn-outline {
   @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
@@ -258,12 +260,12 @@ html {
 }
 
 .section-heading {
-  font-size: 28px;
-  @apply font-bold text-gray-800 mt-8;
+  font-size: 1.25rem;
+  @apply font-semibold text-black mt-8;
 }
 .section-subtext {
-  font-size: 16px;
-  @apply text-gray-600 leading-snug;
+  font-size: 1rem;
+  @apply text-[#222222] leading-snug;
 }
 
 .accordion-item {
@@ -413,10 +415,8 @@ html {
 }
 
 .hero-heading {
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: 48px;
+  font-weight: 600;
+  font-size: 2.25rem;
   line-height: 1.2;
-  letter-spacing: -0.5px;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: #000000;
 }

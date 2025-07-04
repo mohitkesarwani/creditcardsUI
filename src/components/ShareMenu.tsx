@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpTrayIcon,
-  ClipboardIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { WhatsAppIcon, FacebookIcon, LinkedinIcon } from './BrandIcons';
+import { FaWhatsapp, FaFacebookF, FaLinkedinIn, FaRegCopy } from 'react-icons/fa';
+
 import { useToast } from '../hooks/useToast';
 
 interface Props {
@@ -161,7 +161,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <span className="share-menu-icon">
-                <WhatsAppIcon className="w-5 h-5 text-[#25D366] transition-transform group-hover:scale-110" />
+                <FaWhatsapp className="w-5 h-5 text-[#25D366] transition-transform group-hover:scale-110" />
               </span>
               <span className="font-medium">WhatsApp</span>
             </button>
@@ -172,7 +172,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <span className="share-menu-icon">
-                <FacebookIcon className="w-5 h-5 text-[#1877F2] transition-transform group-hover:scale-110" />
+                <FaFacebookF className="w-5 h-5 text-[#1877F2] transition-transform group-hover:scale-110" />
               </span>
               <span className="font-medium">Facebook</span>
             </button>
@@ -183,7 +183,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <span className="share-menu-icon">
-                <LinkedinIcon className="w-5 h-5 text-[#0A66C2] transition-transform group-hover:scale-110" />
+                <FaLinkedinIn className="w-5 h-5 text-[#0A66C2] transition-transform group-hover:scale-110" />
               </span>
               <span className="font-medium">LinkedIn</span>
             </button>
@@ -194,7 +194,7 @@ export default function ShareMenu({ productId, productType, count, onShared }: P
               role="menuitem"
             >
               <span className="share-menu-icon">
-                <ClipboardIcon className="w-5 h-5 text-[#ffffff] transition-transform group-hover:scale-110" />
+                <FaRegCopy className="w-5 h-5 text-[#ffffff] transition-transform group-hover:scale-110" />
               </span>
               <span className="font-medium">Copy Link</span>
               {copied && (
