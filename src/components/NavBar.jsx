@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import AnimatedRadarLogo from './AnimatedRadarLogo';
 import useDarkMode from '../hooks/useDarkMode';
 import { useAuth } from '../hooks/useAuth.jsx';
@@ -9,19 +9,19 @@ function NavBar() {
   const { authed, logout } = useAuth();
 
   return (
-    <header className="bg-white text-body-text border-b-2 border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+    <header className="bg-black text-white shadow">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-[14px] flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="RewardRadar home">
           <AnimatedRadarLogo className="w-8 h-8 text-accent" />
           <span className="text-xl font-bold">RewardRadar</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-[15px] font-bold">
-          <Link to="/" className="hover:underline">Home</Link>
-          <Link to="/credit-cards" className="hover:underline">Credit Cards</Link>
-          <Link to="/home-loans" className="hover:underline">Home Loans</Link>
-          <Link to="/deposits" className="hover:underline">Deposits</Link>
-          <Link to="/faqs" className="hover:underline">FAQs</Link>
-          <Link to="/contact" className="hover:underline">Contact Us</Link>
+        <nav className="hidden md:flex items-center gap-6 text-[15px] font-medium">
+          <NavLink to="/" className={({isActive}) => isActive ? 'border-b-2 border-secondary pb-1' : 'hover:underline'}>Home</NavLink>
+          <NavLink to="/credit-cards" className={({isActive}) => isActive ? 'border-b-2 border-secondary pb-1' : 'hover:underline'}>Credit Cards</NavLink>
+          <NavLink to="/home-loans" className={({isActive}) => isActive ? 'border-b-2 border-secondary pb-1' : 'hover:underline'}>Home Loans</NavLink>
+          <NavLink to="/deposits" className={({isActive}) => isActive ? 'border-b-2 border-secondary pb-1' : 'hover:underline'}>Deposits</NavLink>
+          <NavLink to="/faqs" className={({isActive}) => isActive ? 'border-b-2 border-secondary pb-1' : 'hover:underline'}>FAQs</NavLink>
+          <NavLink to="/contact" className={({isActive}) => isActive ? 'border-b-2 border-secondary pb-1' : 'hover:underline'}>Contact Us</NavLink>
         </nav>
         <div className="flex items-center gap-2">
           <button

@@ -14,7 +14,7 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-md divide-y divide-gray-100 overflow-y-auto max-h-screen shadow-inner p-4"
+      className="bg-white rounded-2xl divide-y divide-gray-100 overflow-y-auto max-h-screen p-4"
       data-testid="mortgage-filters"
     >
       <button

@@ -28,8 +28,8 @@ export default function SocialStats({
   productId,
   productType,
 }: SocialStatsProps) {
-  const iconCls = 'w-5 h-5';
-  const btnCls = 'flex items-center gap-1 hover:text-blue-500 transition';
+  const iconCls = 'w-5 h-5 text-[#555555] group-hover:text-[#222222]';
+  const btnCls = 'flex items-center gap-1 transition group';
 
   if (loading) {
     return (
