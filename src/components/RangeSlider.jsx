@@ -30,10 +30,10 @@ function RangeSlider({
     <label className="block text-sm" role="group" aria-label="value range selector">
       <div className="flex items-center gap-2 mt-1">
         <span className="text-xs font-medium w-12 text-left">{format(minVal)}</span>
-        <div className="relative w-full range-slider h-2">
-          <div className="absolute w-full h-2 bg-gray-200 rounded-full top-1/2 transform -translate-y-1/2" />
+        <div className="relative w-full range-slider h-[6px]">
+          <div className="absolute w-full h-[6px] bg-[#cfd8dc] rounded-full top-1/2 transform -translate-y-1/2" />
           <div
-            className="absolute h-2 bg-accent rounded-full top-1/2 transform -translate-y-1/2"
+            className="absolute h-[6px] bg-primary-blue rounded-full top-1/2 transform -translate-y-1/2"
             style={{ left: `${left}%`, right: `${right}%` }}
           />
         <input
@@ -46,7 +46,7 @@ function RangeSlider({
           onMouseDown={(e) => e.target.focus()}
           onTouchStart={(e) => e.target.focus()}
           aria-label="Minimum value"
-          className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none focus:outline-none focus:ring-2 focus:ring-accent"
+          className="thumb absolute w-full h-[6px] bg-transparent pointer-events-none appearance-none focus:outline-none focus:ring-2 focus:ring-primary-blue"
           aria-valuetext={format(minVal)}
           style={{ zIndex: minVal > max - 100 ? 5 : 3 }}
         />
@@ -60,7 +60,7 @@ function RangeSlider({
           onMouseDown={(e) => e.target.focus()}
           onTouchStart={(e) => e.target.focus()}
           aria-label="Maximum value"
-          className="thumb absolute w-full h-2 bg-transparent pointer-events-none appearance-none focus:outline-none focus:ring-2 focus:ring-accent"
+          className="thumb absolute w-full h-[6px] bg-transparent pointer-events-none appearance-none focus:outline-none focus:ring-2 focus:ring-primary-blue"
           aria-valuetext={format(maxVal)}
           style={{ zIndex: 4 }}
         />

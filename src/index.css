@@ -137,10 +137,18 @@ textarea:focus {
   @apply px-5 py-2 rounded-xl font-semibold transition-all duration-300 ease-in-out shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
 }
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white;
+  background-color: #1556f0;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background-color: #0d47d2;
 }
 .btn-secondary {
-  @apply border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white;
+  @apply border text-blue-600 hover:text-white;
+  border-color: #1556f0;
+}
+.btn-secondary:hover {
+  background-color: #1556f0;
 }
 .btn-outline {
   @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
@@ -193,27 +201,23 @@ html {
   -webkit-appearance: none;
   appearance: none;
   pointer-events: all;
-  height: 1rem;
-  width: 1rem;
+  height: 16px;
+  width: 16px;
   border-radius: 9999px;
-  background-color: theme('colors.accent');
-  border: 2px solid white;
-  transition: box-shadow 0.2s ease;
+  background-color: #1556f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .range-slider input[type='range']::-moz-range-thumb {
   pointer-events: all;
-  height: 1rem;
-  width: 1rem;
+  height: 16px;
+  width: 16px;
   border-radius: 9999px;
-  background-color: theme('colors.accent');
-  border: 2px solid white;
-  transition: box-shadow 0.2s ease;
+  background-color: #1556f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
-.range-slider input[type='range']::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
-}
+.range-slider input[type='range']::-webkit-slider-thumb:hover,
 .range-slider input[type='range']::-moz-range-thumb:hover {
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .range-slider .tooltip {
@@ -221,7 +225,12 @@ html {
 }
 /* Skyscanner inspired components */
 .card-tile {
-  @apply bg-white rounded-2xl border border-gray-200 shadow-md p-4 relative transition-all duration-300 ease-in-out;
+  @apply bg-white rounded-2xl border border-gray-200 p-6 relative transition-all duration-300 ease-in-out;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+.card-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 .card-title {
   @apply text-lg font-semibold;
@@ -321,15 +330,15 @@ html {
 }
 
 .animate-cloud1 {
-  animation: cloud-drift 60s linear infinite;
+  animation: cloud-drift 30s linear infinite;
 }
 
 .animate-cloud2 {
-  animation: cloud-drift 90s linear infinite;
+  animation: cloud-drift 30s linear infinite;
 }
 
 .animate-cloud3 {
-  animation: cloud-drift 120s linear infinite;
+  animation: cloud-drift 30s linear infinite;
 }
 
 @keyframes fade-menu {
@@ -344,11 +353,11 @@ html {
 }
 
 .share-menu {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(180, 210, 255, 0.25));
-  backdrop-filter: blur(16px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 16px;
   animation: fade-menu 0.2s ease-out;
 }
@@ -392,4 +401,13 @@ html {
   letter-spacing: 0.6px;
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.hero-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 48px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
