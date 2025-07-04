@@ -331,3 +331,40 @@ html {
 .animate-cloud3 {
   animation: cloud-drift 120s linear infinite;
 }
+
+@keyframes fade-menu {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.share-menu {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(173, 216, 230, 0.25));
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  padding: 1rem;
+  animation: fade-menu 0.2s ease-out;
+}
+
+.share-menu-item {
+  @apply flex items-center w-full gap-3 px-3 py-2 rounded-md text-left transition-all min-h-[44px];
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+.share-menu-item:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+.share-menu-item:active {
+  transform: scale(0.97);
+}
