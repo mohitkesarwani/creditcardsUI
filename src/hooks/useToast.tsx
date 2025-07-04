@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface Toast {
   id: number;
@@ -22,7 +23,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((t) => [...t, { id, type, message }]);
     setTimeout(() => {
       setToasts((t) => t.filter((toast) => toast.id !== id));
-    }, 3000);
+    }, 2000);
   };
 
   return (
@@ -32,12 +33,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`px-4 py-2 rounded shadow text-white ${
-              t.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            className={`flex items-center gap-2 px-4 py-2 rounded shadow ${
+              t.type === 'success'
+                ? 'bg-green-50 text-green-800'
+                : 'bg-red-50 text-red-800'
             }`}
             role="status"
           >
-            {t.message}
+            {t.type === 'success' ? (
+              <CheckIcon className="w-4 h-4" />
+            ) : (
+              <ExclamationTriangleIcon className="w-4 h-4" />
+            )}
+            <span>{t.message}</span>
           </div>
         ))}
       </div>
