@@ -39,7 +39,6 @@ function Card({ card, selectedTags = [] }) {
     : null;
   const sponsored = card.isSponsored;
 
-  const shareUrl = `${window.location.origin}/credit-cards/${card.id}`;
 
   const handleApply = async () => {
     try {
@@ -259,7 +258,8 @@ function Card({ card, selectedTags = [] }) {
         loading={engagementLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}
-        shareUrl={shareUrl}
+        productId={card.id}
+        productType="credit-cards"
       />
       <CardDetailsModal
         open={showDetails}

@@ -21,7 +21,6 @@ function CardDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(id);
-  const shareUrl = `${window.location.origin}/credit-cards/${id}`;
 
   useEffect(() => {
     const load = async () => {
@@ -110,7 +109,8 @@ function CardDetailPage() {
               loading={engagementLoading && !engagement}
               onLike={() => like.mutate()}
               onShare={() => share.mutate()}
-              shareUrl={shareUrl}
+              productId={id}
+              productType="credit-cards"
               onComment={() => {}}
             />
             <a

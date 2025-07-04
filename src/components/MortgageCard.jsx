@@ -21,7 +21,6 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
   const isSelected = selected.some((m) => m.id === mortgage.id);
   const { data: engagement, isLoading: engagementLoading, like, share } = useEngagement(mortgage.id);
 
-  const shareUrl = `${window.location.origin}/home-loans/${mortgage.id}`;
 
   return (
     <div
@@ -92,7 +91,8 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         loading={engagementLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}
-        shareUrl={shareUrl}
+        productId={mortgage.id}
+        productType="home-loans"
       />
     </div>
   );
