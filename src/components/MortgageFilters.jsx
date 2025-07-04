@@ -14,7 +14,7 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-md divide-y divide-gray-100"
+      className="bg-white rounded-2xl shadow-md divide-y divide-gray-100 overflow-y-auto max-h-screen shadow-inner p-4"
       data-testid="mortgage-filters"
     >
       <button
@@ -26,8 +26,8 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
       >
         Clear Filters
       </button>
-      <details open className="p-4" aria-label="Filter by bank or brand">
-        <summary className="text-lg font-semibold mb-2 cursor-pointer">Bank / Brand</summary>
+      <details open className="p-4 first:mt-0 mt-4" aria-label="Filter by bank or brand">
+        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Bank / Brand</summary>
         <input
           type="text"
           list="bank-list"
@@ -57,8 +57,8 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           </div>
         )}
       </details>
-      <details open className="p-4" aria-label="Filter by interest rate">
-        <summary className="text-lg font-semibold mb-2 cursor-pointer">Interest Rate Range</summary>
+      <details open className="p-4 mt-4" aria-label="Filter by interest rate">
+        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Interest Rate Range</summary>
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
@@ -71,8 +71,8 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           Showing: {formatPercent(filters.rate[0], 3)} – {formatPercent(filters.rate[1], 3)}
         </div>
       </details>
-      <details open className="p-4" aria-label="Filter by features">
-        <summary className="text-lg font-semibold mb-2 cursor-pointer">Filter Features</summary>
+      <details open className="p-4 mt-4" aria-label="Filter by features">
+        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Filter Features</summary>
         <FeatureFilter
           active={filters.features}
           setActive={setFeatures}

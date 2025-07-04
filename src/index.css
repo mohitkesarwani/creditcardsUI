@@ -185,17 +185,6 @@ html {
 }
 
 
-.filter-option {
-  @apply px-3 py-1 text-sm rounded-full transition-all duration-150 ease-in-out max-w-[150px] break-words whitespace-normal text-center;
-}
-
-.filter-option-active {
-  @apply bg-blue-600 text-white font-semibold border border-blue-700 shadow-sm dark:bg-blue-500 dark:text-white dark:border-blue-400;
-}
-
-.filter-option-inactive {
-  @apply bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
-}
 
 .pill-tab {
   @apply text-sm font-semibold px-5 py-3 rounded-full transition;

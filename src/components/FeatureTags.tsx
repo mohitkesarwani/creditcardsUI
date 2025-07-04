@@ -1,4 +1,5 @@
 import React from 'react';
+import Tag from './Tag.tsx';
 
 interface FeatureTagsProps {
   tags?: string[];
@@ -13,13 +14,13 @@ export default function FeatureTags({ tags = [], highlightTags = [], className =
       {tags.map((t) => {
         const match = highlightTags.includes(t);
         return (
-          <span
+          <Tag
             key={t}
+            label={t}
+            selected={match}
+            className="text-xs px-2"
             data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
-            className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${match ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}
-          >
-            {t}
-          </span>
+          />
         );
       })}
     </div>

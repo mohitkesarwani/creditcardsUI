@@ -1,4 +1,5 @@
 import React from 'react';
+import Tag from './Tag.tsx';
 
 function FeatureFilter({ active, setActive, tags = [] }) {
   const toggle = (f) => {
@@ -14,19 +15,14 @@ function FeatureFilter({ active, setActive, tags = [] }) {
       <h4 className="text-lg font-semibold mb-4">Filter Features</h4>
       <div className="flex flex-wrap gap-2">
         {tags.map((f) => (
-          <button
+          <Tag
             key={f}
-            type="button"
+            label={f}
+            selected={active.includes(f)}
             onClick={() => toggle(f)}
-            className={`filter-option cursor-pointer ${
-              active.includes(f)
-                ? 'filter-option-active'
-                : 'filter-option-inactive'
-            }`}
+            isClickable
             data-testid={`filter-${f.toLowerCase().replace(/\s+/g, '-')}`}
-          >
-            {f}
-          </button>
+          />
         ))}
       </div>
     </div>
