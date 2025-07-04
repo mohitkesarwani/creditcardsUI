@@ -6,13 +6,15 @@ import HowItWorksSection from '../components/HowItWorksSection';
 import BenefitsSection from '../components/BenefitsSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import TrustedBySection from '../components/TrustedBySection';
+import HeroBackgroundClouds from '../components/HeroBackgroundClouds.tsx';
 // Landing page hero focuses on clear messaging without busy animation
 
 function LandingPage() {
   return (
     <div>
-      <section className="bg-gradient-to-b from-accent to-white text-white px-4 py-24 text-center flex items-center justify-center">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative overflow-hidden bg-gradient-to-b from-accent to-white text-white px-4 py-24 text-center flex items-center justify-center">
+        <HeroBackgroundClouds />
+        <div className="relative z-10 max-w-2xl mx-auto">
           <motion.h1
             className="text-4xl md:text-6xl font-extrabold leading-tight mb-4"
             initial={{ opacity: 0, y: 10 }}
