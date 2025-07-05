@@ -21,7 +21,10 @@ export default function ReviewList({ reviews }: Props) {
     <ul className="divide-y rounded-xl overflow-hidden">
       {reviews
         .slice()
-        .sort((a, b) => b.timestamp - a.timestamp)
+        .sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        )
         .map((r, idx) => (
           <li
             key={idx}

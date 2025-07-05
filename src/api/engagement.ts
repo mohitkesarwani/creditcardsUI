@@ -17,6 +17,18 @@ export const shareProduct = async (productId: string) => {
 };
 
 export const addReview = async (productId: string, review: Review) => {
-  const { data } = await apiClient.post(`/api/products/${productId}/review`, review);
+  const payload = {
+    userId: 'anon',
+    entityId: productId,
+    entityType: 'credit-cards',
+    rating: review.stars,
+    commentText: review.comment,
+    name: review.name,
+    timestamp: review.timestamp,
+  };
+  const { data } = await apiClient.post(
+    `/api/products/${productId}/engagement`,
+    payload
+  );
   return data;
 };
