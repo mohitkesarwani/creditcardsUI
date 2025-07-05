@@ -28,14 +28,6 @@ export default function InlineFeedbackBox({
   const handlePost = async () => {
     setSaving(true);
     try {
-      if (comment.trim()) {
-        await postComment({
-          userId: 'anon',
-          entityId,
-          entityType,
-          commentText: comment.trim(),
-        });
-      }
       if (rating > 0) {
         if (comment.trim().length <= 2) {
           toast('error', 'Comment must be at least 3 characters');
@@ -49,8 +41,16 @@ export default function InlineFeedbackBox({
           rating,
           commentText: comment.trim(),
         });
+        toast('success', 'Review posted');
+      } else if (comment.trim()) {
+        await postComment({
+          userId: 'anon',
+          entityId,
+          entityType,
+          commentText: comment.trim(),
+        });
+        toast('success', 'Comment posted');
       }
-      toast('success', 'Comment posted');
       onSubmitted && onSubmitted(comment.trim(), rating);
       onClose();
     } catch {
