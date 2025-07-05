@@ -48,7 +48,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
   return (
     <div
       id={mortgage.id}
-      className="relative flex flex-col bg-white rounded p-5 shadow-sm min-h-[460px] hover:shadow-md transition"
+      className="relative flex flex-col bg-white rounded p-5 shadow-sm min-h-[580px] hover:shadow-md transition"
       data-testid="mortgage-card"
     >
       <img
