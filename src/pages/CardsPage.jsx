@@ -49,7 +49,11 @@ function CardsPage() {
           withTags.map(async (c) => {
             try {
               const res = await apiClient.get(`/api/products/${c.id}/engagement`);
-              eng[c.id] = res.data;
+              eng[c.id] = {
+                ...res.data,
+                comments:
+                  res.data.reviews?.length ?? res.data.comments ?? 0,
+              };
             } catch {
               eng[c.id] = { likes: 0, shares: 0, comments: 0, rating: 0 };
             }

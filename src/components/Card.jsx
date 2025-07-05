@@ -28,6 +28,7 @@ function Card({ card, selectedTags = [] }) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [userComment, setUserComment] = useState('');
   const [userRating, setUserRating] = useState(0);
+  const commentCount = engagement?.reviews?.length ?? engagement?.comments ?? 0;
 
 
   const annualFee = card.annualFee ?? findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
@@ -281,7 +282,7 @@ function Card({ card, selectedTags = [] }) {
       </div>
       <SocialStats
         likes={engagement?.likes ?? 0}
-        comments={engagement?.comments ?? 0}
+        comments={commentCount}
         shares={engagement?.shares ?? 0}
         rating={engagement?.rating ?? 0}
         loading={engagementLoading && !engagement}
