@@ -25,7 +25,9 @@ export const deleteComment = async (id: string) => {
 };
 
 export const getComments = async (entityId: string) => {
-  const { data } = await apiClient.get(`/api/comments/${entityId}`);
+  const { data } = await apiClient.get('/api/comments', {
+    params: { productId: entityId },
+  });
   return data;
 };
 
