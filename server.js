@@ -6,6 +6,8 @@ import CreditCard from './src/models/CreditCard.js';
 import Referral from './src/models/Referral.js';
 import Lead from './src/models/Lead.js';
 import EmailEvent from './src/models/EmailEvent.js';
+import Comment from './src/models/Comment.js';
+import Review from './src/models/Review.js';
 import { getMinimumAnnualFee, formatPercent, formatMoney } from './src/utils.js';
 import { requestLogger } from './src/middleware/logger.js';
 
@@ -151,6 +153,60 @@ app.post('/api/products/:id/review', (req, res) => {
   const avg = engagements[id].reviews.reduce((a, r) => a + (r.stars || 0), 0) / engagements[id].reviews.length;
   engagements[id].rating = Number(avg.toFixed(2));
   res.json(engagements[id]);
+});
+
+// Comment & Review endpoints
+app.post('/api/comments', async (req, res) => {
+  try {
+    const comment = await Comment.create(req.body);
+    res.json(comment);
+  } catch (err) {
+    res.status(500).send('Error saving comment');
+  }
+});
+
+app.delete('/api/comments/:id', async (req, res) => {
+  try {
+    await Comment.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).send('Error deleting comment');
+  }
+});
+
+app.get('/api/comments/:entityId', async (req, res) => {
+  try {
+    const comments = await Comment.find({ entityId: req.params.entityId }).sort({ createdAt: -1 });
+    res.json(comments);
+  } catch (err) {
+    res.status(500).send('Error loading comments');
+  }
+});
+
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { userId, entityId, rating } = req.body;
+    let reviewDoc = await Review.findOne({ userId, entityId });
+    if (reviewDoc) {
+      reviewDoc.rating = rating;
+      await reviewDoc.save();
+    } else {
+      reviewDoc = await Review.create(req.body);
+    }
+    res.json(reviewDoc);
+  } catch (err) {
+    res.status(500).send('Error saving review');
+  }
+});
+
+app.get('/api/reviews/:entityId', async (req, res) => {
+  try {
+    const reviews = await Review.find({ entityId: req.params.entityId });
+    const avg = reviews.reduce((a, r) => a + (r.rating || 0), 0) / (reviews.length || 1);
+    res.json({ average: reviews.length ? Number(avg.toFixed(2)) : 0, count: reviews.length });
+  } catch (err) {
+    res.status(500).send('Error loading reviews');
+  }
 });
 
 const start = async () => {

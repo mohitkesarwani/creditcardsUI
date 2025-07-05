@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   formatMoney,
@@ -7,6 +7,8 @@ import {
 } from '../utils.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import SocialStats from './SocialStats.tsx';
+import InlineFeedbackBox from './InlineFeedbackBox.tsx';
+import { useToast } from '../hooks/useToast.tsx';
 import useEngagement from '../hooks/useEngagement.ts';
 import FeatureTags from './FeatureTags.tsx';
 import ActionButtons from './ActionButtons.tsx';
@@ -19,7 +21,28 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
   const tags = getMortgageFeatureTags(mortgage);
   const { selected, toggleMortgage } = useSelectedMortgages();
   const isSelected = selected.some((m) => m.id === mortgage.id);
-  const { data: engagement, isLoading: engagementLoading, like, share } = useEngagement(mortgage.id);
+  const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(mortgage.id);
+  const toast = useToast();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [userComment, setUserComment] = useState('');
+  const [userRating, setUserRating] = useState(0);
+
+  const handleRate = (val) => {
+    setUserRating(val);
+    setFeedbackOpen(true);
+  };
+
+  const handleFeedbackSubmit = (comment, rating) => {
+    setUserComment(comment);
+    setUserRating(rating);
+    review.mutate({ name: 'Anon', comment, timestamp: Date.now(), stars: rating });
+  };
+
+  const handleDelete = () => {
+    setUserComment('');
+    setUserRating(0);
+    toast('success', 'Comment deleted');
+  };
 
 
   return (
@@ -91,6 +114,9 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         loading={engagementLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}
+        onComment={() => setFeedbackOpen((v) => !v)}
+        onRate={handleRate}
+        userRating={userRating}
         productId={mortgage.id}
         productType="home-loans"
         summary={{
@@ -100,6 +126,31 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           annualFee: fees[0]?.amount,
         }}
       />
+      {feedbackOpen ? (
+        <InlineFeedbackBox
+          entityId={mortgage.id}
+          entityType="home-loans"
+          onClose={() => setFeedbackOpen(false)}
+          onSubmitted={handleFeedbackSubmit}
+          initialComment={userComment}
+          initialRating={userRating}
+        />
+      ) : userComment ? (
+        <div className="bg-white rounded-lg border px-4 py-3 mt-2 text-sm shadow">
+          <p className="whitespace-pre-line break-words">{userComment}</p>
+          <div className="flex justify-end gap-2 mt-2 text-xs">
+            <button type="button" onClick={() => setFeedbackOpen(true)} className="btn btn-secondary text-xs">Edit</button>
+            <button type="button" onClick={handleDelete} className="btn btn-secondary text-xs">Delete</button>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="bg-white rounded-lg border px-4 py-2 mt-2 text-sm text-gray-500 cursor-text"
+          onClick={() => setFeedbackOpen(true)}
+        >
+          Add a comment...
+        </div>
+      )}
     </div>
   );
 }
