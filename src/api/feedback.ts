@@ -32,11 +32,7 @@ export const getComments = async (entityId: string) => {
 };
 
 export const postReview = async (payload: ReviewPayload) => {
-  const { entityId } = payload;
-  const { data } = await apiClient.post(
-    `/api/products/${entityId}/engagement`,
-    payload
-  );
+  const { data } = await apiClient.post('/api/reviews', payload);
   return data;
 };
 
