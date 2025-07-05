@@ -261,6 +261,15 @@ function Card({ card, selectedTags = [] }) {
         onShare={() => share.mutate()}
         productId={card.id}
         productType="credit-cards"
+        summary={{
+          image:
+            card.productImageUrl ||
+            card.cardArt?.[0]?.imageUri ||
+            '/assets/image-not-available.svg',
+          name: card.name,
+          rate: interestRate,
+          annualFee,
+        }}
       />
       <CardDetailsModal
         open={showDetails}

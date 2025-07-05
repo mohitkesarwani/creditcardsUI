@@ -307,6 +307,12 @@ function HomeLoanDetailsPage() {
             onShare={() => share.mutate()}
             productId={loanId}
             productType="home-loans"
+            summary={{
+              image: loan.cardArt?.imageUri || '/assets/image-not-available.svg',
+              name: `${loan.bankName || loan.brandName} – ${loan.name}`,
+              rate: ratePercent ? formatPercent(ratePercent) : null,
+              annualFee: fees[0]?.amount,
+            }}
           />
 
           <div className="flex flex-wrap gap-2">

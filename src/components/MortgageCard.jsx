@@ -93,6 +93,12 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         onShare={() => share.mutate()}
         productId={mortgage.id}
         productType="home-loans"
+        summary={{
+          image: mortgage.cardArt?.imageUri || '/assets/image-not-available.svg',
+          name: mortgage.name,
+          rate,
+          annualFee: fees[0]?.amount,
+        }}
       />
     </div>
   );
