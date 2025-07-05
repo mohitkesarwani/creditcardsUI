@@ -12,9 +12,11 @@ export default function ReviewsSection({ reviews, onAdd }: Props) {
   const [showForm, setShowForm] = useState(false);
 
   return (
-    <section className="mt-10 border-t pt-6" aria-label="User reviews">
+    <section className="mt-8 border-t pt-6" aria-label="User reviews">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold">User Reviews</h3>
+        <h3 className="section-heading">
+          User Reviews <span className="text-sm text-gray-500">({reviews.length})</span>
+        </h3>
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}

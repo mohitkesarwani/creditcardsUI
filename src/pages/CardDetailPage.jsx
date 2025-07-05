@@ -13,6 +13,9 @@ import Disclaimers from '../components/Disclaimers';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import SocialStats from '../components/SocialStats.tsx';
 import ReviewsSection from '../components/ReviewsSection.tsx';
+import FeatureTags from '../components/FeatureTags.tsx';
+import ActionButtons from '../components/ActionButtons.tsx';
+import { useSelectedCards } from '../hooks/useSelectedCards.jsx';
 import useEngagement from '../hooks/useEngagement.ts';
 
 function CardDetailPage() {
@@ -20,6 +23,7 @@ function CardDetailPage() {
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { selected, toggleCard } = useSelectedCards();
   const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(id);
   const commentCount = engagement?.reviews?.length ?? engagement?.comments ?? 0;
 
@@ -62,17 +66,19 @@ function CardDetailPage() {
   const interestFree = card.interestFree ?? card.feesAndPricing?.interestFreePeriod;
   const tags = getFeatureTags(card);
   const featureGroups = categorizeFeatures(card.features);
+  const isSelected = selected.some((c) => c.id === card.id);
 
   return (
-    <div className="p-4">
+    <div className="bg-[#f8f9fa] p-4 md:p-8 min-h-screen">
       <Link
         to="/credit-cards"
-        className="sticky top-0 z-10 inline-block text-sm text-blue-600 hover:underline mb-4"
+        className="inline-block text-sm text-blue-600 underline mb-4"
       >
         &larr; Back
       </Link>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+      <div className="max-w-screen-xl mx-auto">
+        <div className="bg-white rounded-2xl shadow p-6 md:p-8">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
           <img
             src={
               card.productImageUrl ||
@@ -92,16 +98,7 @@ function CardDetailPage() {
             <p className="text-gray-600 text-sm md:text-base mt-2">
               {card.description}
             </p>
-            <div className="mt-3">
-              {tags.map((t) => (
-                <span
-                  key={t}
-                  className="bg-gray-100 text-xs text-gray-800 rounded-full px-2 py-1 inline-block mr-2 mb-1"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
+            <FeatureTags tags={tags} className="mt-3" />
             <SocialStats
               likes={engagement?.likes ?? 0}
               comments={commentCount}
@@ -123,20 +120,30 @@ function CardDetailPage() {
               }}
               onComment={() => {}}
             />
-            <a
-              href={card.applicationUrl || card.applicationUri}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Apply for ${card.name}`}
-              className="mt-4 inline-block bg-blue-600 text-white text-sm rounded-full px-6 py-2 hover:bg-blue-700 transition"
-            >
-              Apply Now
-            </a>
+            {isSelected && (
+              <div className="flex items-center gap-2 mt-3">
+                <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Selected
+                </span>
+                <button onClick={() => toggleCard(card)} className="text-xs text-accent underline">
+                  Deselect
+                </button>
+              </div>
+            )}
+            <ActionButtons
+              showCompare={!isSelected}
+              showDetails={false}
+              onCompare={() => toggleCard(card)}
+              applyHref={card.applicationUrl || card.applicationUri}
+            />
           </div>
         </div>
 
-        <section className="mt-10 border-t pt-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Fees &amp; Pricing</h3>
+        <section className="mt-8 border-t pt-6">
+          <h3 className="section-heading mb-4">Fees &amp; Pricing</h3>
           <div className="overflow-x-auto">
             <table className="table-auto w-full text-sm text-left text-gray-700">
               <tbody>
@@ -170,8 +177,8 @@ function CardDetailPage() {
         </section>
 
         {card.features?.length > 0 && (
-          <section className="mt-10 border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Features</h3>
+          <section className="mt-8 border-t pt-6">
+            <h3 className="section-heading mb-4">Features</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(featureGroups).map(([cat, list]) =>
                 list.length ? (
@@ -193,8 +200,8 @@ function CardDetailPage() {
         )}
 
         {(card.lendingRates?.length > 0 || card.fees?.length > 0) && (
-          <section className="mt-10 border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Lending Rates &amp; Fees</h3>
+          <section className="mt-8 border-t pt-6">
+            <h3 className="section-heading mb-4">Lending Rates &amp; Fees</h3>
             <div className="rounded-md overflow-hidden shadow">
               <div className="overflow-x-auto">
                 <table className="table-auto w-full text-sm text-left text-gray-700">
