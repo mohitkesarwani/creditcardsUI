@@ -18,7 +18,7 @@ export default function ReviewList({ reviews }: Props) {
   }
 
   return (
-    <ul className="divide-y rounded-xl overflow-hidden">
+    <ul className="space-y-3">
       {reviews
         .slice()
         .sort(
@@ -28,20 +28,20 @@ export default function ReviewList({ reviews }: Props) {
         .map((r, idx) => (
           <li
             key={idx}
-            className={`p-4 text-sm ${idx % 2 === 1 ? 'bg-gray-50' : ''}`}
+            className="bg-gray-50 rounded-lg p-4 shadow-sm text-sm"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="font-medium">{r.name || 'Anonymous'}</span>
               <StarRating rating={r.stars} />
+              <span className="ml-auto text-xs text-gray-500">
+                {new Date(r.timestamp).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </span>
             </div>
-            <p className="prose-sm mt-1">{r.comment}</p>
-            <span className="text-xs text-gray-500">
-              {new Date(r.timestamp).toLocaleDateString(undefined, {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </span>
+            <p className="prose-sm">{r.comment}</p>
           </li>
         ))}
     </ul>

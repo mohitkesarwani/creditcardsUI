@@ -14,6 +14,7 @@ import LoanRepaymentCalculator from '../components/LoanRepaymentCalculator.jsx';
 import FeatureTags from '../components/FeatureTags.tsx';
 import SocialStats from '../components/SocialStats.tsx';
 import ReviewsSection from '../components/ReviewsSection.tsx';
+import ActionButtons from '../components/ActionButtons.tsx';
 import useEngagement from '../hooks/useEngagement.ts';
 
 function calcRepayments(amount, rate, years) {
@@ -35,7 +36,7 @@ function Section({ title, children }) {
         className="flex justify-between items-center w-full cursor-pointer"
         aria-expanded={open}
       >
-        <h3 className="font-semibold">{title}</h3>
+        <h3 className="section-heading text-base">{title}</h3>
         <span>{open ? '▾' : '▸'}</span>
       </button>
       <div className={`${open ? 'block' : 'hidden'} mt-2 text-sm`}>{children}</div>
@@ -144,14 +145,14 @@ function HomeLoanDetailsPage() {
   );
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen">
-      <div className="max-w-2xl mx-auto">
-        <button onClick={() => navigate(-1)} className="text-blue-600 underline mb-4 text-sm">
-          &larr; Go Back
+    <div className="bg-[#f8f9fa] p-4 md:p-8 min-h-screen">
+      <div className="max-w-screen-xl mx-auto">
+        <button onClick={() => navigate(-1)} className="text-blue-600 underline text-sm mb-4">
+          &larr; Back
         </button>
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-3xl mx-auto space-y-6">
           <div className="space-y-2">
-            <h2 className="font-bold" style={{ fontSize: '1.5em' }}>
+            <h2 className="text-2xl font-semibold">
               {loan.bankName || loan.brandName} – {loan.name}
             </h2>
             <p className="text-xs text-gray-500">Last Updated: July 01, 2025, 03:55 PM AEST</p>
@@ -317,7 +318,7 @@ function HomeLoanDetailsPage() {
           />
 
           <div className="flex flex-wrap gap-2">
-            {isSelected ? (
+            {isSelected && (
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -329,24 +330,13 @@ function HomeLoanDetailsPage() {
                   Deselect
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={() => toggleMortgage(loan)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
-              >
-                Compare
-              </button>
             )}
-            {loan.applicationUri && (
-              <a
-                href={loan.applicationUri}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
-              >
-                Apply
-              </a>
-            )}
+            <ActionButtons
+              showCompare={!isSelected}
+              showDetails={false}
+              onCompare={() => toggleMortgage(loan)}
+              applyHref={loan.applicationUri}
+            />
           </div>
           {engagement && (
             <ReviewsSection reviews={engagement.reviews} onAdd={(r) => review.mutate(r)} />
