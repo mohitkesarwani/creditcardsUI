@@ -1,7 +1,7 @@
 export interface Review {
   name: string;
   comment: string;
-  timestamp: number;
+  timestamp: string;
   stars: number; // 1-5
 }
 

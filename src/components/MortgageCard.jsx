@@ -35,7 +35,12 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
   const handleFeedbackSubmit = (comment, rating) => {
     setUserComment(comment);
     setUserRating(rating);
-    review.mutate({ name: 'Anon', comment, timestamp: Date.now(), stars: rating });
+    review.mutate({
+      name: 'Anon',
+      comment,
+      timestamp: new Date().toISOString(),
+      stars: rating,
+    });
   };
 
   const handleDelete = () => {

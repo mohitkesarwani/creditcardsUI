@@ -37,7 +37,18 @@ export default function InlineFeedbackBox({
         });
       }
       if (rating > 0) {
-        await postReview({ userId: 'anon', entityId, entityType, rating });
+        if (comment.trim().length <= 2) {
+          toast('error', 'Comment must be at least 3 characters');
+          setSaving(false);
+          return;
+        }
+        await postReview({
+          userId: 'anon',
+          entityId,
+          entityType,
+          rating,
+          commentText: comment.trim(),
+        });
       }
       toast('success', 'Comment posted');
       onSubmitted && onSubmitted(comment.trim(), rating);

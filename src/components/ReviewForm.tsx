@@ -26,7 +26,9 @@ export default function ReviewForm({ onAdd }: Props) {
   }, [expanded]);
 
   const commentTooLong = comment.length > 200;
-  const canSubmit = comment.trim() && rating > 0 && !commentTooLong && !submitting;
+  const commentTooShort = comment.trim().length <= 2;
+  const canSubmit =
+    !commentTooShort && rating > 0 && !commentTooLong && !submitting;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +39,7 @@ export default function ReviewForm({ onAdd }: Props) {
       await onAdd({
         name: name.trim() || 'Anonymous',
         comment: comment.trim(),
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
         stars: rating,
       });
       setComment('');
@@ -69,9 +71,9 @@ export default function ReviewForm({ onAdd }: Props) {
           className="w-full border rounded p-2 text-sm resize-none focus:outline-none"
           rows={expanded ? 4 : 2}
         />
-        {touched && !comment.trim() && (
+        {touched && commentTooShort && (
           <p className="text-red-600 text-xs" role="alert">
-            Comment is required
+            Comment must be at least 3 characters
           </p>
         )}
         {commentTooLong && (
