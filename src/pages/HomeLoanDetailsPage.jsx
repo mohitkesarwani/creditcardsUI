@@ -53,6 +53,7 @@ function HomeLoanDetailsPage() {
   const [preview, setPreview] = useState({ monthly: null, total: null, costPerDollar: null });
   const { selected, toggleMortgage } = useSelectedMortgages();
   const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(loanId);
+  const commentCount = engagement?.reviews?.length ?? engagement?.comments ?? 0;
 
   useEffect(() => {
     const load = async () => {
@@ -299,7 +300,7 @@ function HomeLoanDetailsPage() {
 
           <SocialStats
             likes={engagement?.likes ?? 0}
-            comments={engagement?.comments ?? 0}
+            comments={commentCount}
             shares={engagement?.shares ?? 0}
             rating={engagement?.rating ?? 0}
             loading={engagementLoading && !engagement}

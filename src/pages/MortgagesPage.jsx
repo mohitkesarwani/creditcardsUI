@@ -62,7 +62,11 @@ function MortgagesPage() {
           data.map(async (m) => {
             try {
               const res = await apiClient.get(`/api/products/${m.id}/engagement`);
-              eng[m.id] = res.data;
+              eng[m.id] = {
+                ...res.data,
+                comments:
+                  res.data.reviews?.length ?? res.data.comments ?? 0,
+              };
             } catch {
               eng[m.id] = { likes: 0, comments: 0, rating: 0 };
             }

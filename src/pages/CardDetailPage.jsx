@@ -21,6 +21,7 @@ function CardDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(id);
+  const commentCount = engagement?.reviews?.length ?? engagement?.comments ?? 0;
 
   useEffect(() => {
     const load = async () => {
@@ -103,7 +104,7 @@ function CardDetailPage() {
             </div>
             <SocialStats
               likes={engagement?.likes ?? 0}
-              comments={engagement?.comments ?? 0}
+              comments={commentCount}
               shares={engagement?.shares ?? 0}
               rating={engagement?.rating ?? 0}
               loading={engagementLoading && !engagement}
