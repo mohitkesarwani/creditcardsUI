@@ -36,7 +36,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
     setUserComment(comment);
     setUserRating(rating);
     review.mutate({
-      name: 'Anon',
+      name: 'Anonymous',
       comment,
       timestamp: new Date().toISOString(),
       stars: rating,
