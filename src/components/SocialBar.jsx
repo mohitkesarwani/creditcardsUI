@@ -1,35 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { postComment, getComments } from '../api/feedback';
 
 function SocialBar({ itemId, type = 'card' }) {
   const likeKey = `${type}-like-${itemId}`;
   const likeCountKey = `${type}-like-count-${itemId}`;
-  const commentKey = `${type}-comments-${itemId}`;
 
   const [liked, setLiked] = useState(() => localStorage.getItem(likeKey) === '1');
   const [likes, setLikes] = useState(() => {
     const val = localStorage.getItem(likeCountKey);
     return val ? parseInt(val, 10) : 0;
   });
-  const [comments, setComments] = useState(() => {
-    const stored = localStorage.getItem(commentKey);
-    try {
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await getComments(itemId);
+        setComments(Array.isArray(data) ? data : []);
+      } catch {
+        // ignore fetch errors
+      }
+    };
+    load();
+  }, [itemId]);
 
   useEffect(() => {
     localStorage.setItem(likeKey, liked ? '1' : '0');
     localStorage.setItem(likeCountKey, String(likes));
   }, [liked, likes, likeKey, likeCountKey]);
 
-  useEffect(() => {
-    localStorage.setItem(commentKey, JSON.stringify(comments));
-  }, [comments, commentKey]);
 
   const handleLike = () => {
     setLiked((prev) => {
@@ -39,12 +41,23 @@ function SocialBar({ itemId, type = 'card' }) {
     });
   };
 
-  const handleAddComment = (e) => {
+  const handleAddComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
-    const entry = { user: 'User', text: newComment.trim(), date: Date.now() };
-    setComments((prev) => [...prev, entry]);
-    setNewComment('');
+    const text = newComment.trim();
+    if (!text) return;
+    try {
+      await postComment({
+        userId: 'anon',
+        entityId: itemId,
+        entityType: type,
+        commentText: text,
+      });
+      const updated = await getComments(itemId);
+      setComments(Array.isArray(updated) ? updated : []);
+      setNewComment('');
+    } catch {
+      // ignore errors for now
+    }
   };
 
   const handleShare = async () => {
@@ -90,9 +103,9 @@ function SocialBar({ itemId, type = 'card' }) {
           <div className="max-h-40 overflow-y-auto space-y-2">
             {comments.slice(-5).map((c, idx) => (
               <div key={idx} className="border-b pb-1">
-                <p className="font-bold text-sm leading-none">{c.user}</p>
-                <p className="text-sm">{c.text}</p>
-                <p className="text-xs text-gray-400">{new Date(c.date).toLocaleString()}</p>
+                <p className="font-bold text-sm leading-none">{c.userId || 'Anon'}</p>
+                <p className="text-sm">{c.commentText}</p>
+                <p className="text-xs text-gray-400">{new Date(c.createdAt).toLocaleString()}</p>
               </div>
             ))}
           </div>
