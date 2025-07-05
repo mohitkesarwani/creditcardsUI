@@ -1,7 +1,12 @@
-import React from 'react';
-import { HandThumbUpIcon, ChatBubbleLeftEllipsisIcon, StarIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
+import {
+  HandThumbUpIcon,
+  ChatBubbleLeftEllipsisIcon,
+  StarIcon,
+  PaperAirplaneIcon,
+} from '@heroicons/react/24/outline';
 import StarRating from './StarRating';
-import ShareMenu from './ShareMenu';
+import ShareModal from './ShareModal';
 
 interface SocialStatsProps {
   likes: number;
@@ -14,6 +19,12 @@ interface SocialStatsProps {
   onComment?: () => void;
   productId: string;
   productType: string;
+  summary: {
+    image?: string;
+    name: string;
+    rate?: string | number | null;
+    annualFee?: string | number | null;
+  };
 }
 
 export default function SocialStats({
@@ -27,9 +38,11 @@ export default function SocialStats({
   onComment,
   productId,
   productType,
+  summary,
 }: SocialStatsProps) {
   const iconCls = 'w-5 h-5 text-[#555555] group-hover:text-[#222222]';
   const btnCls = 'flex items-center gap-1 transition group';
+  const [open, setOpen] = useState(false);
 
   if (loading) {
     return (
@@ -50,11 +63,22 @@ export default function SocialStats({
       <button onClick={onComment} aria-label="View comments" className={btnCls} tabIndex={0}>
         <ChatBubbleLeftEllipsisIcon className={iconCls} /> {comments}
       </button>
-      <ShareMenu
-        productId={productId}
-        productType={productType}
-        count={shares}
-        onShared={onShare}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Share this product"
+          className="flex items-center gap-1 text-sm font-semibold text-gray-700 hover:text-blue-600 transition"
+        >
+          <PaperAirplaneIcon className={iconCls} /> Share
+        </button>
+        <span className="text-xs">{shares} Shares</span>
+      </div>
+      <ShareModal
+        open={open}
+        onClose={() => setOpen(false)}
+        onShare={() => onShare && onShare()}
+        header={`Share this ${productType === 'home-loans' ? 'home loan' : 'card'}`}
+        summary={summary}
       />
       <div className="flex items-center gap-1" aria-label="Average rating">
         <StarIcon className="w-5 h-5 text-yellow-500" />
