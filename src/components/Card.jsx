@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import CardDetailsModal from './CardDetailsModal';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import SocialStats from './SocialStats.tsx';
+import InlineFeedbackBox from './InlineFeedbackBox.tsx';
+import { useToast } from '../hooks/useToast.tsx';
 import useEngagement from '../hooks/useEngagement.ts';
 import FeatureTags from './FeatureTags.tsx';
 import ActionButtons from './ActionButtons.tsx';
@@ -21,7 +23,11 @@ function Card({ card, selectedTags = [] }) {
   const isSelected = selected.some((c) => c.id === card.id);
   const [showDetails, setShowDetails] = useState(false);
   const navigate = useNavigate();
-  const { data: engagement, isLoading: engagementLoading, like, share } = useEngagement(card.id);
+  const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(card.id);
+  const toast = useToast();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [userComment, setUserComment] = useState('');
+  const [userRating, setUserRating] = useState(0);
 
 
   const annualFee = card.annualFee ?? findFeeAmount(card, 'annual') ?? getMinimumAnnualFee(card);
@@ -38,6 +44,23 @@ function Card({ card, selectedTags = [] }) {
     ? 'Best for Travel'
     : null;
   const sponsored = card.isSponsored;
+
+  const handleRate = (val) => {
+    setUserRating(val);
+    setFeedbackOpen(true);
+  };
+
+  const handleFeedbackSubmit = (comment, rating) => {
+    setUserComment(comment);
+    setUserRating(rating);
+    review.mutate({ name: 'Anon', comment, timestamp: Date.now(), stars: rating });
+  };
+
+  const handleDelete = () => {
+    setUserComment('');
+    setUserRating(0);
+    toast('success', 'Comment deleted');
+  };
 
 
   const handleApply = async () => {
@@ -259,6 +282,9 @@ function Card({ card, selectedTags = [] }) {
         loading={engagementLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}
+        onComment={() => setFeedbackOpen((v) => !v)}
+        onRate={handleRate}
+        userRating={userRating}
         productId={card.id}
         productType="credit-cards"
         summary={{
@@ -271,6 +297,31 @@ function Card({ card, selectedTags = [] }) {
           annualFee,
         }}
       />
+      {feedbackOpen ? (
+        <InlineFeedbackBox
+          entityId={card.id}
+          entityType="credit-cards"
+          onClose={() => setFeedbackOpen(false)}
+          onSubmitted={handleFeedbackSubmit}
+          initialComment={userComment}
+          initialRating={userRating}
+        />
+      ) : userComment ? (
+        <div className="bg-white rounded-lg border px-4 py-3 mt-2 text-sm shadow">
+          <p className="whitespace-pre-line break-words">{userComment}</p>
+          <div className="flex justify-end gap-2 mt-2 text-xs">
+            <button type="button" onClick={() => setFeedbackOpen(true)} className="btn btn-secondary text-xs">Edit</button>
+            <button type="button" onClick={handleDelete} className="btn btn-secondary text-xs">Delete</button>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="bg-white rounded-lg border px-4 py-2 mt-2 text-sm text-gray-500 cursor-text"
+          onClick={() => setFeedbackOpen(true)}
+        >
+          Add a comment...
+        </div>
+      )}
       <CardDetailsModal
         open={showDetails}
         onClose={() => setShowDetails(false)}

@@ -6,6 +6,7 @@ import {
   PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
 import StarRating from './StarRating';
+import StarRatingInput from './StarRatingInput';
 import ShareModal from './ShareModal';
 
 interface SocialStatsProps {
@@ -17,6 +18,8 @@ interface SocialStatsProps {
   onLike?: () => void;
   onShare?: () => void;
   onComment?: () => void;
+  onRate?: (value: number) => void;
+  userRating?: number;
   productId: string;
   productType: string;
   summary: {
@@ -36,6 +39,8 @@ export default function SocialStats({
   onLike,
   onShare,
   onComment,
+  onRate,
+  userRating,
   productId,
   productType,
   summary,
@@ -80,10 +85,16 @@ export default function SocialStats({
         header={`Share this ${productType === 'home-loans' ? 'home loan' : 'card'}`}
         summary={summary}
       />
-      <div className="flex items-center gap-1" aria-label="Average rating">
+      <div className="flex items-center gap-1" aria-label="Average rating" title={onRate ? 'Rate this card' : undefined}>
         <StarIcon className="w-5 h-5 text-yellow-500" />
         <span className="sr-only">Rating</span>
-        <StarRating rating={rating} />
+        {onRate ? (
+          <div className="scale-75">
+            <StarRatingInput rating={userRating ?? 0} onChange={onRate} />
+          </div>
+        ) : (
+          <StarRating rating={rating} />
+        )}
       </div>
     </div>
   );
