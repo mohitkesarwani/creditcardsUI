@@ -50,23 +50,32 @@ export default function InlineFeedbackBox({
   };
 
   return (
-    <div className="bg-white rounded-lg border px-4 py-3 mt-2 shadow" data-testid="inline-feedback">
+    <div
+      className="mt-2 w-full flex flex-col bg-gray-50 border border-gray-200 rounded-md p-3 transition-[max-height] ease-in-out duration-300"
+      data-testid="inline-feedback"
+    >
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        placeholder="Add your comment here..."
-        className="w-full border rounded p-2 text-sm resize-none mb-2 max-h-[100px]"
+        placeholder="Add a comment..."
+        className="w-full border border-gray-300 rounded-md p-2 text-sm resize-none mb-2 max-h-[100px] overflow-y-auto placeholder:text-sm placeholder:text-gray-500 placeholder:pl-2"
       />
-      <div className="flex items-center justify-end gap-2">
+      <div className="mb-2">
         <StarRatingInput rating={rating} onChange={setRating} />
-        <button type="button" onClick={onClose} className="btn btn-secondary text-xs">
+      </div>
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={onClose}
+          className="border border-gray-300 text-gray-600 px-3 py-1 text-sm rounded"
+        >
           Cancel
         </button>
         <button
           type="button"
           onClick={handlePost}
           disabled={saving}
-          className="btn btn-primary text-xs"
+          className="bg-green-600 text-white px-3 py-1 text-sm rounded"
         >
           Post
         </button>

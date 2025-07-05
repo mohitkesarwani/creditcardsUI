@@ -170,7 +170,7 @@ function Card({ card, selectedTags = [] }) {
   return (
     <div
       id={card.id}
-      className="relative flex flex-col bg-white rounded p-5 min-h-[420px] shadow-sm hover:shadow-md"
+      className="relative flex flex-col bg-white rounded p-5 min-h-[580px] shadow-sm hover:shadow-md"
       style={{ boxShadow: '0px 2px 4px rgba(0,0,0,0.08)' }}
     >
       <img
