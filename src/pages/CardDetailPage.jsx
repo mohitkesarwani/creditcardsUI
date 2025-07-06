@@ -237,6 +237,7 @@ function CardDetailPage() {
 
         <Disclaimers className="mt-10" />
       </div>
+      </div>
     </div>
   );
 }
