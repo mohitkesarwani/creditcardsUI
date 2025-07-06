@@ -6,6 +6,7 @@ import SocialStats from './SocialStats.tsx';
 import InlineFeedbackBox from './InlineFeedbackBox.tsx';
 import { useToast } from '../hooks/useToast.tsx';
 import useEngagement from '../hooks/useEngagement.ts';
+import { postComment, postReview } from '../api/feedback';
 import FeatureTags from './FeatureTags.tsx';
 import ActionButtons from './ActionButtons.tsx';
 import apiClient from '../api/apiClient.js';
@@ -51,15 +52,39 @@ function Card({ card, selectedTags = [] }) {
     setFeedbackOpen(true);
   };
 
-  const handleFeedbackSubmit = (comment, rating) => {
+  const handleFeedbackSubmit = async (comment, rating) => {
     setUserComment(comment);
     setUserRating(rating);
-    review.mutate({
-      name: 'Anonymous',
-      comment,
-      timestamp: new Date().toISOString(),
-      stars: rating,
-    });
+    try {
+      if (rating > 0) {
+        if (comment.trim().length <= 2) {
+          toast('error', 'Comment must be at least 3 characters');
+          return;
+        }
+        await postReview({
+          userId: 'anon',
+          entityId: card.id,
+          entityType: 'credit-cards',
+          rating,
+          commentText: comment.trim(),
+        });
+      } else if (comment.trim()) {
+        await postComment({
+          userId: 'anon',
+          entityId: card.id,
+          entityType: 'credit-cards',
+          commentText: comment.trim(),
+        });
+      }
+      review.mutate({
+        name: 'Anonymous',
+        comment,
+        timestamp: new Date().toISOString(),
+        stars: rating,
+      });
+    } catch {
+      toast('error', 'Failed to post comment');
+    }
   };
 
   const handleDelete = () => {
