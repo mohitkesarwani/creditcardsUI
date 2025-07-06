@@ -6,7 +6,6 @@ import SocialStats from './SocialStats.tsx';
 import InlineFeedbackBox from './InlineFeedbackBox.tsx';
 import { useToast } from '../hooks/useToast.tsx';
 import useEngagement from '../hooks/useEngagement.ts';
-import { postComment, postReview } from '../api/feedback';
 import FeatureTags from './FeatureTags.tsx';
 import ActionButtons from './ActionButtons.tsx';
 import apiClient from '../api/apiClient.js';
@@ -56,25 +55,9 @@ function Card({ card, selectedTags = [] }) {
     setUserComment(comment);
     setUserRating(rating);
     try {
-      if (rating > 0) {
-        if (comment.trim().length <= 2) {
-          toast('error', 'Comment must be at least 3 characters');
-          return;
-        }
-        await postReview({
-          userId: 'anon',
-          entityId: card.id,
-          entityType: 'credit-cards',
-          rating,
-          commentText: comment.trim(),
-        });
-      } else if (comment.trim()) {
-        await postComment({
-          userId: 'anon',
-          entityId: card.id,
-          entityType: 'credit-cards',
-          commentText: comment.trim(),
-        });
+      if (rating > 0 && comment.trim().length <= 2) {
+        toast('error', 'Comment must be at least 3 characters');
+        return;
       }
       review.mutate({
         name: 'Anonymous',
