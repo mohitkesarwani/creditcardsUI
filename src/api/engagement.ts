@@ -29,3 +29,34 @@ export const addReview = async (productId: string, review: Review) => {
   );
   return data;
 };
+export const getEngagementForEntity = async (id: string, entityType: string) => {
+  const { data } = await apiClient.get(`/api/engagement/${id}`, {
+    params: { entityType },
+  });
+  return data;
+};
+
+export const likeEntity = async (id: string, entityType: string) => {
+  const { data } = await apiClient.post('/api/likes', { entityId: id, entityType });
+  return data;
+};
+
+export const shareEntity = async (id: string, entityType: string) => {
+  const { data } = await apiClient.post('/api/shares', { entityId: id, entityType });
+  return data;
+};
+
+export const addEntityReview = async (
+  id: string,
+  entityType: string,
+  review: Review
+) => {
+  const payload = {
+    userId: 'anon',
+    entityId: id,
+    entityType,
+    rating: review.stars,
+  };
+  const { data } = await apiClient.post('/api/reviews', payload);
+  return data;
+};

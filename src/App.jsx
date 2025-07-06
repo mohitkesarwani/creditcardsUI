@@ -8,6 +8,7 @@ import HomeLoanDetailsPage from './pages/HomeLoanDetailsPage.jsx';
 import HowWeMakeMoneyPage from './pages/HowWeMakeMoneyPage';
 import LoansDepositsPage from './pages/LoansDepositsPage';
 import DepositsPage from './pages/DepositsPage';
+import DepositDetailPage from './pages/DepositDetailPage';
 import MortgagesPage from './pages/MortgagesPage';
 import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
@@ -15,6 +16,7 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import { SelectedCardsProvider } from './hooks/useSelectedCards';
 import { SelectedMortgagesProvider } from './hooks/useSelectedMortgages.jsx';
+import { SelectedDepositsProvider } from './hooks/useSelectedDeposits.jsx';
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
 import { ToastProvider } from './hooks/useToast.tsx';
 import NavBar from './components/NavBar';
@@ -41,6 +43,7 @@ function AppContent() {
         <Route path="/home-loans/:loanId" element={<HomeLoanDetailsPage />} />
         <Route path="/mortgages" element={<MortgagesPage />} />
         <Route path="/deposits" element={<DepositsPage />} />
+        <Route path="/deposits/:id" element={<DepositDetailPage />} />
         <Route path="/faqs" element={<FaqPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/terms" element={<TermsPage />} />
@@ -57,7 +60,9 @@ function App() {
       <ToastProvider>
         <SelectedCardsProvider>
           <SelectedMortgagesProvider>
-            <AppContent />
+            <SelectedDepositsProvider>
+              <AppContent />
+            </SelectedDepositsProvider>
           </SelectedMortgagesProvider>
         </SelectedCardsProvider>
       </ToastProvider>
