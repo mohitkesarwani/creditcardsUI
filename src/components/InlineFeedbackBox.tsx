@@ -7,7 +7,7 @@ interface Props {
   entityId: string;
   entityType: string;
   onClose: () => void;
-  onSubmitted?: (comment: string, rating: number) => void;
+  onSubmitted?: (comment: string, rating: number) => Promise<any> | void;
   initialComment?: string;
   initialRating?: number;
 }
@@ -28,30 +28,37 @@ export default function InlineFeedbackBox({
   const handlePost = async () => {
     setSaving(true);
     try {
-      if (rating > 0) {
-        if (comment.trim().length <= 2) {
-          toast('error', 'Comment must be at least 3 characters');
-          setSaving(false);
-          return;
+      if (onSubmitted) {
+        await Promise.resolve(onSubmitted(comment.trim(), rating));
+        toast(
+          'success',
+          rating > 0 ? 'Review posted' : 'Comment posted'
+        );
+      } else {
+        if (rating > 0) {
+          if (comment.trim().length <= 2) {
+            toast('error', 'Comment must be at least 3 characters');
+            setSaving(false);
+            return;
+          }
+          await postReview({
+            userId: 'anon',
+            entityId,
+            entityType,
+            rating,
+            commentText: comment.trim(),
+          });
+          toast('success', 'Review posted');
+        } else if (comment.trim()) {
+          await postComment({
+            userId: 'anon',
+            entityId,
+            entityType,
+            commentText: comment.trim(),
+          });
+          toast('success', 'Comment posted');
         }
-        await postReview({
-          userId: 'anon',
-          entityId,
-          entityType,
-          rating,
-          commentText: comment.trim(),
-        });
-        toast('success', 'Review posted');
-      } else if (comment.trim()) {
-        await postComment({
-          userId: 'anon',
-          entityId,
-          entityType,
-          commentText: comment.trim(),
-        });
-        toast('success', 'Comment posted');
       }
-      onSubmitted && onSubmitted(comment.trim(), rating);
       onClose();
     } catch {
       toast('error', 'Failed to post comment');
