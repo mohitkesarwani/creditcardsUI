@@ -105,7 +105,9 @@ function DepositCard({ deposit, highlightTags = [] }) {
         likes={engagement?.likes ?? 0}
         comments={commentCount}
         shares={engagement?.shares ?? 0}
-        rating={engagement?.rating ?? 0}
+        rating={
+          engagement?.rating ?? deposit.rating ?? deposit.averageRating ?? 0
+        }
         loading={isLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}
