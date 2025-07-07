@@ -20,6 +20,9 @@ app.use(express.json());
 app.use(requestLogger);
 
 const engagements = {};
+// Placeholder datasets for other product types
+const deposits = [];
+const homeLoans = [];
 
 const normalizeCard = (card) => {
   const interestRateRaw = card.feesAndPricing?.interestRates?.[0]?.rate;
@@ -50,16 +53,47 @@ const normalizeCard = (card) => {
   };
 };
 
+const summarizeEngagement = (id, type = 'credit-cards') => {
+  const key = type ? `${type}:${id}` : id;
+  const e = engagements[key] || engagements[id] || { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  return {
+    likes: e.likes || 0,
+    comments: e.comments || 0,
+    shares: e.shares || 0,
+    averageRating: e.rating || 0,
+  };
+};
+
 app.get('/api/credit-cards', async (req, res) => {
   try {
     const cards = await CreditCard.find({})
       .sort({ isSponsored: -1, sponsorRank: 1 })
       .lean();
-    res.json(cards.map(normalizeCard));
+    const withEngagement = cards.map((c) => ({
+      ...normalizeCard(c),
+      ...summarizeEngagement(String(c._id), 'credit-cards'),
+    }));
+    res.json(withEngagement);
   } catch (err) {
     console.error('Error fetching cards:', err.message);
     res.status(500).send('Server error');
   }
+});
+
+app.get('/api/deposits', async (_req, res) => {
+  const result = deposits.map((d) => ({
+    ...d,
+    ...summarizeEngagement(d.id, 'deposits'),
+  }));
+  res.json(result);
+});
+
+app.get('/api/home-loans', async (_req, res) => {
+  const result = homeLoans.map((h) => ({
+    ...h,
+    ...summarizeEngagement(h.id, 'home-loans'),
+  }));
+  res.json(result);
 });
 
 app.get('/api/credit-cards/:id', async (req, res) => {
@@ -155,6 +189,31 @@ app.post('/api/products/:id/review', (req, res) => {
   res.json(engagements[id]);
 });
 
+// Generic engagement endpoints
+app.get('/api/engagement/:id', (req, res) => {
+  const { id } = req.params;
+  const { entityType = 'generic' } = req.query;
+  const key = `${entityType}:${id}`;
+  if (!engagements[key]) engagements[key] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  res.json(engagements[key]);
+});
+
+app.post('/api/likes', (req, res) => {
+  const { entityId, entityType = 'generic' } = req.body;
+  const key = `${entityType}:${entityId}`;
+  if (!engagements[key]) engagements[key] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  engagements[key].likes += 1;
+  res.json(engagements[key]);
+});
+
+app.post('/api/shares', (req, res) => {
+  const { entityId, entityType = 'generic' } = req.body;
+  const key = `${entityType}:${entityId}`;
+  if (!engagements[key]) engagements[key] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+  engagements[key].shares += 1;
+  res.json(engagements[key]);
+});
+
 // Comment & Review endpoints
 app.post('/api/comments', async (req, res) => {
   try {
@@ -193,6 +252,12 @@ app.post('/api/reviews', async (req, res) => {
     } else {
       reviewDoc = await Review.create(req.body);
     }
+    const key = `${req.body.entityType}:${entityId}`;
+    if (!engagements[key]) engagements[key] = { likes: 0, shares: 0, comments: 0, rating: 0, reviews: [] };
+    engagements[key].reviews.push({ stars: rating });
+    engagements[key].comments = engagements[key].reviews.length;
+    const avg = engagements[key].reviews.reduce((a, r) => a + (r.stars || 0), 0) / engagements[key].reviews.length;
+    engagements[key].rating = Number(avg.toFixed(2));
     res.json(reviewDoc);
   } catch (err) {
     res.status(500).send('Error saving review');
