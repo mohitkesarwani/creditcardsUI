@@ -57,26 +57,29 @@ function MortgagesPage() {
           ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
         setAvailableBanks([...new Set(data.map(m => m.bankName || m.brandName).filter(Boolean))]);
-        const eng = {};
-        await Promise.all(
-          data.map(async (m) => {
-            try {
-              const res = await apiClient.get(`/api/products/${m.id}/engagement`);
-              eng[m.id] = {
+
+        setLoading(false);
+
+        data.forEach(async (m) => {
+          try {
+            const res = await apiClient.get(`/api/products/${m.id}/engagement`);
+            setEngagements(prev => ({
+              ...prev,
+              [m.id]: {
                 ...res.data,
-                comments:
-                  res.data.reviews?.length ?? res.data.comments ?? 0,
-              };
-            } catch {
-              eng[m.id] = { likes: 0, comments: 0, rating: 0 };
-            }
-          })
-        );
-        setEngagements(eng);
+                comments: res.data.reviews?.length ?? res.data.comments ?? 0,
+              },
+            }));
+          } catch {
+            setEngagements(prev => ({
+              ...prev,
+              [m.id]: { likes: 0, comments: 0, rating: 0 },
+            }));
+          }
+        });
       } catch (err) {
         console.error(err);
         setError('Failed to load mortgages');
-      } finally {
         setLoading(false);
       }
     };
