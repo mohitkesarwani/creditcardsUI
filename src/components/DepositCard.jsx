@@ -26,23 +26,18 @@ function DepositCard({ deposit, highlightTags = [] }) {
   };
 
   const handleFeedbackSubmit = async (comment, rating) => {
-    setUserComment(comment);
-    setUserRating(rating);
     try {
       if (rating > 0 && comment.trim().length <= 2) {
         toast('error', 'Comment must be at least 3 characters');
         return;
       }
       review.mutate({ name: 'Anonymous', comment, timestamp: new Date().toISOString(), stars: rating });
+      setUserRating(rating);
+      setUserComment('');
+      setFeedbackOpen(false);
     } catch {
       toast('error', 'Failed to post comment');
     }
-  };
-
-  const handleDelete = () => {
-    setUserComment('');
-    setUserRating(0);
-    toast('success', 'Comment deleted');
   };
 
   const handleApply = async () => {
@@ -134,14 +129,6 @@ function DepositCard({ deposit, highlightTags = [] }) {
           initialComment={userComment}
           initialRating={userRating}
         />
-      ) : userComment ? (
-        <div className="bg-white rounded-lg border px-4 py-3 mt-2 text-sm shadow">
-          <p className="whitespace-pre-line break-words">{userComment}</p>
-          <div className="flex justify-end gap-2 mt-2 text-xs">
-            <button type="button" onClick={() => setFeedbackOpen(true)} className="btn btn-secondary text-xs">Edit</button>
-            <button type="button" onClick={handleDelete} className="btn btn-secondary text-xs">Delete</button>
-          </div>
-        </div>
       ) : (
         <div className="bg-white rounded-lg border px-4 py-2 mt-2 text-sm text-gray-500 cursor-text" onClick={() => setFeedbackOpen(true)}>
           Add a comment...
