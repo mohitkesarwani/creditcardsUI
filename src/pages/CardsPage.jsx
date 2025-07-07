@@ -158,7 +158,8 @@ function CardsPage() {
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Card. No Guesswork.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Use smart filters to explore cards that match your lifestyle — rewards, cashback, travel perks and more.</p>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-2">Use smart filters to explore cards that match your lifestyle — rewards, cashback, travel perks and more.</p>
+          <p className="text-sm text-gray-600">{cards.length} cards available</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
