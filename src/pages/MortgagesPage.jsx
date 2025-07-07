@@ -109,8 +109,18 @@ function MortgagesPage() {
       }
       if (sortBy !== 'featured') {
         result = result.slice().sort((a, b) => {
-          const ea = engagements[a.id] || { likes: 0, comments: 0, rating: 0 };
-          const eb = engagements[b.id] || { likes: 0, comments: 0, rating: 0 };
+          const eaRaw = engagements[a.id] || {};
+          const ebRaw = engagements[b.id] || {};
+          const ea = {
+            likes: eaRaw.likes ?? a.likes ?? 0,
+            comments: eaRaw.comments ?? a.comments ?? 0,
+            rating: eaRaw.rating ?? a.rating ?? a.averageRating ?? 0,
+          };
+          const eb = {
+            likes: ebRaw.likes ?? b.likes ?? 0,
+            comments: ebRaw.comments ?? b.comments ?? 0,
+            rating: ebRaw.rating ?? b.rating ?? b.averageRating ?? 0,
+          };
           if (sortBy === 'mostLiked') return eb.likes - ea.likes;
           if (sortBy === 'mostCommented') return eb.comments - ea.comments;
           if (sortBy === 'topRated') return eb.rating - ea.rating;
