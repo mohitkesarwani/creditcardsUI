@@ -90,7 +90,8 @@ function DepositsPage() {
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Deposit.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Compare deposit products easily.</p>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-2">Compare deposit products easily.</p>
+          <p className="text-sm text-gray-600">{deposits.length} deposits available</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button className="md:hidden mb-2 btn btn-outline self-start" onClick={() => setShowFilters(true)}>Filters</button>
