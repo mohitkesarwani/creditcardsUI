@@ -17,6 +17,7 @@ function CardsPage() {
   const [availableBanks, setAvailableBanks] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
+  const scrollRef = useRef(null);
   const [filters, setFilters] = useState({
     annualFee: '',
     features: [],
@@ -133,12 +134,16 @@ function CardsPage() {
   // infinite scroll observer
   useEffect(() => {
     const el = loadMoreRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setVisibleCount((c) => Math.min(c + 20, filtered.length));
-      }
-    });
+    const root = scrollRef.current;
+    if (!el || !root) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((c) => Math.min(c + 20, filtered.length));
+        }
+      },
+      { root }
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, [filtered]);
@@ -188,7 +193,7 @@ function CardsPage() {
               Compare ({selected.length})
             </button>
           </div>
-          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
+          <div ref={scrollRef} className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
             <div className="mb-2 text-right">
               <label className="text-sm mr-2">Sort by</label>
               <select
