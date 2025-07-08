@@ -4,6 +4,7 @@ import MortgageCardGrid from '../components/MortgageCardGrid';
 import MortgageFilters from '../components/MortgageFilters';
 import MortgageCompareStickyButton from '../components/MortgageCompareStickyButton.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
+import Loader from '../components/Loader.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
 import apiClient from '../api/apiClient.js';
 import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
@@ -12,7 +13,7 @@ function MortgagesPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [mortgages, setMortgages] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [page, setPage] = useState(1);
+  const [nextCursor, setNextCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -20,16 +21,17 @@ function MortgagesPage() {
   const PAGE_SIZE = 20;
 
   const loadMore = async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore || !nextCursor) return;
     try {
       setLoading(true);
-      const { mortgages: items } = await fetchMortgages(page + 1, PAGE_SIZE);
+      const { mortgages: items } = await fetchMortgages(nextCursor, PAGE_SIZE);
       setMortgages((prev) => {
         const updated = [...prev, ...items];
-        setHasMore(updated.length < total);
+        const more = updated.length < total;
+        setHasMore(more);
+        setNextCursor(more ? nextCursor + 1 : null);
         return updated;
       });
-      setPage((p) => p + 1);
       setAvailableFeatures((prev) => [
         ...new Set([...prev, ...items.flatMap((m) => getMortgageFeatureTags(m))]),
       ]);
@@ -68,6 +70,7 @@ function MortgagesPage() {
     rootRef: containerRef,
     hasMore,
     loading,
+    rootMargin: '0px 0px -20% 0px',
   });
 
   const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], bank: '' });
@@ -86,8 +89,9 @@ function MortgagesPage() {
         const { mortgages: items, total } = await fetchMortgages(1, 20);
         setMortgages(items);
         setTotal(total);
-        setPage(1);
-        setHasMore(items.length < total);
+        const more = items.length < total;
+        setHasMore(more);
+        setNextCursor(more ? 2 : null);
         setFiltered(items);
         const rates = items
           .map((m) => parseFloat(m.lendingRates?.[0]?.rate))
@@ -199,7 +203,7 @@ function MortgagesPage() {
     localStorage.setItem('mortgageFilters', JSON.stringify(filters));
   }, [filters, rateBounds]);
 
-  if (loading) return <LoaderSkeleton rows={4} />;
+  if (loading && mortgages.length === 0) return <LoaderSkeleton rows={4} />;
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
@@ -258,6 +262,14 @@ function MortgagesPage() {
               adFrequency={adFrequency}
             />
             <div ref={sentinelRef} className="h-10" />
+            {loading && mortgages.length > 0 && (
+              <Loader message="Loading more..." />
+            )}
+            {!hasMore && !loading && (
+              <p className="text-center py-4 text-sm text-gray-500">
+                End of Results
+              </p>
+            )}
           </div>
         </div>
       </div>
