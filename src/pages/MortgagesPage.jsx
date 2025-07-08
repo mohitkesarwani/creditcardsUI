@@ -143,11 +143,15 @@ function MortgagesPage() {
   useEffect(() => {
     const el = loadMoreRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        setVisibleCount(c => Math.min(c + 20, filtered.length));
-      }
-    });
+    const container = el.parentElement;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((c) => Math.min(c + 20, filtered.length));
+        }
+      },
+      { root: container }
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, [filtered]);
