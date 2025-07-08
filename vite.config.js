@@ -6,6 +6,9 @@ export default defineConfig(({ mode }) => {
   const backendUrl = env.VITE_API_BASE_URL || 'http://localhost:3000';
   return {
     plugins: [react()],
+    build: {
+      target: 'esnext',
+    },
     server: {
       proxy: {
         '/api': {
