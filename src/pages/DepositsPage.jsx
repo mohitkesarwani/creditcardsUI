@@ -10,7 +10,7 @@ function DepositsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [deposits, setDeposits] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount, setVisibleCount] = useState(10);
   const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({ rate: [0, 0], features: [], bank: '' });
   const [rateBounds, setRateBounds] = useState([0, 0]);
@@ -73,7 +73,7 @@ function DepositsPage() {
   }, [filters, deposits]);
 
   useEffect(() => {
-    setVisibleCount(20);
+    setVisibleCount(10);
   }, [filtered]);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ function DepositsPage() {
     if (!el) return;
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        setVisibleCount((c) => Math.min(c + 20, filtered.length));
+        setVisibleCount((c) => Math.min(c + 10, filtered.length));
       }
     });
     observer.observe(el);
@@ -90,6 +90,12 @@ function DepositsPage() {
 
   if (loading) return <LoaderSkeleton rows={5} />;
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
+  if (!filtered.length && deposits.length === 0)
+    return (
+      <p className="text-center py-8" data-testid="no-deposits-found">
+        No deposits found.
+      </p>
+    );
 
   return (
     <ErrorBoundary>
