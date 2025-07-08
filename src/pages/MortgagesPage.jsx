@@ -103,8 +103,8 @@ function MortgagesPage() {
       if (filters.bank) {
         const term = filters.bank.toLowerCase();
         result = result.filter(m =>
-          (m.bankName && m.bankName.toLowerCase().includes(term)) ||
-          (m.brandName && m.brandName.toLowerCase().includes(term))
+          (typeof m.bankName === 'string' && m.bankName.toLowerCase().includes(term)) ||
+          (typeof m.brandName === 'string' && m.brandName.toLowerCase().includes(term))
         );
       }
       if (sortBy !== 'featured') {

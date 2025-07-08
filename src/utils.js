@@ -16,7 +16,7 @@ export function formatValue(label, value, fallback = '–') {
   if (typeof val === 'string' && (/\$/i.test(val) || /%/.test(val))) return val;
   const num = parseFloat(val);
   if (!Number.isNaN(num)) {
-    const l = label.toLowerCase();
+    const l = String(label).toLowerCase();
     if (/fee|payment|amount|cash|advance/.test(l)) return formatMoney(num);
     if (/rate|interest|percent|comparison/.test(l)) return formatPercent(num);
     if (num >= 0 && num <= 1) return formatPercent(num);
@@ -90,7 +90,9 @@ export function findFeeAmount(card, label) {
   if (!label) return null;
   const fees = card.details?.fees || card.fees || [];
   const entry = fees.find(
-    (f) => f.name && f.name.toLowerCase().includes(label.toLowerCase())
+    (f) =>
+      typeof f.name === 'string' &&
+      f.name.toLowerCase().includes(String(label).toLowerCase())
   );
   return entry ? entry.amount : null;
 }
@@ -112,7 +114,7 @@ export function getFeatureTags(card, max = 3) {
   }
   card?.features?.forEach((f) => {
     if (!f.featureType) return;
-    const t = f.featureType.toLowerCase();
+    const t = String(f.featureType).toLowerCase();
     if (t.includes('reward')) tags.add('Rewards');
     if (t.includes('travel')) tags.add('Travel');
     if (t.includes('balance')) tags.add('Balance Transfer');
@@ -152,7 +154,7 @@ export function categorizeFeatures(features = []) {
     Other: [],
   };
   features.forEach((f) => {
-    if (!f?.featureType) return;
+    if (!f?.featureType || typeof f.featureType !== 'string') return;
     const normalized = f.featureType.trim().toUpperCase();
     if (normalized === 'OTHER' || normalized === 'UNLIMITED_TXNS') return;
     const t = normalized.toLowerCase();
@@ -224,7 +226,7 @@ export function getCardTags(card, maxSellingPoints = 4) {
 }
 
 export function normalizeMortgageFeature(label) {
-  if (!label) return null;
+  if (!label || typeof label !== 'string') return null;
   const upper = label.trim().toUpperCase();
   if (upper === 'OTHER') return null;
   if (upper.includes('DIGITAL')) return 'Digital Access';
@@ -263,9 +265,9 @@ export function getInternationalFee(card, multi = false) {
   const fees = card.details?.fees || card.fees || [];
   const entry = fees.find(
     (f) =>
-      f.name &&
+      typeof f.name === 'string' &&
       f.name.toLowerCase().includes('transaction') &&
-      f.name.toLowerCase().includes(label)
+      f.name.toLowerCase().includes(String(label).toLowerCase())
   );
   return entry ? entry.amount : null;
 }
@@ -296,7 +298,7 @@ export function getDigitalWallets(card) {
 export function getInsuranceTypes(card) {
   const list = [];
   card?.features?.forEach((f) => {
-    const t = (f.featureType || '').toLowerCase();
+    const t = String(f.featureType || '').toLowerCase();
     if (t.includes('insurance') || t.includes('protection')) {
       list.push(f.additionalValue ? `${f.featureType} - ${f.additionalValue}` : f.featureType);
     }

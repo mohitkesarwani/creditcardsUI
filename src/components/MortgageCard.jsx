@@ -87,7 +87,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           <p
             key={f.name}
             className="card-subtext flex items-center gap-1"
-            data-testid={`fee-${f.name.toLowerCase().replace(/\s+/g, '-')}`}
+            data-testid={`fee-${String(f.name).toLowerCase().replace(/\s+/g, '-')}`}
           >
             <span className="font-bold">{f.name}:</span> {formatMoney(f.amount)}
           </p>
