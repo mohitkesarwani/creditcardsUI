@@ -58,8 +58,8 @@ function DepositsPage() {
       const term = filters.bank.toLowerCase();
       result = result.filter(
         (d) =>
-          (d.brand && d.brand.toLowerCase().includes(term)) ||
-          (d.brandName && d.brandName.toLowerCase().includes(term))
+          (typeof d.brand === 'string' && d.brand.toLowerCase().includes(term)) ||
+          (typeof d.brandName === 'string' && d.brandName.toLowerCase().includes(term))
       );
     }
     setAvailableBanks([...new Set(result.map((d) => d.brand || d.brandName).filter(Boolean))]);
