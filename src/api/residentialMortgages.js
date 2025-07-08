@@ -7,7 +7,7 @@ const normalizeMortgage = (data) => ({
 
 export const fetchMortgages = async (params = {}) => {
   try {
-    const response = await apiClient.get('/api/residential-mortgages', { params });
+    const response = await apiClient.get('/api/home-loans', { params });
     return response.data.map(normalizeMortgage);
   } catch (err) {
     console.error('Error fetching mortgages:', err);
@@ -17,7 +17,7 @@ export const fetchMortgages = async (params = {}) => {
 
 export const fetchMortgage = async (id) => {
   try {
-    const response = await apiClient.get(`/api/residential-mortgages/${id}`);
+    const response = await apiClient.get(`/api/home-loans/${id}`);
     return normalizeMortgage(response.data);
   } catch (err) {
     console.error('Error fetching mortgage:', err);
