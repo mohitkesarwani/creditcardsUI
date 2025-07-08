@@ -75,7 +75,7 @@ function CardsPage() {
     if (filters.features.length) {
       result = result.filter((c) =>
         filters.features.every((f) =>
-          c.tags.some((t) => t.toLowerCase() === f.toLowerCase())
+          c.tags.some((t) => String(t).toLowerCase() === String(f).toLowerCase())
         )
       );
     }

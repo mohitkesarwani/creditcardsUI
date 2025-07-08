@@ -16,7 +16,7 @@ export function formatValue(label, value, fallback = '–') {
   if (typeof val === 'string' && (/\$/i.test(val) || /%/.test(val))) return val;
   const num = parseFloat(val);
   if (!Number.isNaN(num)) {
-    const l = label.toLowerCase();
+    const l = String(label).toLowerCase();
     if (/fee|payment|amount|cash|advance/.test(l)) return formatMoney(num);
     if (/rate|interest|percent|comparison/.test(l)) return formatPercent(num);
     if (num >= 0 && num <= 1) return formatPercent(num);
@@ -92,7 +92,7 @@ export function findFeeAmount(card, label) {
   const entry = fees.find(
     (f) =>
       typeof f.name === 'string' &&
-      f.name.toLowerCase().includes(label.toLowerCase())
+      f.name.toLowerCase().includes(String(label).toLowerCase())
   );
   return entry ? entry.amount : null;
 }
@@ -267,7 +267,7 @@ export function getInternationalFee(card, multi = false) {
     (f) =>
       typeof f.name === 'string' &&
       f.name.toLowerCase().includes('transaction') &&
-      f.name.toLowerCase().includes(label)
+      f.name.toLowerCase().includes(String(label).toLowerCase())
   );
   return entry ? entry.amount : null;
 }
