@@ -2,7 +2,7 @@ import apiClient from './apiClient.js';
 
 const normalizeDeposit = (data) => ({
   ...data,
-  id: data.id || data._id,
+  id: data.id || data.productId || data._id,
 });
 
 const extractList = (payload) => {
