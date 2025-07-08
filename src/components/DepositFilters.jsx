@@ -42,7 +42,7 @@ function DepositFilters({ filters, setFilters, availableFeatures = [], rateBound
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
-          step={0.005}
+          step={0.01}
           value={filters.rate}
           onChange={(val) => update('rate', val)}
           asPercent

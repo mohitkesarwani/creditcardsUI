@@ -58,11 +58,13 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
         )}
       </details>
       <details open className="p-4 mt-4" aria-label="Filter by interest rate">
-        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Interest Rate Range</summary>
+        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">
+          Interest Rate Range ({formatPercent(rateBounds[0])} – {formatPercent(rateBounds[1])})
+        </summary>
         <RangeSlider
           min={rateBounds[0]}
           max={rateBounds[1]}
-          step={0.005}
+          step={0.01}
           value={filters.rate}
           onChange={(val) => update('rate', val)}
           asPercent
