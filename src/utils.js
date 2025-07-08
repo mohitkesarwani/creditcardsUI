@@ -112,7 +112,7 @@ export function getFeatureTags(card, max = 3) {
   }
   card?.features?.forEach((f) => {
     if (!f.featureType) return;
-    const t = f.featureType.toLowerCase();
+    const t = String(f.featureType).toLowerCase();
     if (t.includes('reward')) tags.add('Rewards');
     if (t.includes('travel')) tags.add('Travel');
     if (t.includes('balance')) tags.add('Balance Transfer');
@@ -152,7 +152,7 @@ export function categorizeFeatures(features = []) {
     Other: [],
   };
   features.forEach((f) => {
-    if (!f?.featureType) return;
+    if (!f?.featureType || typeof f.featureType !== 'string') return;
     const normalized = f.featureType.trim().toUpperCase();
     if (normalized === 'OTHER' || normalized === 'UNLIMITED_TXNS') return;
     const t = normalized.toLowerCase();
@@ -224,7 +224,7 @@ export function getCardTags(card, maxSellingPoints = 4) {
 }
 
 export function normalizeMortgageFeature(label) {
-  if (!label) return null;
+  if (!label || typeof label !== 'string') return null;
   const upper = label.trim().toUpperCase();
   if (upper === 'OTHER') return null;
   if (upper.includes('DIGITAL')) return 'Digital Access';
