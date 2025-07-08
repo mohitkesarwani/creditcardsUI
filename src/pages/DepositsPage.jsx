@@ -10,10 +10,11 @@ function DepositsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [deposits, setDeposits] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(10);
+  const [visibleCount, setVisibleCount] = useState(20);
   const loadMoreRef = useRef(null);
-  const [filters, setFilters] = useState({ rate: [0, 0], features: [], bank: '' });
-  const [rateBounds, setRateBounds] = useState([0, 0]);
+  const DEFAULT_RATE = [0, 20];
+  const [filters, setFilters] = useState({ rate: DEFAULT_RATE, features: [], bank: '' });
+  const [rateBounds, setRateBounds] = useState(DEFAULT_RATE);
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -21,24 +22,22 @@ function DepositsPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    setFilters({ rate: DEFAULT_RATE, features: [], bank: '' });
+  }, []);
+
+  useEffect(() => {
     const load = async () => {
       try {
         const data = await fetchDeposits();
         setDeposits(data);
         setFiltered(data);
-        const rates = data
-          .map((d) => parseFloat(d.interestRate))
-          .filter((n) => !Number.isNaN(n));
-        if (rates.length) {
-          const minRate = Math.min(...rates);
-          const maxRate = Math.max(...rates);
-          setRateBounds([minRate, maxRate]);
-          setFilters({ rate: [minRate, maxRate], features: [], bank: '' });
-        }
+        setRateBounds(DEFAULT_RATE);
         setAvailableFeatures([
           ...new Set(data.flatMap((d) => getDepositFeatureTags(d)))
         ]);
-        setAvailableBanks([...new Set(data.map((d) => d.brand || d.brandName).filter(Boolean))]);
+        setAvailableBanks([
+          ...new Set(data.map((d) => d.brand || d.brandName).filter(Boolean))
+        ]);
       } catch (err) {
         setError('Failed to load deposits');
       } finally {
@@ -52,7 +51,7 @@ function DepositsPage() {
     let result = deposits;
     result = result.filter((d) => {
       const rate = parseFloat(d.interestRate);
-      if (Number.isNaN(rate)) return false;
+      if (Number.isNaN(rate)) return true;
       return rate >= filters.rate[0] && rate <= filters.rate[1];
     });
     if (filters.features.length) {
@@ -73,17 +72,21 @@ function DepositsPage() {
   }, [filters, deposits]);
 
   useEffect(() => {
-    setVisibleCount(10);
+    setVisibleCount(20);
   }, [filtered]);
 
   useEffect(() => {
     const el = loadMoreRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setVisibleCount((c) => Math.min(c + 10, filtered.length));
-      }
-    });
+    const container = el.parentElement;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((c) => Math.min(c + 20, filtered.length));
+        }
+      },
+      { root: container }
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, [filtered]);
@@ -124,7 +127,12 @@ function DepositsPage() {
             </button>
           </div>
           <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
-            <DepositCardGrid deposits={filtered.slice(0, visibleCount)} selectedTags={filters.features} adFrequency={adFrequency} />
+            <DepositCardGrid
+              deposits={filtered.slice(0, visibleCount)}
+              selectedTags={filters.features}
+              adFrequency={adFrequency}
+              totalCount={filtered.length}
+            />
             <div ref={loadMoreRef} className="h-10" />
           </div>
         </div>

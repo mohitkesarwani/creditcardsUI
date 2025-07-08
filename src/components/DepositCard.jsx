@@ -67,6 +67,9 @@ function DepositCard({ deposit, highlightTags = [] }) {
         }}
       />
       <h3 className="card-title mb-1">{deposit.name}</h3>
+      {deposit.brand && (
+        <p className="text-xs text-gray-500 mb-1">{deposit.brand}</p>
+      )}
       <FeatureTags
         tags={getDepositFeatureTags(deposit)}
         highlightTags={highlightTags}
