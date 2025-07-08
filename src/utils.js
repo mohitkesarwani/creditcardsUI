@@ -244,6 +244,29 @@ export function getMortgageFeatureTags(mortgage) {
   return Array.from(new Set(tags));
 }
 
+export function formatDepositFeature(feature) {
+  if (!feature) return '';
+  if (typeof feature === 'string') return feature;
+  const base = feature.name || feature.featureType || '';
+  const value =
+    feature.amount !== undefined
+      ? formatMoney(feature.amount)
+      : feature.additionalValue || feature.value || '';
+  return [base, value].filter(Boolean).join(' - ');
+}
+
+export function getDepositFeatureTags(deposit) {
+  if (!deposit?.features) return [];
+  const tags = deposit.features
+    .map((f) =>
+      typeof f === 'string'
+        ? f
+        : f.name || f.featureType || ''
+    )
+    .filter(Boolean);
+  return Array.from(new Set(tags));
+}
+
 export function getPurchaseInterestRate(card) {
   const rates = card.lendingRates || card.feesAndPricing?.interestRates || [];
   const entry = rates.find(

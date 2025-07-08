@@ -3,6 +3,8 @@ import { fetchDeposits } from '../api/deposits';
 import DepositCardGrid from '../components/DepositCardGrid';
 import DepositFilters from '../components/DepositFilters';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
+import { getDepositFeatureTags } from '../utils.js';
+import ErrorBoundary from '../components/ErrorBoundary.jsx';
 
 function DepositsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
@@ -33,7 +35,9 @@ function DepositsPage() {
           setRateBounds([minRate, maxRate]);
           setFilters({ rate: [minRate, maxRate], features: [], bank: '' });
         }
-        setAvailableFeatures([...new Set(data.flatMap((d) => d.features || []))]);
+        setAvailableFeatures([
+          ...new Set(data.flatMap((d) => getDepositFeatureTags(d)))
+        ]);
         setAvailableBanks([...new Set(data.map((d) => d.brand || d.brandName).filter(Boolean))]);
       } catch (err) {
         setError('Failed to load deposits');
@@ -52,7 +56,9 @@ function DepositsPage() {
       return rate >= filters.rate[0] && rate <= filters.rate[1];
     });
     if (filters.features.length) {
-      result = result.filter((d) => filters.features.every((f) => (d.features || []).includes(f)));
+      result = result.filter((d) =>
+        filters.features.every((f) => getDepositFeatureTags(d).includes(f))
+      );
     }
     if (filters.bank) {
       const term = filters.bank.toLowerCase();
@@ -86,8 +92,9 @@ function DepositsPage() {
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen flex flex-col overflow-x-hidden">
-      <div className="max-w-6xl mx-auto flex flex-col h-full">
+    <ErrorBoundary>
+      <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen flex flex-col overflow-x-hidden">
+        <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Deposit.</h1>
           <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-2">Compare deposit products easily.</p>
@@ -117,6 +124,7 @@ function DepositsPage() {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }
 
