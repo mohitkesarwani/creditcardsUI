@@ -96,8 +96,8 @@ function CardsPage() {
       const term = filters.bank.toLowerCase();
       result = result.filter(
         (c) =>
-          (c.brandName && c.brandName.toLowerCase().includes(term)) ||
-          (c.brand && c.brand.toLowerCase().includes(term))
+          (typeof c.brandName === 'string' && c.brandName.toLowerCase().includes(term)) ||
+          (typeof c.brand === 'string' && c.brand.toLowerCase().includes(term))
       );
     }
 

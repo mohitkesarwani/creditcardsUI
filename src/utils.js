@@ -90,7 +90,9 @@ export function findFeeAmount(card, label) {
   if (!label) return null;
   const fees = card.details?.fees || card.fees || [];
   const entry = fees.find(
-    (f) => f.name && f.name.toLowerCase().includes(label.toLowerCase())
+    (f) =>
+      typeof f.name === 'string' &&
+      f.name.toLowerCase().includes(label.toLowerCase())
   );
   return entry ? entry.amount : null;
 }
@@ -263,7 +265,7 @@ export function getInternationalFee(card, multi = false) {
   const fees = card.details?.fees || card.fees || [];
   const entry = fees.find(
     (f) =>
-      f.name &&
+      typeof f.name === 'string' &&
       f.name.toLowerCase().includes('transaction') &&
       f.name.toLowerCase().includes(label)
   );
@@ -296,7 +298,7 @@ export function getDigitalWallets(card) {
 export function getInsuranceTypes(card) {
   const list = [];
   card?.features?.forEach((f) => {
-    const t = (f.featureType || '').toLowerCase();
+    const t = String(f.featureType || '').toLowerCase();
     if (t.includes('insurance') || t.includes('protection')) {
       list.push(f.additionalValue ? `${f.featureType} - ${f.additionalValue}` : f.featureType);
     }
