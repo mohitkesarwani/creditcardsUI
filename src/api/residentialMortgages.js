@@ -17,7 +17,9 @@ export const fetchMortgages = async (page = 1, limit = 20, params = {}) => {
       ? data
       : data.items || [];
     const total = data.total ?? list.length;
-    return { mortgages: list.map(normalizeMortgage), total };
+    const minRate = typeof data.minRate === 'number' ? data.minRate : null;
+    const maxRate = typeof data.maxRate === 'number' ? data.maxRate : null;
+    return { mortgages: list.map(normalizeMortgage), total, minRate, maxRate };
   } catch (err) {
     console.error('Error fetching mortgages:', err);
     throw err;

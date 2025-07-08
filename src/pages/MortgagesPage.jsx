@@ -73,8 +73,9 @@ function MortgagesPage() {
     rootMargin: '0px 0px -20% 0px',
   });
 
-  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], bank: '' });
-  const [rateBounds, setRateBounds] = useState([0, 0]);
+  const DEFAULT_RANGE = [0.5, 15];
+  const [filters, setFilters] = useState({ rate: DEFAULT_RANGE, fees: [], features: [], bank: '' });
+  const [rateBounds, setRateBounds] = useState(DEFAULT_RANGE);
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -86,7 +87,12 @@ function MortgagesPage() {
     const load = async () => {
       try {
         setLoading(true);
-        const { mortgages: items, total } = await fetchMortgages(1, 20);
+        const {
+          mortgages: items,
+          total,
+          minRate: apiMin,
+          maxRate: apiMax,
+        } = await fetchMortgages(1, 20);
         setMortgages(items);
         setTotal(total);
         const more = items.length < total;
@@ -96,26 +102,27 @@ function MortgagesPage() {
         const rates = items
           .map((m) => parseFloat(m.lendingRates?.[0]?.rate))
           .filter((n) => !Number.isNaN(n));
-        if (rates.length) {
-          const minRate = Math.min(...rates);
-          const maxRate = Math.max(...rates);
-          setRateBounds([minRate, maxRate]);
-          const stored = localStorage.getItem('mortgageFilters');
-          if (stored) {
-            try {
-              const parsed = JSON.parse(stored);
-              setFilters({
-                rate: parsed.rate || [minRate, maxRate],
-                fees: parsed.fees || [],
-                features: parsed.features || [],
-                bank: parsed.bank || '',
-              });
-            } catch {
-              setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
-            }
-          } else {
+        const computedMin = rates.length ? Math.min(...rates) : 0.5;
+        const computedMax = rates.length ? Math.max(...rates) : 15;
+        const minRate = apiMin ?? computedMin;
+        const maxRate = apiMax ?? computedMax;
+        setRateBounds([minRate, maxRate]);
+
+        const stored = localStorage.getItem('mortgageFilters');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            setFilters({
+              rate: parsed.rate || [minRate, maxRate],
+              fees: parsed.fees || [],
+              features: parsed.features || [],
+              bank: parsed.bank || '',
+            });
+          } catch {
             setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
           }
+        } else {
+          setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
         }
         setAvailableFeatures([
           ...new Set(items.flatMap((m) => getMortgageFeatureTags(m))),
@@ -154,11 +161,15 @@ function MortgagesPage() {
   useEffect(() => {
     const handle = setTimeout(() => {
       let result = mortgages;
-      result = result.filter(m => {
-        const rate = parseFloat(m.lendingRates?.[0]?.rate);
-        if (Number.isNaN(rate)) return false;
-        return rate >= filters.rate[0] && rate <= filters.rate[1];
-      });
+      if (
+        !(filters.rate[0] === rateBounds[0] && filters.rate[1] === rateBounds[1])
+      ) {
+        result = result.filter((m) => {
+          const rate = parseFloat(m.lendingRates?.[0]?.rate);
+          if (Number.isNaN(rate)) return false;
+          return rate >= filters.rate[0] && rate <= filters.rate[1];
+        });
+      }
       if (filters.features.length) {
         result = result.filter(m => {
           const tags = getMortgageFeatureTags(m);
@@ -199,7 +210,6 @@ function MortgagesPage() {
   }, [filters, mortgages, sortBy, engagements]);
 
   useEffect(() => {
-    if (rateBounds[0] === 0 && rateBounds[1] === 0) return;
     localStorage.setItem('mortgageFilters', JSON.stringify(filters));
   }, [filters, rateBounds]);
 
