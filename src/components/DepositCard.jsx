@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FeatureTags from './FeatureTags.tsx';
+import { getDepositFeatureTags } from '../utils.js';
 import ActionButtons from './ActionButtons.tsx';
 import SocialStats from './SocialStats.tsx';
 import InlineFeedbackBox from './InlineFeedbackBox.tsx';
@@ -66,7 +67,11 @@ function DepositCard({ deposit, highlightTags = [] }) {
         }}
       />
       <h3 className="card-title mb-1">{deposit.name}</h3>
-      <FeatureTags tags={deposit.features || []} highlightTags={highlightTags} className="mb-2" />
+      <FeatureTags
+        tags={getDepositFeatureTags(deposit)}
+        highlightTags={highlightTags}
+        className="mb-2"
+      />
       <div className="grid gap-1 mb-2 text-sm">
         {deposit.interestRate && (
           <p className="card-subtext">

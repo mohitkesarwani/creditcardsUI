@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchDeposit } from '../api/deposits';
 import Disclaimers from '../components/Disclaimers';
@@ -8,8 +8,10 @@ import ReviewsSection from '../components/ReviewsSection.tsx';
 import FeatureTags from '../components/FeatureTags.tsx';
 import ActionButtons from '../components/ActionButtons.tsx';
 import useEntityEngagement from '../hooks/useEntityEngagement.ts';
+import { formatDepositFeature, getDepositFeatureTags } from '../utils.js';
+import ErrorBoundary from '../components/ErrorBoundary.jsx';
 
-function DepositDetailPage() {
+function DepositDetailPageContent() {
   const { id } = useParams();
   const [deposit, setDeposit] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,6 +36,14 @@ function DepositDetailPage() {
   useEffect(() => {
     if (!deposit) return;
     document.title = `${deposit.name} - RewardRadar`;
+  }, [deposit]);
+
+  const featureRows = useMemo(() => {
+    if (!Array.isArray(deposit?.features)) return [];
+    return deposit.features.map((f) => ({
+      key: f?.name || f?.featureType || (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36)),
+      label: formatDepositFeature(f),
+    }));
   }, [deposit]);
 
   if (loading) return <LoaderSkeleton rows={6} />;
@@ -61,7 +71,10 @@ function DepositDetailPage() {
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-semibold">{deposit.name}</h1>
               <p className="text-gray-600 text-sm md:text-base mt-2">{deposit.description}</p>
-              <FeatureTags tags={deposit.features || []} className="mt-3" />
+              <FeatureTags
+                tags={getDepositFeatureTags(deposit)}
+                className="mt-3"
+              />
               <div className="grid gap-1 mt-3 text-sm">
                 {deposit.interestRate && (
                   <p className="card-subtext">
@@ -99,12 +112,12 @@ function DepositDetailPage() {
             </div>
           </div>
 
-          {deposit.features?.length > 0 && (
+          {featureRows.length > 0 && (
             <section className="mt-8 border-t pt-6">
               <h3 className="section-heading mb-4">Features</h3>
               <ul className="list-disc ml-5 space-y-1 text-sm">
-                {deposit.features.map((f, i) => (
-                  <li key={i}>{f}</li>
+                {featureRows.map((f) => (
+                  <li key={f.key}>{f.label}</li>
                 ))}
               </ul>
             </section>
@@ -118,6 +131,14 @@ function DepositDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function DepositDetailPage() {
+  return (
+    <ErrorBoundary>
+      <DepositDetailPageContent />
+    </ErrorBoundary>
   );
 }
 
