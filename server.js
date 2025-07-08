@@ -96,6 +96,14 @@ app.get('/api/home-loans', async (_req, res) => {
   res.json(result);
 });
 
+app.get('/api/residential-mortgages', async (_req, res) => {
+  const result = homeLoans.map((h) => ({
+    ...h,
+    ...summarizeEngagement(h.id, 'home-loans'),
+  }));
+  res.json({ mortgages: result, total: result.length });
+});
+
 app.get('/api/credit-cards/:id', async (req, res) => {
   try {
     const { id } = req.params;

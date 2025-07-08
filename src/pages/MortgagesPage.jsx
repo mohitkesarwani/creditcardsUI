@@ -6,19 +6,75 @@ import MortgageCompareStickyButton from '../components/MortgageCompareStickyButt
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
 import apiClient from '../api/apiClient.js';
+import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
 
 function MortgagesPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [mortgages, setMortgages] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(20);
-  const loadMoreRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const containerRef = useRef(null);
+  const PAGE_SIZE = 20;
+
+  const loadMore = async () => {
+    if (loading || !hasMore) return;
+    try {
+      setLoading(true);
+      const { mortgages: items } = await fetchMortgages(page + 1, PAGE_SIZE);
+      setMortgages((prev) => {
+        const updated = [...prev, ...items];
+        setHasMore(updated.length < total);
+        return updated;
+      });
+      setPage((p) => p + 1);
+      setAvailableFeatures((prev) => [
+        ...new Set([...prev, ...items.flatMap((m) => getMortgageFeatureTags(m))]),
+      ]);
+      setAvailableBanks((prev) => [
+        ...new Set([
+          ...prev,
+          ...items.map((m) => m.bankName || m.brandName).filter(Boolean),
+        ]),
+      ]);
+      items.forEach(async (m) => {
+        try {
+          const res = await apiClient.get(`/api/products/${m.id}/engagement`);
+          setEngagements((prev) => ({
+            ...prev,
+            [m.id]: {
+              ...res.data,
+              comments: res.data.reviews?.length ?? res.data.comments ?? 0,
+            },
+          }));
+        } catch {
+          setEngagements((prev) => ({
+            ...prev,
+            [m.id]: { likes: 0, comments: 0, rating: 0 },
+          }));
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      setError('Failed to load mortgages');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sentinelRef = useInfiniteScroll(loadMore, {
+    rootRef: containerRef,
+    hasMore,
+    loading,
+  });
+
   const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], bank: '' });
   const [rateBounds, setRateBounds] = useState([0, 0]);
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('featured');
   const [engagements, setEngagements] = useState({});
@@ -26,12 +82,16 @@ function MortgagesPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await fetchMortgages();
-        setMortgages(data);
-        setFiltered(data);
-        const rates = data
-          .map(m => parseFloat(m.lendingRates?.[0]?.rate))
-          .filter(n => !Number.isNaN(n));
+        setLoading(true);
+        const { mortgages: items, total } = await fetchMortgages(1, 20);
+        setMortgages(items);
+        setTotal(total);
+        setPage(1);
+        setHasMore(items.length < total);
+        setFiltered(items);
+        const rates = items
+          .map((m) => parseFloat(m.lendingRates?.[0]?.rate))
+          .filter((n) => !Number.isNaN(n));
         if (rates.length) {
           const minRate = Math.min(...rates);
           const maxRate = Math.max(...rates);
@@ -54,16 +114,16 @@ function MortgagesPage() {
           }
         }
         setAvailableFeatures([
-          ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
+          ...new Set(items.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
-        setAvailableBanks([...new Set(data.map(m => m.bankName || m.brandName).filter(Boolean))]);
+        setAvailableBanks([
+          ...new Set(items.map((m) => m.bankName || m.brandName).filter(Boolean)),
+        ]);
 
-        setLoading(false);
-
-        data.forEach(async (m) => {
+        items.forEach(async (m) => {
           try {
             const res = await apiClient.get(`/api/products/${m.id}/engagement`);
-            setEngagements(prev => ({
+            setEngagements((prev) => ({
               ...prev,
               [m.id]: {
                 ...res.data,
@@ -71,7 +131,7 @@ function MortgagesPage() {
               },
             }));
           } catch {
-            setEngagements(prev => ({
+            setEngagements((prev) => ({
               ...prev,
               [m.id]: { likes: 0, comments: 0, rating: 0 },
             }));
@@ -80,6 +140,7 @@ function MortgagesPage() {
       } catch (err) {
         console.error(err);
         setError('Failed to load mortgages');
+      } finally {
         setLoading(false);
       }
     };
@@ -138,24 +199,6 @@ function MortgagesPage() {
     localStorage.setItem('mortgageFilters', JSON.stringify(filters));
   }, [filters, rateBounds]);
 
-  useEffect(() => { setVisibleCount(20); }, [filtered]);
-
-  useEffect(() => {
-    const el = loadMoreRef.current;
-    if (!el) return;
-    const container = el.parentElement;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((c) => Math.min(c + 20, filtered.length));
-        }
-      },
-      { root: container }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [filtered]);
-
   if (loading) return <LoaderSkeleton rows={4} />;
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
@@ -195,7 +238,7 @@ function MortgagesPage() {
               Close
             </button>
           </div>
-          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4" data-testid="mortgage-scroll">
+          <div ref={containerRef} className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4" data-testid="mortgage-scroll">
             <div className="mb-2 text-right">
               <label className="text-sm mr-2">Sort by</label>
               <select
@@ -210,11 +253,11 @@ function MortgagesPage() {
               </select>
             </div>
             <MortgageCardGrid
-              mortgages={filtered.slice(0, visibleCount)}
+              mortgages={filtered}
               selectedTags={filters.features}
               adFrequency={adFrequency}
             />
-            <div ref={loadMoreRef} className="h-10" />
+            <div ref={sentinelRef} className="h-10" />
           </div>
         </div>
       </div>

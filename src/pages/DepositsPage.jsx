@@ -5,13 +5,18 @@ import DepositFilters from '../components/DepositFilters';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import { getDepositFeatureTags } from '../utils.js';
 import ErrorBoundary from '../components/ErrorBoundary.jsx';
+import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
 
 function DepositsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [deposits, setDeposits] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
-  const loadMoreRef = useRef(null);
+  const containerRef = useRef(null);
+  const sentinelRef = useInfiniteScroll(
+    () => setVisibleCount((c) => Math.min(c + 20, filtered.length)),
+    { rootRef: containerRef }
+  );
   const DEFAULT_RATE = [0, 20];
   const [filters, setFilters] = useState({ rate: DEFAULT_RATE, features: [], bank: '' });
   const [rateBounds, setRateBounds] = useState(DEFAULT_RATE);
@@ -75,21 +80,6 @@ function DepositsPage() {
     setVisibleCount(20);
   }, [filtered]);
 
-  useEffect(() => {
-    const el = loadMoreRef.current;
-    if (!el) return;
-    const container = el.parentElement;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((c) => Math.min(c + 20, filtered.length));
-        }
-      },
-      { root: container }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [filtered]);
 
   if (loading) return <LoaderSkeleton rows={5} />;
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
@@ -126,14 +116,14 @@ function DepositsPage() {
               Close
             </button>
           </div>
-          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
+          <div ref={containerRef} className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
             <DepositCardGrid
               deposits={filtered.slice(0, visibleCount)}
               selectedTags={filters.features}
               adFrequency={adFrequency}
               totalCount={filtered.length}
             />
-            <div ref={loadMoreRef} className="h-10" />
+            <div ref={sentinelRef} className="h-10" />
           </div>
         </div>
       </div>

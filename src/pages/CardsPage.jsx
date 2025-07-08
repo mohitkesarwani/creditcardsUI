@@ -8,6 +8,7 @@ import apiClient from '../api/apiClient.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import CompareStickyButton from '../components/CompareStickyButton.jsx';
+import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
 
 function CardsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
@@ -16,7 +17,11 @@ function CardsPage() {
   const [availableTags, setAvailableTags] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
-  const loadMoreRef = useRef(null);
+  const containerRef = useRef(null);
+  const sentinelRef = useInfiniteScroll(
+    () => setVisibleCount((c) => Math.min(c + 20, filtered.length)),
+    { rootRef: containerRef }
+  );
   const [filters, setFilters] = useState({
     annualFee: '',
     features: [],
@@ -130,22 +135,6 @@ function CardsPage() {
     setVisibleCount(20);
   }, [filtered]);
 
-  // infinite scroll observer
-  useEffect(() => {
-    const el = loadMoreRef.current;
-    if (!el) return;
-    const container = el.parentElement;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((c) => Math.min(c + 20, filtered.length));
-        }
-      },
-      { root: container }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [filtered]);
 
 
 
@@ -193,7 +182,7 @@ function CardsPage() {
               Compare ({selected.length})
             </button>
           </div>
-          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
+          <div ref={containerRef} className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
             <div className="mb-2 text-right">
               <label className="text-sm mr-2">Sort by</label>
               <select
@@ -213,7 +202,7 @@ function CardsPage() {
               adFrequency={adFrequency}
               onReset={resetFilters}
             />
-            <div ref={loadMoreRef} className="h-10" />
+            <div ref={sentinelRef} className="h-10" />
           </div>
         </div>
       </div>
