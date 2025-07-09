@@ -88,17 +88,12 @@ app.get('/api/deposits', async (_req, res) => {
   res.json(result);
 });
 
-app.get('/api/residential-mortgages', async (_req, res) => {
+app.get('/api/home-loans', async (_req, res) => {
   const result = homeLoans.map((h) => ({
     ...h,
     ...summarizeEngagement(h.id, 'home-loans'),
   }));
-  const rates = result
-    .map((m) => parseFloat(m.lendingRates?.[0]?.rate))
-    .filter((n) => !Number.isNaN(n));
-  const minRate = rates.length ? Math.min(...rates) : 0;
-  const maxRate = rates.length ? Math.max(...rates) : 0;
-  res.json({ mortgages: result, total: result.length, minRate, maxRate });
+  res.json(result);
 });
 
 app.get('/api/credit-cards/:id', async (req, res) => {

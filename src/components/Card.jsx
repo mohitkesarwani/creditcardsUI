@@ -287,9 +287,7 @@ function Card({ card, selectedTags = [] }) {
         likes={engagement?.likes ?? 0}
         comments={commentCount}
         shares={engagement?.shares ?? 0}
-        rating={
-          engagement?.rating ?? card.rating ?? card.averageRating ?? 0
-        }
+        rating={engagement?.rating ?? 0}
         loading={engagementLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}

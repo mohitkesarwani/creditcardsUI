@@ -16,7 +16,7 @@ export function formatValue(label, value, fallback = '–') {
   if (typeof val === 'string' && (/\$/i.test(val) || /%/.test(val))) return val;
   const num = parseFloat(val);
   if (!Number.isNaN(num)) {
-    const l = String(label).toLowerCase();
+    const l = label.toLowerCase();
     if (/fee|payment|amount|cash|advance/.test(l)) return formatMoney(num);
     if (/rate|interest|percent|comparison/.test(l)) return formatPercent(num);
     if (num >= 0 && num <= 1) return formatPercent(num);
@@ -90,9 +90,7 @@ export function findFeeAmount(card, label) {
   if (!label) return null;
   const fees = card.details?.fees || card.fees || [];
   const entry = fees.find(
-    (f) =>
-      typeof f.name === 'string' &&
-      f.name.toLowerCase().includes(String(label).toLowerCase())
+    (f) => f.name && f.name.toLowerCase().includes(label.toLowerCase())
   );
   return entry ? entry.amount : null;
 }
@@ -114,7 +112,7 @@ export function getFeatureTags(card, max = 3) {
   }
   card?.features?.forEach((f) => {
     if (!f.featureType) return;
-    const t = String(f.featureType).toLowerCase();
+    const t = f.featureType.toLowerCase();
     if (t.includes('reward')) tags.add('Rewards');
     if (t.includes('travel')) tags.add('Travel');
     if (t.includes('balance')) tags.add('Balance Transfer');
@@ -154,7 +152,7 @@ export function categorizeFeatures(features = []) {
     Other: [],
   };
   features.forEach((f) => {
-    if (!f?.featureType || typeof f.featureType !== 'string') return;
+    if (!f?.featureType) return;
     const normalized = f.featureType.trim().toUpperCase();
     if (normalized === 'OTHER' || normalized === 'UNLIMITED_TXNS') return;
     const t = normalized.toLowerCase();
@@ -226,7 +224,7 @@ export function getCardTags(card, maxSellingPoints = 4) {
 }
 
 export function normalizeMortgageFeature(label) {
-  if (!label || typeof label !== 'string') return null;
+  if (!label) return null;
   const upper = label.trim().toUpperCase();
   if (upper === 'OTHER') return null;
   if (upper.includes('DIGITAL')) return 'Digital Access';
@@ -240,29 +238,6 @@ export function getMortgageFeatureTags(mortgage) {
   if (!mortgage?.features) return [];
   const tags = mortgage.features
     .map((f) => normalizeMortgageFeature(f.featureType))
-    .filter(Boolean);
-  return Array.from(new Set(tags));
-}
-
-export function formatDepositFeature(feature) {
-  if (!feature) return '';
-  if (typeof feature === 'string') return feature;
-  const base = feature.name || feature.featureType || '';
-  const value =
-    feature.amount !== undefined
-      ? formatMoney(feature.amount)
-      : feature.additionalValue || feature.value || '';
-  return [base, value].filter(Boolean).join(' - ');
-}
-
-export function getDepositFeatureTags(deposit) {
-  if (!deposit?.features) return [];
-  const tags = deposit.features
-    .map((f) =>
-      typeof f === 'string'
-        ? f
-        : f.name || f.featureType || ''
-    )
     .filter(Boolean);
   return Array.from(new Set(tags));
 }
@@ -288,9 +263,9 @@ export function getInternationalFee(card, multi = false) {
   const fees = card.details?.fees || card.fees || [];
   const entry = fees.find(
     (f) =>
-      typeof f.name === 'string' &&
+      f.name &&
       f.name.toLowerCase().includes('transaction') &&
-      f.name.toLowerCase().includes(String(label).toLowerCase())
+      f.name.toLowerCase().includes(label)
   );
   return entry ? entry.amount : null;
 }
@@ -321,7 +296,7 @@ export function getDigitalWallets(card) {
 export function getInsuranceTypes(card) {
   const list = [];
   card?.features?.forEach((f) => {
-    const t = String(f.featureType || '').toLowerCase();
+    const t = (f.featureType || '').toLowerCase();
     if (t.includes('insurance') || t.includes('protection')) {
       list.push(f.additionalValue ? `${f.featureType} - ${f.additionalValue}` : f.featureType);
     }

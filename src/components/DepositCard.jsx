@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FeatureTags from './FeatureTags.tsx';
-import { getDepositFeatureTags } from '../utils.js';
 import ActionButtons from './ActionButtons.tsx';
 import SocialStats from './SocialStats.tsx';
 import InlineFeedbackBox from './InlineFeedbackBox.tsx';
@@ -67,14 +66,7 @@ function DepositCard({ deposit, highlightTags = [] }) {
         }}
       />
       <h3 className="card-title mb-1">{deposit.name}</h3>
-      {deposit.brand && (
-        <p className="text-xs text-gray-500 mb-1">{deposit.brand}</p>
-      )}
-      <FeatureTags
-        tags={getDepositFeatureTags(deposit)}
-        highlightTags={highlightTags}
-        className="mb-2"
-      />
+      <FeatureTags tags={deposit.features || []} highlightTags={highlightTags} className="mb-2" />
       <div className="grid gap-1 mb-2 text-sm">
         {deposit.interestRate && (
           <p className="card-subtext">
@@ -113,9 +105,7 @@ function DepositCard({ deposit, highlightTags = [] }) {
         likes={engagement?.likes ?? 0}
         comments={commentCount}
         shares={engagement?.shares ?? 0}
-        rating={
-          engagement?.rating ?? deposit.rating ?? deposit.averageRating ?? 0
-        }
+        rating={engagement?.rating ?? 0}
         loading={isLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}

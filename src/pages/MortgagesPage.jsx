@@ -1,84 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { fetchMortgages, fetchMortgageRateRange } from '../api/residentialMortgages';
+import { fetchMortgages } from '../api/residentialMortgages';
 import MortgageCardGrid from '../components/MortgageCardGrid';
 import MortgageFilters from '../components/MortgageFilters';
 import MortgageCompareStickyButton from '../components/MortgageCompareStickyButton.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
-import Loader from '../components/Loader.jsx';
 import { getMortgageFeatureTags } from '../utils.js';
 import apiClient from '../api/apiClient.js';
-import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
 
 function MortgagesPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [mortgages, setMortgages] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [nextCursor, setNextCursor] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const containerRef = useRef(null);
-  const PAGE_SIZE = 20;
-
-  const loadMore = async () => {
-    if (loading || !hasMore || !nextCursor) return;
-    try {
-      setLoading(true);
-      const { mortgages: items } = await fetchMortgages(nextCursor, PAGE_SIZE);
-      setMortgages((prev) => {
-        const updated = [...prev, ...items];
-        const more = updated.length < total;
-        setHasMore(more);
-        setNextCursor(more ? nextCursor + 1 : null);
-        return updated;
-      });
-      setAvailableFeatures((prev) => [
-        ...new Set([...prev, ...items.flatMap((m) => getMortgageFeatureTags(m))]),
-      ]);
-      setAvailableBanks((prev) => [
-        ...new Set([
-          ...prev,
-          ...items.map((m) => m.bankName || m.brandName).filter(Boolean),
-        ]),
-      ]);
-      items.forEach(async (m) => {
-        try {
-          const res = await apiClient.get(`/api/products/${m.id}/engagement`);
-          setEngagements((prev) => ({
-            ...prev,
-            [m.id]: {
-              ...res.data,
-              comments: res.data.reviews?.length ?? res.data.comments ?? 0,
-            },
-          }));
-        } catch {
-          setEngagements((prev) => ({
-            ...prev,
-            [m.id]: { likes: 0, comments: 0, rating: 0 },
-          }));
-        }
-      });
-    } catch (err) {
-      console.error(err);
-      setError('Failed to load mortgages');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const sentinelRef = useInfiniteScroll(loadMore, {
-    rootRef: containerRef,
-    hasMore,
-    loading,
-    rootMargin: '0px 0px -20% 0px',
-  });
-
-  const DEFAULT_RANGE = [0, 0];
-  const [filters, setFilters] = useState({ rate: DEFAULT_RANGE, fees: [], features: [], bank: '' });
-  const [rateBounds, setRateBounds] = useState(DEFAULT_RANGE);
+  const [visibleCount, setVisibleCount] = useState(20);
+  const loadMoreRef = useRef(null);
+  const [filters, setFilters] = useState({ rate: [0, 0], fees: [], features: [], bank: '' });
+  const [rateBounds, setRateBounds] = useState([0, 0]);
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('featured');
   const [engagements, setEngagements] = useState({});
@@ -86,55 +26,44 @@ function MortgagesPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        setLoading(true);
-        const [{ minRate: apiMin, maxRate: apiMax }, { mortgages: items, total }] = await Promise.all([
-          fetchMortgageRateRange(),
-          fetchMortgages(1, 20),
-        ]);
-        setMortgages(items);
-        setTotal(total);
-        const more = items.length < total;
-        setHasMore(more);
-        setNextCursor(more ? 2 : null);
-        setFiltered(items);
-        const rates = items
-          .map((m) => parseFloat(m.lendingRates?.[0]?.rate))
-          .filter((n) => !Number.isNaN(n));
-        const computedMin = rates.length ? Math.min(...rates) : 0;
-        const computedMax = rates.length ? Math.max(...rates) : 0;
-        const minRate = (apiMin ?? computedMin) * 100;
-        const maxRate = (apiMax ?? computedMax) * 100;
-        setRateBounds([minRate, maxRate]);
-
-        const stored = localStorage.getItem('mortgageFilters');
-        if (stored) {
-          try {
-            const parsed = JSON.parse(stored);
-            const storedRate = Array.isArray(parsed.rate) ? parsed.rate : [minRate, maxRate];
-            const rate = storedRate.map((r) => (r <= 1 ? r * 100 : r));
-            setFilters({
-              rate,
-              fees: parsed.fees || [],
-              features: parsed.features || [],
-              bank: parsed.bank || '',
-            });
-          } catch {
+        const data = await fetchMortgages();
+        setMortgages(data);
+        setFiltered(data);
+        const rates = data
+          .map(m => parseFloat(m.lendingRates?.[0]?.rate))
+          .filter(n => !Number.isNaN(n));
+        if (rates.length) {
+          const minRate = Math.min(...rates);
+          const maxRate = Math.max(...rates);
+          setRateBounds([minRate, maxRate]);
+          const stored = localStorage.getItem('mortgageFilters');
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              setFilters({
+                rate: parsed.rate || [minRate, maxRate],
+                fees: parsed.fees || [],
+                features: parsed.features || [],
+                bank: parsed.bank || '',
+              });
+            } catch {
+              setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
+            }
+          } else {
             setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
           }
-        } else {
-          setFilters({ rate: [minRate, maxRate], fees: [], features: [], bank: '' });
         }
         setAvailableFeatures([
-          ...new Set(items.flatMap((m) => getMortgageFeatureTags(m))),
+          ...new Set(data.flatMap((m) => getMortgageFeatureTags(m))),
         ]);
-        setAvailableBanks([
-          ...new Set(items.map((m) => m.bankName || m.brandName).filter(Boolean)),
-        ]);
+        setAvailableBanks([...new Set(data.map(m => m.bankName || m.brandName).filter(Boolean))]);
 
-        items.forEach(async (m) => {
+        setLoading(false);
+
+        data.forEach(async (m) => {
           try {
             const res = await apiClient.get(`/api/products/${m.id}/engagement`);
-            setEngagements((prev) => ({
+            setEngagements(prev => ({
               ...prev,
               [m.id]: {
                 ...res.data,
@@ -142,7 +71,7 @@ function MortgagesPage() {
               },
             }));
           } catch {
-            setEngagements((prev) => ({
+            setEngagements(prev => ({
               ...prev,
               [m.id]: { likes: 0, comments: 0, rating: 0 },
             }));
@@ -151,7 +80,6 @@ function MortgagesPage() {
       } catch (err) {
         console.error(err);
         setError('Failed to load mortgages');
-      } finally {
         setLoading(false);
       }
     };
@@ -161,17 +89,11 @@ function MortgagesPage() {
   useEffect(() => {
     const handle = setTimeout(() => {
       let result = mortgages;
-      if (
-        !(filters.rate[0] === rateBounds[0] && filters.rate[1] === rateBounds[1])
-      ) {
-        result = result.filter((m) => {
-          const rate = parseFloat(m.lendingRates?.[0]?.rate);
-          if (Number.isNaN(rate)) return false;
-          const min = filters.rate[0] / 100;
-          const max = filters.rate[1] / 100;
-          return rate >= min && rate <= max;
-        });
-      }
+      result = result.filter(m => {
+        const rate = parseFloat(m.lendingRates?.[0]?.rate);
+        if (Number.isNaN(rate)) return false;
+        return rate >= filters.rate[0] && rate <= filters.rate[1];
+      });
       if (filters.features.length) {
         result = result.filter(m => {
           const tags = getMortgageFeatureTags(m);
@@ -181,8 +103,8 @@ function MortgagesPage() {
       if (filters.bank) {
         const term = filters.bank.toLowerCase();
         result = result.filter(m =>
-          (typeof m.bankName === 'string' && m.bankName.toLowerCase().includes(term)) ||
-          (typeof m.brandName === 'string' && m.brandName.toLowerCase().includes(term))
+          (m.bankName && m.bankName.toLowerCase().includes(term)) ||
+          (m.brandName && m.brandName.toLowerCase().includes(term))
         );
       }
       if (sortBy !== 'featured') {
@@ -212,10 +134,25 @@ function MortgagesPage() {
   }, [filters, mortgages, sortBy, engagements]);
 
   useEffect(() => {
+    if (rateBounds[0] === 0 && rateBounds[1] === 0) return;
     localStorage.setItem('mortgageFilters', JSON.stringify(filters));
   }, [filters, rateBounds]);
 
-  if (loading && mortgages.length === 0) return <LoaderSkeleton rows={4} />;
+  useEffect(() => { setVisibleCount(20); }, [filtered]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setVisibleCount(c => Math.min(c + 20, filtered.length));
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filtered]);
+
+  if (loading) return <LoaderSkeleton rows={4} />;
   if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
 
   return (
@@ -224,8 +161,7 @@ function MortgagesPage() {
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Mortgage. No Guesswork.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-2">Compare mortgages easily. Find your best rate, faster.</p>
-          <p className="text-sm text-gray-600">{mortgages.length} mortgages available</p>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Compare mortgages easily. Find your best rate, faster.</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
@@ -247,13 +183,14 @@ function MortgagesPage() {
               filters={filters}
               setFilters={setFilters}
               availableFeatures={availableFeatures}
+              rateBounds={rateBounds}
               banks={availableBanks}
             />
             <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
               Close
             </button>
           </div>
-          <div ref={containerRef} className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4" data-testid="mortgage-scroll">
+          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4" data-testid="mortgage-scroll">
             <div className="mb-2 text-right">
               <label className="text-sm mr-2">Sort by</label>
               <select
@@ -268,19 +205,11 @@ function MortgagesPage() {
               </select>
             </div>
             <MortgageCardGrid
-              mortgages={filtered}
+              mortgages={filtered.slice(0, visibleCount)}
               selectedTags={filters.features}
               adFrequency={adFrequency}
             />
-            <div ref={sentinelRef} className="h-10" />
-            {loading && mortgages.length > 0 && (
-              <Loader message="Loading more..." />
-            )}
-            {!hasMore && !loading && (
-              <p className="text-center py-4 text-sm text-gray-500">
-                End of Results
-              </p>
-            )}
+            <div ref={loadMoreRef} className="h-10" />
           </div>
         </div>
       </div>

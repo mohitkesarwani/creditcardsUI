@@ -87,7 +87,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
           <p
             key={f.name}
             className="card-subtext flex items-center gap-1"
-            data-testid={`fee-${String(f.name).toLowerCase().replace(/\s+/g, '-')}`}
+            data-testid={`fee-${f.name.toLowerCase().replace(/\s+/g, '-')}`}
           >
             <span className="font-bold">{f.name}:</span> {formatMoney(f.amount)}
           </p>
@@ -119,9 +119,7 @@ function MortgageCard({ mortgage, highlightTags = [] }) {
         likes={engagement?.likes ?? 0}
         comments={commentCount}
         shares={engagement?.shares ?? 0}
-        rating={
-          engagement?.rating ?? mortgage.rating ?? mortgage.averageRating ?? 0
-        }
+        rating={engagement?.rating ?? 0}
         loading={engagementLoading && !engagement}
         onLike={() => like.mutate()}
         onShare={() => share.mutate()}
