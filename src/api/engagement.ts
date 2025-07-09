@@ -29,32 +29,34 @@ export const addReview = async (productId: string, review: Review) => {
   );
   return data;
 };
-export const getEngagementForEntity = async (id: string, _entityType: string) => {
-  const { data } = await apiClient.get(`/api/products/${id}/engagement`);
+export const getEngagementForEntity = async (id: string, entityType: string) => {
+  const { data } = await apiClient.get(`/api/engagement/${id}`, {
+    params: { entityType },
+  });
   return data;
 };
 
-export const likeEntity = async (id: string, _entityType: string) => {
-  const { data } = await apiClient.post(`/api/products/${id}/like`);
+export const likeEntity = async (id: string, entityType: string) => {
+  const { data } = await apiClient.post('/api/likes', { entityId: id, entityType });
   return data;
 };
 
-export const shareEntity = async (id: string, _entityType: string) => {
-  const { data } = await apiClient.post(`/api/products/${id}/share`);
+export const shareEntity = async (id: string, entityType: string) => {
+  const { data } = await apiClient.post('/api/shares', { entityId: id, entityType });
   return data;
 };
 
 export const addEntityReview = async (
   id: string,
-  _entityType: string,
+  entityType: string,
   review: Review
 ) => {
   const payload = {
-    name: review.name,
-    comment: review.comment,
-    stars: review.stars,
-    timestamp: review.timestamp,
+    userId: 'anon',
+    entityId: id,
+    entityType,
+    rating: review.stars,
   };
-  const { data } = await apiClient.post(`/api/products/${id}/review`, payload);
+  const { data } = await apiClient.post('/api/reviews', payload);
   return data;
 };
