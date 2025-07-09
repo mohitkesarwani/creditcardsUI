@@ -32,7 +32,7 @@ export const fetchMortgage = async (id) => {
     return normalizeMortgage(response.data);
   } catch (err) {
     try {
-      const fallback = await apiClient.get(`/api/home-loans/${id}`);
+      const fallback = await apiClient.get(`/api/residential-mortgages/${id}`);
       return normalizeMortgage(fallback.data);
     } catch (e) {
       console.error('Error fetching mortgage:', e);

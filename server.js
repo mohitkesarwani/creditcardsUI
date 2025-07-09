@@ -88,14 +88,6 @@ app.get('/api/deposits', async (_req, res) => {
   res.json(result);
 });
 
-app.get('/api/home-loans', async (_req, res) => {
-  const result = homeLoans.map((h) => ({
-    ...h,
-    ...summarizeEngagement(h.id, 'home-loans'),
-  }));
-  res.json(result);
-});
-
 app.get('/api/residential-mortgages', async (_req, res) => {
   const result = homeLoans.map((h) => ({
     ...h,
