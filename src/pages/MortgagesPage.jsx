@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { fetchMortgages } from '../api/residentialMortgages';
+import { fetchMortgages, fetchMortgageRateRange } from '../api/residentialMortgages';
 import MortgageCardGrid from '../components/MortgageCardGrid';
 import MortgageFilters from '../components/MortgageFilters';
 import MortgageCompareStickyButton from '../components/MortgageCompareStickyButton.jsx';
@@ -73,7 +73,7 @@ function MortgagesPage() {
     rootMargin: '0px 0px -20% 0px',
   });
 
-  const DEFAULT_RANGE = [0.5, 15];
+  const DEFAULT_RANGE = [0, 0];
   const [filters, setFilters] = useState({ rate: DEFAULT_RANGE, fees: [], features: [], bank: '' });
   const [rateBounds, setRateBounds] = useState(DEFAULT_RANGE);
   const [availableFeatures, setAvailableFeatures] = useState([]);
@@ -87,12 +87,10 @@ function MortgagesPage() {
     const load = async () => {
       try {
         setLoading(true);
-        const {
-          mortgages: items,
-          total,
-          minRate: apiMin,
-          maxRate: apiMax,
-        } = await fetchMortgages(1, 20);
+        const [{ minRate: apiMin, maxRate: apiMax }, { mortgages: items, total }] = await Promise.all([
+          fetchMortgageRateRange(),
+          fetchMortgages(1, 20),
+        ]);
         setMortgages(items);
         setTotal(total);
         const more = items.length < total;
@@ -102,8 +100,8 @@ function MortgagesPage() {
         const rates = items
           .map((m) => parseFloat(m.lendingRates?.[0]?.rate))
           .filter((n) => !Number.isNaN(n));
-        const computedMin = rates.length ? Math.min(...rates) : 0.5;
-        const computedMax = rates.length ? Math.max(...rates) : 15;
+        const computedMin = rates.length ? Math.min(...rates) : 0;
+        const computedMax = rates.length ? Math.max(...rates) : 0;
         const minRate = apiMin ?? computedMin;
         const maxRate = apiMax ?? computedMax;
         setRateBounds([minRate, maxRate]);

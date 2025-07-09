@@ -67,7 +67,6 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
           step={0.01}
           value={filters.rate}
           onChange={(val) => update('rate', val)}
-          asPercent
         />
       </details>
       <details open className="p-4 mt-4" aria-label="Filter by features">
