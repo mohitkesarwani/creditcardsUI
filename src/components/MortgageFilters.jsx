@@ -1,7 +1,6 @@
 import React from 'react';
 import RangeSlider from './RangeSlider';
 import FeatureFilter from './FeatureFilter';
-import { formatPercent } from '../utils.js';
 
 function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBounds = [0,0], banks = [] }) {
   const update = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
@@ -59,7 +58,7 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBoun
       </details>
       <details open className="p-4 mt-4" aria-label="Filter by interest rate">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">
-          Interest Rate Range ({formatPercent(rateBounds[0])} – {formatPercent(rateBounds[1])})
+          Interest Rate Range ({rateBounds[0].toFixed(2)}% – {rateBounds[1].toFixed(2)}%)
         </summary>
         <RangeSlider
           min={rateBounds[0]}
