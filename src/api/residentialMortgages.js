@@ -26,6 +26,21 @@ export const fetchMortgages = async (page = 1, limit = 20, params = {}) => {
   }
 };
 
+export const fetchMortgageRateRange = async () => {
+  try {
+    const { data } = await apiClient.get(
+      '/api/residential-mortgages/rate-range'
+    );
+    return {
+      minRate: typeof data?.minRate === 'number' ? data.minRate : null,
+      maxRate: typeof data?.maxRate === 'number' ? data.maxRate : null,
+    };
+  } catch (err) {
+    console.error('Error fetching mortgage rate range:', err);
+    throw err;
+  }
+};
+
 export const fetchMortgage = async (id) => {
   try {
     const response = await apiClient.get(`/api/residential-mortgages/${id}`);

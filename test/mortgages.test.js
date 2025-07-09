@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { fetchMortgages } from '../src/api/residentialMortgages.js';
+import { fetchMortgages, fetchMortgageRateRange } from '../src/api/residentialMortgages.js';
 import apiClient from '../src/api/apiClient.js';
 
 const originalGet = apiClient.get;
@@ -37,6 +37,15 @@ test('fetchMortgages returns min and max when provided', async () => {
   const res = await fetchMortgages();
   assert.strictEqual(res.minRate, 0.5);
   assert.strictEqual(res.maxRate, 5);
+});
+
+test('fetchMortgageRateRange fetches rate bounds', async () => {
+  mockGet(async (url) => {
+    assert.strictEqual(url, '/api/residential-mortgages/rate-range');
+    return { data: { minRate: 4.25, maxRate: 7.5 } };
+  });
+  const res = await fetchMortgageRateRange();
+  assert.deepStrictEqual(res, { minRate: 4.25, maxRate: 7.5 });
 });
 
 test.after(() => {
