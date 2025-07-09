@@ -247,7 +247,6 @@ function MortgagesPage() {
               filters={filters}
               setFilters={setFilters}
               availableFeatures={availableFeatures}
-              rateBounds={rateBounds}
               banks={availableBanks}
             />
             <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
