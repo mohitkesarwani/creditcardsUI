@@ -1,37 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import RangeSlider from './RangeSlider';
 import FeatureFilter from './FeatureFilter';
-import { fetchMortgageRateRange } from '../api/residentialMortgages';
+import { formatPercent } from '../utils.js';
 
-function MortgageFilters({ filters, setFilters, availableFeatures = [], banks = [] }) {
-  const [rateBounds, setRateBounds] = useState(null);
+function MortgageFilters({ filters, setFilters, availableFeatures = [], rateBounds = [0,0], banks = [] }) {
   const update = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
   const setFeatures = (features) => update('features', features);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const { minRate, maxRate } = await fetchMortgageRateRange();
-        if (typeof minRate === 'number' && typeof maxRate === 'number') {
-          const range = [minRate * 100, maxRate * 100];
-          setRateBounds(range);
-          setFilters(prev => {
-            if (prev.rate && prev.rate[0] === 0 && prev.rate[1] === 0) {
-              return { ...prev, rate: range };
-            }
-            return prev;
-          });
-        }
-      } catch (err) {
-        console.error('Failed to load mortgage rate range', err);
-      }
-    };
-    load();
-  }, []);
-
   const clear = () => {
     localStorage.removeItem('mortgageFilters');
-    setFilters({ rate: rateBounds || [0, 0], fees: [], features: [], bank: '' });
+    setFilters({ rate: rateBounds, fees: [], features: [], bank: '' });
   };
 
   return (
@@ -80,22 +58,15 @@ function MortgageFilters({ filters, setFilters, availableFeatures = [], banks = 
         )}
       </details>
       <details open className="p-4 mt-4" aria-label="Filter by interest rate">
-        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">
-          {rateBounds
-            ? `Interest Rate Range (${rateBounds[0].toFixed(2)}% – ${rateBounds[1].toFixed(2)}%)`
-            : 'Interest Rate Range'}
-        </summary>
-        {rateBounds ? (
-          <RangeSlider
-            min={rateBounds[0]}
-            max={rateBounds[1]}
-            step={0.01}
-            value={filters.rate}
-            onChange={(val) => update('rate', val)}
-          />
-        ) : (
-          <p>Loading range…</p>
-        )}
+        <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Interest Rate Range</summary>
+        <RangeSlider
+          min={rateBounds[0]}
+          max={rateBounds[1]}
+          step={0.005}
+          value={filters.rate}
+          onChange={(val) => update('rate', val)}
+          asPercent
+        />
       </details>
       <details open className="p-4 mt-4" aria-label="Filter by features">
         <summary className="text-lg font-semibold border-b border-gray-200 mb-2 pb-1 cursor-pointer">Filter Features</summary>

@@ -21,7 +21,7 @@ function FeatureFilter({ active, setActive, tags = [] }) {
             onClick={() => toggle(f)}
             isClickable
             className="filter-feature text-xs px-2"
-            data-testid={`filter-${String(f).toLowerCase().replace(/\s+/g, '-')}`}
+            data-testid={`filter-${f.toLowerCase().replace(/\s+/g, '-')}`}
           />
         ))}
       </div>

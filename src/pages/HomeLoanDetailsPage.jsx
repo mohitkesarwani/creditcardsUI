@@ -81,7 +81,7 @@ function HomeLoanDetailsPage() {
       .filter(
         (e) =>
           e &&
-          typeof e.eligibilityType === 'string' &&
+          e.eligibilityType &&
           e.eligibilityType.trim() !== '' &&
           e.eligibilityType.toLowerCase() !== 'other'
       )

@@ -19,7 +19,7 @@ export default function FeatureTags({ tags = [], highlightTags = [], className =
             label={t}
             selected={match}
             className="text-xs px-2"
-            data-testid={`tag-${String(t).toLowerCase().replace(/\s+/g, '-')}`}
+            data-testid={`tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
           />
         );
       })}

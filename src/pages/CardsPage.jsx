@@ -8,7 +8,6 @@ import apiClient from '../api/apiClient.js';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedCards } from '../hooks/useSelectedCards';
 import CompareStickyButton from '../components/CompareStickyButton.jsx';
-import useInfiniteScroll from '../hooks/useInfiniteScroll.js';
 
 function CardsPage() {
   const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
@@ -17,11 +16,7 @@ function CardsPage() {
   const [availableTags, setAvailableTags] = useState([]);
   const [availableBanks, setAvailableBanks] = useState([]);
   const [visibleCount, setVisibleCount] = useState(20);
-  const containerRef = useRef(null);
-  const sentinelRef = useInfiniteScroll(
-    () => setVisibleCount((c) => Math.min(c + 20, filtered.length)),
-    { rootRef: containerRef }
-  );
+  const loadMoreRef = useRef(null);
   const [filters, setFilters] = useState({
     annualFee: '',
     features: [],
@@ -80,7 +75,7 @@ function CardsPage() {
     if (filters.features.length) {
       result = result.filter((c) =>
         filters.features.every((f) =>
-          c.tags.some((t) => String(t).toLowerCase() === String(f).toLowerCase())
+          c.tags.some((t) => t.toLowerCase() === f.toLowerCase())
         )
       );
     }
@@ -101,8 +96,8 @@ function CardsPage() {
       const term = filters.bank.toLowerCase();
       result = result.filter(
         (c) =>
-          (typeof c.brandName === 'string' && c.brandName.toLowerCase().includes(term)) ||
-          (typeof c.brand === 'string' && c.brand.toLowerCase().includes(term))
+          (c.brandName && c.brandName.toLowerCase().includes(term)) ||
+          (c.brand && c.brand.toLowerCase().includes(term))
       );
     }
 
@@ -135,6 +130,18 @@ function CardsPage() {
     setVisibleCount(20);
   }, [filtered]);
 
+  // infinite scroll observer
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setVisibleCount((c) => Math.min(c + 20, filtered.length));
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filtered]);
 
 
 
@@ -146,8 +153,7 @@ function CardsPage() {
       <div className="max-w-6xl mx-auto flex flex-col h-full">
         <header className="text-center mb-8 flex-shrink-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Card. No Guesswork.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-2">Use smart filters to explore cards that match your lifestyle — rewards, cashback, travel perks and more.</p>
-          <p className="text-sm text-gray-600">{cards.length} cards available</p>
+          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Use smart filters to explore cards that match your lifestyle — rewards, cashback, travel perks and more.</p>
         </header>
         <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
           <button
@@ -182,7 +188,7 @@ function CardsPage() {
               Compare ({selected.length})
             </button>
           </div>
-          <div ref={containerRef} className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
+          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
             <div className="mb-2 text-right">
               <label className="text-sm mr-2">Sort by</label>
               <select
@@ -202,7 +208,7 @@ function CardsPage() {
               adFrequency={adFrequency}
               onReset={resetFilters}
             />
-            <div ref={sentinelRef} className="h-10" />
+            <div ref={loadMoreRef} className="h-10" />
           </div>
         </div>
       </div>

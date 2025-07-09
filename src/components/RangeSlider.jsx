@@ -3,7 +3,7 @@ import React from 'react';
 function RangeSlider({
   min = 0,
   max = 100,
-  step = 0.01,
+  step = 0.005,
   value = [min, max],
   onChange,
   asPercent = false,
@@ -24,7 +24,7 @@ function RangeSlider({
   const left = ((minVal - min) / range) * 100;
   const right = 100 - ((maxVal - min) / range) * 100;
   const format = (v) =>
-    asPercent ? `${(v * 100).toFixed(2)}%` : `${v.toFixed(2)}%`;
+    asPercent ? `${(v * 100).toFixed(3)}%` : `${v.toFixed(3)}%`;
 
   return (
     <label className="block text-sm" role="group" aria-label="value range selector">

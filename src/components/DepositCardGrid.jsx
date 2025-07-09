@@ -2,8 +2,8 @@ import React from 'react';
 import DepositCard from './DepositCard';
 import AdBanner from './AdBanner.jsx';
 
-function DepositCardGrid({ deposits, selectedTags = [], adFrequency = 4, totalCount = deposits.length }) {
-  if (totalCount === 0) {
+function DepositCardGrid({ deposits, selectedTags = [], adFrequency = 4 }) {
+  if (!deposits.length) {
     return (
       <p className="text-center py-8" data-testid="no-deposits">
         No deposits match your criteria.
