@@ -102,16 +102,18 @@ function MortgagesPage() {
           .filter((n) => !Number.isNaN(n));
         const computedMin = rates.length ? Math.min(...rates) : 0;
         const computedMax = rates.length ? Math.max(...rates) : 0;
-        const minRate = apiMin ?? computedMin;
-        const maxRate = apiMax ?? computedMax;
+        const minRate = (apiMin ?? computedMin) * 100;
+        const maxRate = (apiMax ?? computedMax) * 100;
         setRateBounds([minRate, maxRate]);
 
         const stored = localStorage.getItem('mortgageFilters');
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
+            const storedRate = Array.isArray(parsed.rate) ? parsed.rate : [minRate, maxRate];
+            const rate = storedRate.map((r) => (r <= 1 ? r * 100 : r));
             setFilters({
-              rate: parsed.rate || [minRate, maxRate],
+              rate,
               fees: parsed.fees || [],
               features: parsed.features || [],
               bank: parsed.bank || '',
@@ -165,7 +167,9 @@ function MortgagesPage() {
         result = result.filter((m) => {
           const rate = parseFloat(m.lendingRates?.[0]?.rate);
           if (Number.isNaN(rate)) return false;
-          return rate >= filters.rate[0] && rate <= filters.rate[1];
+          const min = filters.rate[0] / 100;
+          const max = filters.rate[1] / 100;
+          return rate >= min && rate <= max;
         });
       }
       if (filters.features.length) {
