@@ -1,242 +1,240 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { fetchCreditCard } from '../api/creditCards';
-import {
-  getMinimumAnnualFee,
-  getFeatureTags,
-  getTagColor,
-  categorizeFeatures,
-  formatPercent,
-  formatMoney,
-} from '../utils.js';
-import Disclaimers from '../components/Disclaimers';
-import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
-import SocialStats from '../components/SocialStats.tsx';
-import ReviewsSection from '../components/ReviewsSection.tsx';
-import FeatureTags from '../components/FeatureTags.tsx';
-import ActionButtons from '../components/ActionButtons.tsx';
 import { useSelectedCards } from '../hooks/useSelectedCards.jsx';
-import useEngagement from '../hooks/useEngagement.ts';
+import supabase from '../supabaseClient.js';
+import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
+import Tabs from '../components/detail/Tabs.jsx';
+import RatesBreakdown from '../components/detail/RatesBreakdown.jsx';
+import FeesBreakdown from '../components/detail/FeesBreakdown.jsx';
+import FeaturesGrid from '../components/detail/FeaturesGrid.jsx';
+import YearlyCostCalculator from '../components/detail/YearlyCostCalculator.jsx';
+import DocumentsPanel from '../components/detail/DocumentsPanel.jsx';
+import ComparisonRateWarning from '../components/ComparisonRateWarning.jsx';
+import { formatMoneyWhole } from '../utils.js';
+import { TAG_STYLES } from '../lib/cardTags.js';
+
+const FALLBACK_IMG = '/assets/image-not-available.svg';
+
+const displayFee = (card) => {
+  const n = card.annualFeeNumber;
+  if (n === 0) return '$0';
+  if (n !== null && n !== undefined) return formatMoneyWhole(n);
+  if (card.annualFee) return card.annualFee;
+  return '—';
+};
+const dash = (v) => (v === null || v === undefined || v === '' ? '—' : v);
+
+function Kpi({ label, value, tone }) {
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-wide text-gray-500 leading-tight">{label}</p>
+      <p className={`text-lg md:text-xl font-bold leading-tight tabular-nums ${tone || 'text-gray-900'}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
 
 function CardDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { selected, toggleCard } = useSelectedCards();
-  const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(id);
-  const commentCount = engagement?.reviews?.length ?? engagement?.comments ?? 0;
+  const isSelected = card && selected.some((c) => c.id === card.id);
 
   useEffect(() => {
-    const load = async () => {
+    let cancelled = false;
+    (async () => {
       try {
         const data = await fetchCreditCard(id);
-        setCard(data);
-      } catch (err) {
-        setError('Failed to load card');
+        if (!cancelled) setCard(data);
+      } catch {
+        if (!cancelled) setError('Failed to load card.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    };
-    load();
+    })();
+    return () => { cancelled = true; };
   }, [id]);
 
   useEffect(() => {
     if (!card) return;
-    document.title = `${card.name} - RewardRadar`;
-    const meta = document.querySelector('meta[name="description"]');
-    const content = card.description || `Details about ${card.name}`;
-    if (meta) {
-      meta.setAttribute('content', content);
-    } else {
-      const el = document.createElement('meta');
-      el.name = 'description';
-      el.content = content;
-      document.head.appendChild(el);
-    }
+    document.title = `${card.name} · RewardRadar`;
   }, [card]);
 
-  if (loading) return <LoaderSkeleton rows={6} />;
-  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
-  if (!card) return <p>Card not found.</p>;
+  const handleApply = async () => {
+    if (!card) return;
+    try {
+      await supabase.from('referrals').insert({
+        card_id: card.id,
+        partner_id: card.partnerId,
+        redirect_url: card.applicationUrl || card.applicationUri,
+      });
+    } catch {/* non-fatal */}
+  };
 
-  const annualFee = card.annualFee ?? getMinimumAnnualFee(card);
-  const interestRate = card.interestRate ?? card.feesAndPricing?.interestRates?.[0]?.rate;
-  const comparisonRate = card.comparisonRate ?? card.lendingRates?.[0]?.comparisonRate;
-  const interestFree = card.interestFree ?? card.feesAndPricing?.interestFreePeriod;
-  const tags = getFeatureTags(card);
-  const featureGroups = categorizeFeatures(card.features);
-  const isSelected = selected.some((c) => c.id === card.id);
+  if (loading) {
+    return <div className="max-w-7xl mx-auto px-4 md:px-8 py-8"><LoaderSkeleton rows={6} /></div>;
+  }
+  if (error || !card) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 text-center">
+        <p className="text-gray-600 mb-4">{error || 'Card not found.'}</p>
+        <Link to="/credit-cards" className="text-blue-600 hover:underline">Back to all cards</Link>
+      </div>
+    );
+  }
 
+  const issuer = card.brandName || card.brand || card.bank_name || 'Unknown';
+  const tagObjects = card.tagObjects || [];
+  const spendingTags = tagObjects.filter((t) => t.category === 'spending');
+  const typeTags     = tagObjects.filter((t) => t.category === 'type');
+  const applyHref = card.applicationUrl || card.applicationUri;
+
+  const ratesTab = {
+    id: 'rates',
+    label: 'Rates',
+    badge: (card.lendingRates || []).length || null,
+    render: () => (
+      <>
+        <RatesBreakdown rates={card.lendingRates} />
+        {card.comparisonRate && <ComparisonRateWarning className="mt-3" />}
+      </>
+    ),
+  };
+  const feesTab = {
+    id: 'fees',
+    label: 'Fees',
+    badge: (card.fees || []).length || null,
+    render: () => <FeesBreakdown fees={card.fees} />,
+  };
+  const featuresTab = {
+    id: 'features',
+    label: 'Features',
+    badge: (card.features || []).length || null,
+    render: () => <FeaturesGrid features={card.features} />,
+  };
+  const docsTab = {
+    id: 'docs',
+    label: 'Documents',
+    render: () => <DocumentsPanel product={card} productType="credit-card" applicationUri={applyHref} />,
+  };
+
+  // Single-screen dashboard layout — no scrolling needed for the primary flow.
+  // Mobile: stacks, calculator above tabs.
+  // Desktop: 2-col body (calculator left, tabs right), each scrolls internally.
   return (
-    <div className="bg-[#f8f9fa] p-4 md:p-8 min-h-screen">
-      <Link
-        to="/credit-cards"
-        className="inline-block text-sm text-blue-600 underline mb-4"
-      >
-        &larr; Back
-      </Link>
-      <div className="max-w-screen-xl mx-auto">
-        <div className="bg-white rounded-2xl shadow p-6 md:p-8">
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-          <img
-            src={
-              card.productImageUrl ||
-              card.cardArt?.[0]?.imageUri ||
-              '/assets/image-not-available.svg'
-            }
-            alt={card.name}
-            className="w-64 rounded-xl shadow mx-auto md:mx-0"
-            onError={(e) => {
-              if (e.currentTarget.src !== '/assets/image-not-available.svg') {
-                e.currentTarget.src = '/assets/image-not-available.svg';
-              }
-            }}
-          />
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-semibold">{card.name}</h1>
-            <p className="text-gray-600 text-sm md:text-base mt-2">
-              {card.description}
-            </p>
-            <FeatureTags tags={tags} className="mt-3" />
-            <SocialStats
-              likes={engagement?.likes ?? 0}
-              comments={commentCount}
-              shares={engagement?.shares ?? 0}
-              rating={engagement?.rating ?? 0}
-              loading={engagementLoading && !engagement}
-              onLike={() => like.mutate()}
-              onShare={() => share.mutate()}
-              productId={id}
-              productType="credit-cards"
-              summary={{
-                image:
-                  card.productImageUrl ||
-                  card.cardArt?.[0]?.imageUri ||
-                  '/assets/image-not-available.svg',
-                name: card.name,
-                rate: interestRate,
-                annualFee,
-              }}
-              onComment={() => {}}
-            />
-            {isSelected && (
-              <div className="flex items-center gap-2 mt-3">
-                <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Selected
-                </span>
-                <button onClick={() => toggleCard(card)} className="text-xs text-accent underline">
-                  Deselect
-                </button>
+    <div className="bg-gray-50 md:h-[calc(100vh-3.5rem)] md:overflow-hidden flex flex-col">
+      <div className="max-w-7xl mx-auto w-full px-4 md:px-8 py-3 md:py-4 flex flex-col flex-1 min-h-0">
+
+        {/* Breadcrumb */}
+        <nav className="text-xs text-gray-500 mb-2">
+          <Link to="/credit-cards" className="hover:text-gray-700">All credit cards</Link>
+          <span className="mx-2">/</span>
+          <span className="text-gray-700">{card.name}</span>
+        </nav>
+
+        {/* ─── Compact hero ───────────────────────────────────────────── */}
+        <header className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex-shrink-0">
+          <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr_auto] gap-4 items-center">
+            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center h-16 md:h-20">
+              <img
+                src={card.productImageUrl || card.cardArt?.[0]?.imageUri || FALLBACK_IMG}
+                alt={card.name}
+                className="max-h-full max-w-full object-contain"
+                onError={(e) => { if (!e.currentTarget.src.endsWith(FALLBACK_IMG)) e.currentTarget.src = FALLBACK_IMG; }}
+              />
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                <span className="text-[11px] text-gray-500 uppercase tracking-wide">{issuer}</span>
+                {card.isSponsored && (
+                  <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">Sponsored</span>
+                )}
               </div>
-            )}
-            <ActionButtons
-              showCompare={!isSelected}
-              showDetails={false}
-              onCompare={() => toggleCard(card)}
-              applyHref={card.applicationUrl || card.applicationUri}
+              <h1 className="text-base md:text-xl font-semibold text-gray-900 leading-tight truncate" title={card.name}>{card.name}</h1>
+              <div className="hidden md:flex flex-wrap gap-1.5 mt-1.5">
+                {spendingTags.length > 0 && (
+                  <>
+                    <span className="text-[10px] uppercase tracking-wide text-gray-400 self-center mr-0.5">Best for</span>
+                    {spendingTags.slice(0, 3).map((t) => (
+                      <span key={t.id} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${TAG_STYLES.spending}`}>
+                        {t.label}
+                      </span>
+                    ))}
+                  </>
+                )}
+                {typeTags.length > 0 && (
+                  <>
+                    {spendingTags.length > 0 && <span className="text-gray-300">·</span>}
+                    {typeTags.slice(0, 3).map((t) => (
+                      <span key={t.id} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${TAG_STYLES.type}`}>
+                        {t.label}
+                      </span>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 col-start-3">
+              {applyHref && (
+                <a href={applyHref} target="_blank" rel="noopener noreferrer" onClick={handleApply}
+                   className="btn btn-primary text-sm whitespace-nowrap">Apply now</a>
+              )}
+              <button type="button" onClick={() => toggleCard(card)}
+                      className="btn btn-outline text-sm whitespace-nowrap">
+                {isSelected ? '✓ Compare' : 'Compare'}
+              </button>
+            </div>
+          </div>
+
+          {/* KPI strip */}
+          <div className="grid grid-cols-4 gap-3 md:gap-6 mt-3 pt-3 border-t border-gray-100">
+            <Kpi label="Annual fee"    value={displayFee(card)} />
+            <Kpi label="Purchase rate" value={dash(card.interestRate)} />
+            <Kpi label="Comparison"    value={dash(card.comparisonRate)} />
+            <Kpi label="Interest-free" value={dash(card.interestFree)} />
+          </div>
+        </header>
+
+        {/* ─── Body: 2 columns, each scrolls inside its own pane ─────── */}
+        <div className="grid md:grid-cols-[340px_1fr] gap-4 flex-1 min-h-0">
+          {/* Left: interactive calculator (always visible) */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:overflow-y-auto">
+            <h2 className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
+              How you'll use this card
+            </h2>
+            <p className="text-xs text-gray-600 mb-3">
+              Tick what applies — we'll sum the fees this card actually charges.
+            </p>
+            <YearlyCostCalculator card={card} />
+          </div>
+
+          {/* Right: tabbed long-form content */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-5 min-h-0 flex flex-col">
+            <Tabs
+              tabs={[ratesTab, feesTab, featuresTab, docsTab]}
+              defaultId="rates"
             />
           </div>
         </div>
-
-        <section className="mt-8 border-t pt-6">
-          <h3 className="section-heading mb-4">Fees &amp; Pricing</h3>
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full text-sm text-left text-gray-700">
-              <tbody>
-                {interestRate && (
-                  <tr className="even:bg-gray-50">
-                    <th className="pr-4 py-2">Interest Rate</th>
-                    <td className="py-2">{formatPercent(interestRate)}</td>
-                  </tr>
-                )}
-                {comparisonRate && (
-                  <tr className="even:bg-gray-50">
-                    <th className="pr-4 py-2">Comparison Rate</th>
-                    <td className="py-2">{formatPercent(comparisonRate)}</td>
-                  </tr>
-                )}
-                {interestFree && (
-                  <tr className="even:bg-gray-50">
-                    <th className="pr-4 py-2">Interest Free Period</th>
-                    <td className="py-2">{interestFree}</td>
-                  </tr>
-                )}
-                {annualFee !== null && (
-                  <tr className="even:bg-gray-50">
-                    <th className="pr-4 py-2">Annual Fee</th>
-                    <td className="py-2">{formatMoney(annualFee)}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {card.features?.length > 0 && (
-          <section className="mt-8 border-t pt-6">
-            <h3 className="section-heading mb-4">Features</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(featureGroups).map(([cat, list]) =>
-                list.length ? (
-                  <div key={cat} className="bg-white border rounded-xl shadow-sm p-4">
-                    <h4 className="font-semibold text-sm mb-2">{cat}</h4>
-                    <ul className="list-disc ml-5 space-y-1">
-                      {list.map((f, i) => (
-                        <li key={i} className="text-sm">
-                          {f.featureType}
-                          {f.additionalValue ? ` - ${f.additionalValue}` : ''}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null
-              )}
-            </div>
-          </section>
-        )}
-
-        {(card.lendingRates?.length > 0 || card.fees?.length > 0) && (
-          <section className="mt-8 border-t pt-6">
-            <h3 className="section-heading mb-4">Lending Rates &amp; Fees</h3>
-            <div className="rounded-md overflow-hidden shadow">
-              <div className="overflow-x-auto">
-                <table className="table-auto w-full text-sm text-left text-gray-700">
-                  <thead className="bg-gray-100 font-semibold text-xs uppercase text-gray-500">
-                    <tr>
-                      <th className="py-2 px-3">Type</th>
-                      <th className="py-2 px-3">Rate / Fee</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {card.lendingRates?.map((rate, i) => (
-                      <tr key={`lr${i}`} className="even:bg-gray-50">
-                        <td className="py-2 px-3">{rate.rateType || '-'}</td>
-                        <td className="py-2 px-3">{formatPercent(rate.rate)}</td>
-                      </tr>
-                    ))}
-                    {card.fees?.map((f, i) => (
-                      <tr key={`fee${i}`} className="even:bg-gray-50">
-                        <td className="py-2 px-3">{f.name || `Fee ${i + 1}`}</td>
-                        <td className="py-2 px-3">{f.amount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {engagement && (
-          <ReviewsSection reviews={engagement.reviews} onAdd={(r) => review.mutate(r)} />
-        )}
-
-        <Disclaimers className="mt-10" />
       </div>
+
+      {/* Mobile sticky CTA */}
+      <div className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+        <button type="button" onClick={() => toggleCard(card)}
+                className="btn btn-outline text-sm flex-1">
+          {isSelected ? '✓ Compare' : 'Compare'}
+        </button>
+        {applyHref && (
+          <a href={applyHref} target="_blank" rel="noopener noreferrer" onClick={handleApply}
+             className="btn btn-primary text-sm flex-[2] text-center">Apply now</a>
+        )}
       </div>
     </div>
   );

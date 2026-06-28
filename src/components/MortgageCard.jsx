@@ -1,158 +1,185 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  formatMoney,
-  formatPercent,
-  getMortgageFeatureTags,
-} from '../utils.js';
+import CardKpis from './CardKpis.jsx';
+import DealBadge from './DealBadge.jsx';
+import supabase from '../supabaseClient.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
-import SocialStats from './SocialStats.tsx';
-import InlineFeedbackBox from './InlineFeedbackBox.tsx';
-import { useToast } from '../hooks/useToast.tsx';
-import useEngagement from '../hooks/useEngagement.ts';
-import FeatureTags from './FeatureTags.tsx';
-import ActionButtons from './ActionButtons.tsx';
+import { topHomeLoanTags, HOME_LOAN_TAG_STYLES } from '../lib/homeLoanTags.js';
 
-function MortgageCard({ mortgage, highlightTags = [] }) {
+const FALLBACK_IMG = '/assets/image-not-available.svg';
+
+const dash = (v) => (v === null || v === undefined || v === '' ? '—' : v);
+
+function MortgageCard({ mortgage, selectedTags = [] }) {
   const navigate = useNavigate();
-  const rate = mortgage.lendingRates?.[0]?.rate;
-  const comparisonRate = mortgage.lendingRates?.[0]?.comparisonRate;
-  const fees = mortgage.feesAndPricing?.fees || [];
-  const tags = getMortgageFeatureTags(mortgage);
   const { selected, toggleMortgage } = useSelectedMortgages();
   const isSelected = selected.some((m) => m.id === mortgage.id);
-  const { data: engagement, isLoading: engagementLoading, like, share, review } = useEngagement(mortgage.id);
-  const toast = useToast();
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [userComment, setUserComment] = useState('');
-  const [userRating, setUserRating] = useState(0);
-  const commentCount = engagement?.reviews?.length ?? engagement?.comments ?? 0;
+  const reachedLimit = !isSelected && selected.length >= 3;
+  const tagObjects = mortgage.tagObjects || [];
+  const topTags = topHomeLoanTags(tagObjects, 4, selectedTags);
+  const issuer = mortgage.brandName || mortgage.brand || mortgage.bank_name || 'Unknown';
+  const applyHref = mortgage.applicationUrl || mortgage.application_uri;
 
-  const handleRate = (val) => {
-    setUserRating(val);
-    setFeedbackOpen(true);
-  };
-
-  const handleFeedbackSubmit = async (comment, rating) => {
+  const handleApply = async () => {
     try {
-      if (rating > 0 && comment.trim().length <= 2) {
-        toast('error', 'Comment must be at least 3 characters');
-        return;
-      }
-      review.mutate({
-        name: 'Anonymous',
-        comment,
-        timestamp: new Date().toISOString(),
-        stars: rating,
+      await supabase.from('referrals').insert({
+        card_id: mortgage.id,
+        partner_id: mortgage.partnerId,
+        redirect_url: applyHref,
       });
-      setUserRating(rating);
-      setUserComment('');
-      setFeedbackOpen(false);
-    } catch {
-      toast('error', 'Failed to post comment');
-    }
+    } catch { /* non-fatal */ }
   };
 
+  // Headline rate: variable owner-occupied preferred, else fixed.
+  const headline = mortgage.headlineRate || mortgage.variableRateOwner || mortgage.fixedRateOwner;
+  const kind = mortgage.headlineRateKind ||
+    (mortgage.variableRateOwner ? 'variable' : mortgage.fixedRateOwner ? 'fixed' : null);
+
+  const kpis = [
+    {
+      label: kind === 'fixed' ? 'Fixed rate' : 'Variable rate',
+      value: dash(headline),
+      tooltip: 'Headline rate for owner-occupied principal-and-interest borrowers.',
+    },
+    {
+      label: 'Comparison',
+      value: dash(mortgage.comparisonRate),
+      tooltip: 'Rate including standard fees — for apples-to-apples comparison.',
+    },
+    {
+      label: 'Max LVR',
+      value: dash(mortgage.maxLvr),
+      tooltip: 'Maximum loan-to-value ratio the issuer offers on this product.',
+    },
+    {
+      label: 'Annual fee',
+      value: mortgage.annual_fee_amount !== null && mortgage.annual_fee_amount !== undefined
+        ? `$${Math.round(mortgage.annual_fee_amount)}`
+        : '—',
+      tooltip: 'Package or annual service fee.',
+    },
+  ];
 
   return (
-    <div
-      id={mortgage.id}
-      className="relative flex flex-col bg-white rounded p-5 shadow-sm min-h-[580px] hover:shadow-md transition"
-      data-testid="mortgage-card"
-    >
-      <img
-        src={mortgage.cardArt?.imageUri || '/assets/image-not-available.svg'}
-        alt={mortgage.bankName || mortgage.brandName}
-        className="w-full h-20 object-contain mb-2"
-        onError={(e) => {
-          if (e.currentTarget.src !== '/assets/image-not-available.svg') {
-            e.currentTarget.src = '/assets/image-not-available.svg';
-          }
-        }}
-      />
-      <p className="text-xs text-gray-500 mb-1 leading-snug">{mortgage.bankName || mortgage.brandName}</p>
-      <h3 className="card-title mb-2 font-semibold leading-snug">{mortgage.name}</h3>
-      <div className="grid gap-1 mb-2 text-sm leading-relaxed">
-        {rate && (
-          <p className="card-subtext">
-            <span className="font-bold">Interest Rate:</span> {formatPercent(rate)}
-          </p>
-        )}
-        {comparisonRate && (
-          <p className="card-subtext">
-            <span className="font-bold">Comparison Rate:</span> {formatPercent(comparisonRate)}
-          </p>
-        )}
-        {fees.map((f) => (
-          <p
-            key={f.name}
-            className="card-subtext flex items-center gap-1"
-            data-testid={`fee-${f.name.toLowerCase().replace(/\s+/g, '-')}`}
-          >
-            <span className="font-bold">{f.name}:</span> {formatMoney(f.amount)}
-          </p>
-        ))}
-      </div>
-      <FeatureTags tags={tags} highlightTags={highlightTags} className="mb-3" />
-      <div className="mt-auto">
-        {isSelected && (
-          <div className="flex items-center gap-2 mb-2">
-            <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              Selected
-            </span>
-            <button onClick={() => toggleMortgage(mortgage)} className="text-xs text-accent underline" aria-label="Deselect loan">
-              Deselect
-            </button>
-          </div>
-        )}
-        <ActionButtons
-          showCompare={!isSelected}
-          onCompare={() => toggleMortgage(mortgage)}
-          onDetails={() => navigate(`/home-loans/${mortgage.id}`)}
-          applyHref={mortgage.applicationUri}
-        />
-      </div>
-      <SocialStats
-        likes={engagement?.likes ?? 0}
-        comments={commentCount}
-        shares={engagement?.shares ?? 0}
-        rating={engagement?.rating ?? 0}
-        loading={engagementLoading && !engagement}
-        onLike={() => like.mutate()}
-        onShare={() => share.mutate()}
-        onComment={() => setFeedbackOpen((v) => !v)}
-        onRate={handleRate}
-        userRating={userRating}
-        productId={mortgage.id}
-        productType="home-loans"
-        summary={{
-          image: mortgage.cardArt?.imageUri || '/assets/image-not-available.svg',
-          name: mortgage.name,
-          rate,
-          annualFee: fees[0]?.amount,
-        }}
-      />
-      {feedbackOpen ? (
-        <InlineFeedbackBox
-          entityId={mortgage.id}
-          entityType="home-loans"
-          onClose={() => setFeedbackOpen(false)}
-          onSubmitted={handleFeedbackSubmit}
-          initialComment={userComment}
-          initialRating={userRating}
-        />
-      ) : (
-        <div
-          className="bg-white rounded-lg border px-4 py-2 mt-2 text-sm text-gray-500 cursor-text"
-          onClick={() => setFeedbackOpen(true)}
+    <article className="result-card p-4 md:p-5" data-selected={isSelected} id={mortgage.id}>
+      <div className="grid grid-cols-[88px_1fr] md:grid-cols-[112px_1fr_auto] gap-4 items-start">
+        <button
+          type="button"
+          onClick={() => navigate(`/home-loans/${mortgage.id}`)}
+          className="bg-gray-50 rounded-lg p-2 flex items-center justify-center h-20 md:h-24 hover:bg-gray-100 transition-colors"
         >
-          Add a comment...
+          <img
+            src={mortgage.productImageUrl || FALLBACK_IMG}
+            alt={mortgage.name}
+            className="max-h-full max-w-full object-contain"
+            onError={(e) => {
+              if (!e.currentTarget.src.endsWith(FALLBACK_IMG)) e.currentTarget.src = FALLBACK_IMG;
+            }}
+          />
+        </button>
+
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <span className="text-xs text-gray-500 uppercase tracking-wide truncate">{issuer}</span>
+            {mortgage.is_sponsored && (
+              <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
+                Sponsored
+              </span>
+            )}
+            {mortgage.deal && <DealBadge deal={mortgage.deal} />}
+          </div>
+          <h3
+            className="text-base md:text-lg font-semibold text-gray-900 leading-snug truncate cursor-pointer hover:text-blue-700"
+            onClick={() => navigate(`/home-loans/${mortgage.id}`)}
+            title={mortgage.name}
+          >
+            {mortgage.name}
+          </h3>
+          {topTags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {topTags.map((t) => {
+                const highlight = selectedTags.includes(t.label);
+                return (
+                  <span
+                    key={t.id}
+                    className={
+                      'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ' +
+                      (highlight
+                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                        : HOME_LOAN_TAG_STYLES[t.category])
+                    }
+                    title={`${t.label} · ${t.category}`}
+                  >
+                    {t.label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+
+        {/* Apply CTA — desktop */}
+        <div className="hidden md:flex flex-col items-end gap-2">
+          {applyHref && (
+            <a
+              href={applyHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleApply}
+              className="btn btn-primary text-sm whitespace-nowrap"
+            >
+              Apply now
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={() => navigate(`/home-loans/${mortgage.id}`)}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            View details →
+          </button>
+        </div>
+      </div>
+
+      <CardKpis cells={kpis} className="mt-4" />
+
+      <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+        <label
+          className={`flex items-center gap-2 text-sm select-none ${reachedLimit ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        >
+          <input
+            type="checkbox"
+            checked={isSelected}
+            disabled={reachedLimit}
+            onChange={() => toggleMortgage(mortgage)}
+            className="accent-blue-600 w-4 h-4"
+          />
+          <span className={isSelected ? 'text-blue-700 font-medium' : 'text-gray-700'}>
+            {isSelected ? 'Added to compare' : reachedLimit ? 'Compare full (3)' : 'Compare'}
+          </span>
+        </label>
+        <div className="md:hidden flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(`/home-loans/${mortgage.id}`)}
+            className="text-sm text-blue-600"
+          >
+            Details
+          </button>
+          {applyHref && (
+            <a
+              href={applyHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleApply}
+              className="btn btn-primary text-sm"
+            >
+              Apply
+            </a>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
 

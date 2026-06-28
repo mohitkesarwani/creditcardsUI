@@ -7,7 +7,7 @@ import InlineFeedbackBox from './InlineFeedbackBox.tsx';
 import { useToast } from '../hooks/useToast.tsx';
 import useEntityEngagement from '../hooks/useEntityEngagement.ts';
 import { useSelectedDeposits } from '../hooks/useSelectedDeposits.jsx';
-import apiClient from '../api/apiClient.js';
+import supabase from '../supabaseClient.js';
 
 function DepositCard({ deposit, highlightTags = [] }) {
   const navigate = useNavigate();
@@ -42,10 +42,10 @@ function DepositCard({ deposit, highlightTags = [] }) {
 
   const handleApply = async () => {
     try {
-      await apiClient.post('/api/referrals', {
-        cardId: deposit.id,
-        partnerId: deposit.partnerId,
-        redirectUrl: deposit.applicationUrl || deposit.applicationUri,
+      await supabase.from('referrals').insert({
+        card_id: deposit.id,
+        partner_id: deposit.partnerId,
+        redirect_url: deposit.applicationUrl || deposit.applicationUri,
       });
     } catch (err) {
       console.error('Referral log failed', err);

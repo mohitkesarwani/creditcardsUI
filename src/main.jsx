@@ -4,11 +4,12 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 import { setupAutoTitleCase } from './autoTitleCase';
-import { setupBonusPointsFormatting } from './bonusPoints';
+// NB: setupBonusPointsFormatting deliberately removed. It rewrote every "$N"
+// text node where N > 5000 into "N bonus points" — global DOM mutation that
+// mangled real dollar values in the calculator, comparison table, etc.
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 setupAutoTitleCase();
-setupBonusPointsFormatting();
 
 const queryClient = new QueryClient();
 

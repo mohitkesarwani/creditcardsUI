@@ -1,217 +1,332 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchCreditCards } from '../api/creditCards';
-import CardGrid from '../components/CardGrid';
-import AdvancedFilters from '../components/AdvancedFilters';
+import Card from '../components/Card.jsx';
+import FiltersPanel, { FEE_BUCKETS } from '../components/FiltersPanel.jsx';
+import SortBar from '../components/SortBar.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
-import { getMinimumAnnualFee, getCardTags } from '../utils.js';
-import apiClient from '../api/apiClient.js';
-import { useNavigate } from 'react-router-dom';
-import { useSelectedCards } from '../hooks/useSelectedCards';
 import CompareStickyButton from '../components/CompareStickyButton.jsx';
+import {
+  getMinimumAnnualFee,
+  parseCurrency,
+  formatMoneyWhole,
+  formatPercent,
+} from '../utils.js';
+
+const PAGE_SIZE = 20;
+
+const EMPTY_FILTERS = { feeBucket: 'any', features: [], banks: [] };
+
+// Helpers
+const annualFeeNumber = (c) => {
+  const raw = c.annualFee ?? getMinimumAnnualFee(c);
+  if (raw === null || raw === undefined) return null;
+  const n = typeof raw === 'number' ? raw : parseCurrency(raw);
+  return Number.isFinite(n) ? n : null;
+};
+const purchaseRateNumber = (c) => {
+  const raw = c.interestRate ?? c.feesAndPricing?.interestRates?.[0]?.rate;
+  if (!raw) return null;
+  const n = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? n : null;
+};
+const comparisonRateNumber = (c) => {
+  const raw = c.comparisonRate ?? c.lendingRates?.[0]?.comparisonRate;
+  if (!raw) return null;
+  const n = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? n : null;
+};
+const matchesFeeBucket = (c, bucketKey) => {
+  const bucket = FEE_BUCKETS.find((b) => b.key === bucketKey) || FEE_BUCKETS[0];
+  return bucket.match(annualFeeNumber(c));
+};
+
+// Apply filters individually so we can compute live counts (each count
+// excludes only its own dimension).
+const applyOthers = (cards, filters, exclude) => {
+  return cards.filter((c) => {
+    if (exclude !== 'feeBucket' && filters.feeBucket && filters.feeBucket !== 'any') {
+      if (!matchesFeeBucket(c, filters.feeBucket)) return false;
+    }
+    if (exclude !== 'features' && filters.features.length) {
+      const tagSet = new Set((c.tags || []).map((t) => t.toLowerCase()));
+      const ok = filters.features.every((t) => tagSet.has(t.toLowerCase()));
+      if (!ok) return false;
+    }
+    if (exclude !== 'banks' && filters.banks.length) {
+      const issuer = c.brandName || c.brand;
+      if (!filters.banks.includes(issuer)) return false;
+    }
+    return true;
+  });
+};
 
 function CardsPage() {
-  const adFrequency = Number(import.meta.env.VITE_AD_FREQUENCY) || 4;
   const [cards, setCards] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [availableTags, setAvailableTags] = useState([]);
-  const [availableBanks, setAvailableBanks] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(20);
-  const loadMoreRef = useRef(null);
-  const [filters, setFilters] = useState({
-    annualFee: '',
-    features: [],
-    bank: '',
-  });
-  const [sortBy, setSortBy] = useState('featured');
-  const resetFilters = () => setFilters({ annualFee: '', features: [], bank: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const { selected } = useSelectedCards();
-  const navigate = useNavigate();
-  const [engagements, setEngagements] = useState({});
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [sortBy, setSortBy] = useState('featured');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
+  const loadMoreRef = useRef(null);
 
+  // Load + tag once
   useEffect(() => {
-    const load = async () => {
+    let cancelled = false;
+    (async () => {
       try {
         const data = await fetchCreditCards();
-        const withTags = data.map((c) => ({ ...c, tags: getCardTags(c, 10) }));
-        setCards(withTags);
-        setFiltered(withTags);
-        setAvailableTags([
-          ...new Set(withTags.flatMap((c) => c.tags)),
-        ]);
-        setAvailableBanks([
-          ...new Set(withTags.map((c) => c.brandName || c.brand).filter(Boolean)),
-        ]);
-        const eng = {};
-        await Promise.all(
-          withTags.map(async (c) => {
-            try {
-              const res = await apiClient.get(`/api/products/${c.id}/engagement`);
-              eng[c.id] = {
-                ...res.data,
-                comments:
-                  res.data.reviews?.length ?? res.data.comments ?? 0,
-              };
-            } catch {
-              eng[c.id] = { likes: 0, shares: 0, comments: 0, rating: 0 };
-            }
-          })
-        );
-        setEngagements(eng);
-      } catch (err) {
-        setError('Failed to load cards');
+        if (cancelled) return;
+        // Tags are computed inside normalizeCard now (tagObjects + tags strings).
+        setCards(data);
+      } catch (e) {
+        if (!cancelled) setError('Failed to load cards. Please try again later.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    };
-    load();
+    })();
+    return () => { cancelled = true; };
   }, []);
 
-  useEffect(() => {
-    let result = cards;
+  // Universe of options. Tags now come in as objects with category info; we
+  // expose them grouped so the filter panel can render "Best for" + "Card type"
+  // sections instead of one undifferentiated chip pile.
+  const allTagObjects = useMemo(() => {
+    const seen = new Map();
+    cards.forEach((c) => (c.tagObjects || []).forEach((t) => {
+      if (!seen.has(t.id)) seen.set(t.id, t);
+    }));
+    return Array.from(seen.values());
+  }, [cards]);
 
-    if (filters.features.length) {
-      result = result.filter((c) =>
-        filters.features.every((f) =>
-          c.tags.some((t) => t.toLowerCase() === f.toLowerCase())
-        )
-      );
+  // Keep the legacy `allTags` for the existing filter-match logic (string-based).
+  const allTags = useMemo(
+    () => allTagObjects.map((t) => t.label),
+    [allTagObjects],
+  );
+  const allBanks = useMemo(
+    () => Array.from(new Set(cards.map((c) => c.brandName || c.brand).filter(Boolean))).sort(),
+    [cards],
+  );
+
+  // Live counts (each filter dimension's counts exclude only that dimension)
+  const countsForBuckets = useMemo(() => {
+    const base = applyOthers(cards, filters, 'feeBucket');
+    return Object.fromEntries(
+      FEE_BUCKETS.map((b) => [b.key, base.filter((c) => b.match(annualFeeNumber(c))).length]),
+    );
+  }, [cards, filters]);
+
+  // Tag counts narrow against the active filter set:
+  //   - For UNSELECTED tags: "if I added this filter, how many cards would
+  //     remain?" — applies all current filters (incl. other features) and
+  //     intersects with cards that also carry this tag.
+  //   - For SELECTED tags: count is the current narrowed result count (all
+  //     filtered cards trivially carry this tag, since it's part of the
+  //     filter). Visually they're already in the active state, so the number
+  //     is informational, not deceptive.
+  //
+  // This matches what users expect from cumulative AND filters (Booking.com,
+  // Amazon, Kayak — pick a filter and see the next level narrow).
+  const countsForTags = useMemo(() => {
+    const fullBase = applyOthers(cards, filters, null); // apply ALL filters
+    const map = {};
+    allTags.forEach((t) => {
+      const tagLower = t.toLowerCase();
+      const isSelected = filters.features.some((f) => f.toLowerCase() === tagLower);
+      if (isSelected) {
+        map[t] = fullBase.length;
+      } else {
+        map[t] = fullBase.filter((c) =>
+          (c.tags || []).some((x) => x.toLowerCase() === tagLower),
+        ).length;
+      }
+    });
+    return map;
+  }, [cards, filters, allTags]);
+
+  const countsForBanks = useMemo(() => {
+    const base = applyOthers(cards, filters, 'banks');
+    const map = {};
+    allBanks.forEach((b) => {
+      map[b] = base.filter((c) => (c.brandName || c.brand) === b).length;
+    });
+    return map;
+  }, [cards, filters, allBanks]);
+
+  // Filter + sort
+  const filtered = useMemo(() => {
+    const list = applyOthers(cards, filters, null);
+    const arr = [...list];
+    switch (sortBy) {
+      case 'feeAsc':
+        arr.sort((a, b) => (annualFeeNumber(a) ?? Infinity) - (annualFeeNumber(b) ?? Infinity));
+        break;
+      case 'rateAsc':
+        arr.sort((a, b) => (purchaseRateNumber(a) ?? Infinity) - (purchaseRateNumber(b) ?? Infinity));
+        break;
+      case 'compAsc':
+        arr.sort((a, b) => (comparisonRateNumber(a) ?? Infinity) - (comparisonRateNumber(b) ?? Infinity));
+        break;
+      case 'featured':
+      default:
+        arr.sort((a, b) => {
+          if ((b.isSponsored ? 1 : 0) !== (a.isSponsored ? 1 : 0)) return (b.isSponsored ? 1 : 0) - (a.isSponsored ? 1 : 0);
+          return (a.sponsorRank || 0) - (b.sponsorRank || 0);
+        });
     }
+    return arr;
+  }, [cards, filters, sortBy]);
 
-    if (filters.annualFee) {
-      const max = Number(filters.annualFee);
-      result = result.filter((c) => {
-        const fee = getMinimumAnnualFee(c);
-        return fee !== null && fee <= max;
-      });
-    }
+  // Reset pagination when result set changes
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filtered.length, sortBy]);
 
-    setAvailableBanks([
-      ...new Set(result.map((c) => c.brandName || c.brand).filter(Boolean)),
-    ]);
-
-    if (filters.bank) {
-      const term = filters.bank.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.brandName && c.brandName.toLowerCase().includes(term)) ||
-          (c.brand && c.brand.toLowerCase().includes(term))
-      );
-    }
-
-    if (sortBy !== 'featured') {
-      result = result.slice().sort((a, b) => {
-        const eaRaw = engagements[a.id] || {};
-        const ebRaw = engagements[b.id] || {};
-        const ea = {
-          likes: eaRaw.likes ?? a.likes ?? 0,
-          comments: eaRaw.comments ?? a.comments ?? 0,
-          rating: eaRaw.rating ?? a.rating ?? a.averageRating ?? 0,
-        };
-        const eb = {
-          likes: ebRaw.likes ?? b.likes ?? 0,
-          comments: ebRaw.comments ?? b.comments ?? 0,
-          rating: ebRaw.rating ?? b.rating ?? b.averageRating ?? 0,
-        };
-        if (sortBy === 'mostLiked') return eb.likes - ea.likes;
-        if (sortBy === 'mostCommented') return eb.comments - ea.comments;
-        if (sortBy === 'topRated') return eb.rating - ea.rating;
-        return 0;
-      });
-    }
-
-    setFiltered(result);
-  }, [filters, cards, sortBy, engagements]);
-
-  // reset visible count when filters change
-  useEffect(() => {
-    setVisibleCount(20);
-  }, [filtered]);
-
-  // infinite scroll observer
+  // Infinite scroll
   useEffect(() => {
     const el = loadMoreRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        setVisibleCount((c) => Math.min(c + 20, filtered.length));
+        setVisibleCount((n) => Math.min(n + PAGE_SIZE, filtered.length));
       }
     });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [filtered]);
+    io.observe(el);
+    return () => io.disconnect();
+  }, [filtered.length]);
 
+  const activeFilterCount =
+    (filters.feeBucket && filters.feeBucket !== 'any' ? 1 : 0) +
+    filters.features.length +
+    filters.banks.length;
 
+  // Summary line: total + cheapest fee + cheapest rate
+  const summary = useMemo(() => {
+    if (!cards.length) return '';
+    const totalShown = filtered.length;
+    const totalAll = cards.length;
+    const fees = filtered.map(annualFeeNumber).filter((n) => Number.isFinite(n));
+    const rates = filtered.map(purchaseRateNumber).filter((n) => Number.isFinite(n));
+    const issuers = new Set(filtered.map((c) => c.brandName || c.brand).filter(Boolean));
+    const parts = [
+      `${totalShown.toLocaleString()} of ${totalAll.toLocaleString()} cards`,
+      `${issuers.size} issuer${issuers.size === 1 ? '' : 's'}`,
+    ];
+    if (fees.length) parts.push(`fees from ${formatMoneyWhole(Math.min(...fees))}`);
+    if (rates.length) parts.push(`rates from ${formatPercent(Math.min(...rates))}`);
+    return parts.join(' · ');
+  }, [filtered, cards]);
 
-  if (loading) return <LoaderSkeleton rows={5} />;
-  if (error) return <p className="text-center py-8 text-red-600">{error}</p>;
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+        <LoaderSkeleton rows={5} />
+      </div>
+    );
+  }
+  if (error) {
+    return <p className="text-center py-12 text-red-600">{error}</p>;
+  }
 
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen flex flex-col overflow-x-hidden">
-      <div className="max-w-6xl mx-auto flex flex-col h-full">
-        <header className="text-center mb-8 flex-shrink-0">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find the Right Card. No Guesswork.</h1>
-          <p className="text-lg font-medium text-gray-700 max-w-xl mx-auto mb-6">Use smart filters to explore cards that match your lifestyle — rewards, cashback, travel perks and more.</p>
+    <div className="bg-gray-50 min-h-screen pb-32">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
+        <header className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Compare credit cards</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Filter by fee, rate or feature. Tick up to four cards to compare side-by-side.
+            Information is general only — read each issuer's PDS and TMD before applying.
+          </p>
         </header>
-        <div className="flex flex-col md:flex-row md:gap-4 flex-1 md:overflow-hidden relative">
-          <button
-            className="md:hidden mb-2 btn btn-outline self-start"
-            onClick={() => setShowFilters(true)}
-          >
-            Filters
-          </button>
-          {showFilters && (
-            <div
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
-              onClick={() => setShowFilters(false)}
-            />
-          )}
+
+        {/* Mobile filter trigger */}
+        <button
+          type="button"
+          className="md:hidden inline-flex items-center gap-2 mb-4 btn btn-outline text-sm"
+          onClick={() => setFiltersOpenMobile(true)}
+        >
+          Filters {activeFilterCount > 0 && <span className="ml-1 inline-flex items-center justify-center bg-blue-600 text-white rounded-full text-xs px-2">{activeFilterCount}</span>}
+        </button>
+
+        <div className="md:grid md:grid-cols-[280px_1fr] md:gap-6 md:items-start">
+          {/* Sidebar — desktop. Sticky to viewport but capped at its height so
+              the Issuer list at the bottom remains reachable via internal scroll. */}
           <div
-            className={`fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 overflow-y-auto max-h-screen shadow-inner transform transition md:static md:translate-x-0 md:w-1/4 md:min-w-[250px] md:pr-4 md:sticky md:top-0 flex-shrink-0 ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+            className="hidden md:block md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto"
+            style={{ overscrollBehavior: 'contain' }}
           >
-            <AdvancedFilters
+            <FiltersPanel
               filters={filters}
               setFilters={setFilters}
-              availableTags={availableTags}
-              banks={availableBanks}
+              availableTags={allTags}
+              availableTagObjects={allTagObjects}
+              availableBanks={allBanks}
+              countsForBuckets={countsForBuckets}
+              countsForTags={countsForTags}
+              countsForBanks={countsForBanks}
+              activeFilterCount={activeFilterCount}
+              onClear={() => setFilters(EMPTY_FILTERS)}
             />
-            <button className="md:hidden mt-2 btn btn-outline text-sm" onClick={() => setShowFilters(false)}>
-              Close
-            </button>
-            <button
-              disabled={!selected.length}
-              onClick={() => navigate('/compare')}
-              className="btn btn-primary w-full mt-4 disabled:opacity-50 md:hidden"
-            >
-              Compare ({selected.length})
-            </button>
           </div>
-          <div className="md:flex-1 mt-4 md:mt-0 overflow-y-auto pb-4">
-            <div className="mb-2 text-right">
-              <label className="text-sm mr-2">Sort by</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="border rounded px-2 py-1 text-sm"
-              >
-                <option value="featured">Featured</option>
-                <option value="mostLiked">Most Liked</option>
-                <option value="topRated">Top Rated</option>
-                <option value="mostCommented">Most Commented</option>
-              </select>
+
+          {/* Sidebar — mobile drawer */}
+          {filtersOpenMobile && (
+            <div className="fixed inset-0 z-50 md:hidden">
+              <div className="absolute inset-0 bg-black/40" onClick={() => setFiltersOpenMobile(false)} />
+              <div className="absolute inset-y-0 left-0 w-[88%] max-w-sm bg-white overflow-y-auto p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-base font-semibold">Filters</h2>
+                  <button onClick={() => setFiltersOpenMobile(false)} className="text-sm text-gray-500" aria-label="Close filters">Close</button>
+                </div>
+                <FiltersPanel
+                  filters={filters}
+                  setFilters={setFilters}
+                  availableTags={allTags}
+              availableTagObjects={allTagObjects}
+                  availableBanks={allBanks}
+                  countsForBuckets={countsForBuckets}
+                  countsForTags={countsForTags}
+                  countsForBanks={countsForBanks}
+                  activeFilterCount={activeFilterCount}
+                  onClear={() => setFilters(EMPTY_FILTERS)}
+                />
+                <button className="btn btn-primary w-full mt-4" onClick={() => setFiltersOpenMobile(false)}>
+                  Show {filtered.length} cards
+                </button>
+              </div>
             </div>
-            <CardGrid
-              cards={filtered.slice(0, visibleCount)}
-              selectedTags={filters.features}
-              adFrequency={adFrequency}
-              onReset={resetFilters}
+          )}
+
+          {/* Results column */}
+          <div>
+            <SortBar
+              summary={summary}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
             />
-            <div ref={loadMoreRef} className="h-10" />
+
+            {filtered.length === 0 ? (
+              <div className="text-center py-16 bg-white border border-dashed border-gray-200 rounded-xl">
+                <p className="text-gray-600 mb-2">No cards match these filters.</p>
+                <button onClick={() => setFilters(EMPTY_FILTERS)} className="text-sm text-blue-600 hover:underline">
+                  Clear all filters
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filtered.slice(0, visibleCount).map((c) => (
+                  <Card key={c.id} card={c} selectedTags={filters.features} />
+                ))}
+                {visibleCount < filtered.length && (
+                  <div ref={loadMoreRef} className="text-center py-6 text-sm text-gray-500">
+                    Loading more cards…
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
       <CompareStickyButton />
     </div>
   );

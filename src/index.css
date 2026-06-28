@@ -244,6 +244,73 @@ html {
   @apply text-lg font-bold text-black text-right;
 }
 
+/* ------- Compare-flow design tokens (flight-comparison style) ------- */
+
+/* Result card — horizontal, data-dense, hover-lifted */
+.result-card {
+  @apply bg-white rounded-xl border border-gray-200 transition-shadow;
+}
+.result-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgb(229 231 235);
+}
+.result-card[data-selected='true'] {
+  border-color: #1556f0;
+  box-shadow: 0 0 0 1px #1556f0;
+}
+
+/* KPI tile inside a result card or compare table */
+.kpi-tile {
+  @apply flex flex-col items-start justify-center px-3 py-2 bg-gray-50 rounded-lg;
+  min-width: 0;
+}
+.kpi-tile__label {
+  @apply text-[11px] uppercase tracking-wide text-gray-500 font-medium leading-tight;
+}
+.kpi-tile__value {
+  @apply text-base font-semibold text-gray-900 leading-tight mt-0.5;
+}
+.kpi-tile--best {
+  @apply bg-emerald-50;
+}
+.kpi-tile--best .kpi-tile__value {
+  @apply text-emerald-800;
+}
+
+/* Feature chips */
+.feature-chip {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700;
+}
+.feature-chip--highlight {
+  @apply bg-amber-100 text-amber-900;
+}
+
+/* Filter chip (toggleable) */
+.filter-chip {
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border border-gray-300 text-gray-700 cursor-pointer transition-all select-none;
+}
+.filter-chip:hover {
+  @apply border-gray-400 bg-gray-50;
+}
+.filter-chip[data-active='true'] {
+  background-color: #1556f0;
+  color: #ffffff;
+  border-color: #1556f0;
+}
+
+/* Sort segmented control */
+.sort-pill {
+  @apply text-sm font-medium px-3 py-1.5 rounded-md text-gray-600 cursor-pointer transition-colors;
+}
+.sort-pill[data-active='true'] {
+  @apply bg-white text-gray-900 shadow-sm;
+}
+
+/* Best-value pill rendered in the compare table */
+.best-pill {
+  @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-700 uppercase tracking-wide;
+}
+
 
 
 .pill-tab {

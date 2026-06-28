@@ -1,62 +1,73 @@
-import apiClient from './apiClient.js';
+import supabase from '../supabaseClient.js';
+import { normalizeEngagement } from './normalizeCard.js';
 import { Review } from '../types';
 
-export const getEngagement = async (productId: string) => {
-  const { data } = await apiClient.get(`/api/products/${productId}/engagement`);
-  return data;
+// Legacy "products" API kept the entity type implicit (everything was a credit
+// card). The Supabase schema is generic, so the new functions take an entity
+// type explicitly; the product-flavoured wrappers default to 'credit-cards'.
+
+const DEFAULT_TYPE = 'credit-cards';
+
+const fetchSummary = async (id: string, entityType: string) => {
+  const { data, error } = await supabase
+    .from('engagement_summary')
+    .select('*')
+    .eq('entity_type', entityType)
+    .eq('entity_id', id)
+    .maybeSingle();
+  if (error) {
+    console.warn('[engagement] summary fetch failed:', error.message);
+    return normalizeEngagement(null);
+  }
+  return normalizeEngagement(data);
 };
 
-export const likeProduct = async (productId: string) => {
-  const { data } = await apiClient.post(`/api/products/${productId}/like`);
-  return data;
-};
-
-export const shareProduct = async (productId: string) => {
-  const { data } = await apiClient.post(`/api/products/${productId}/share`);
-  return data;
-};
-
-export const addReview = async (productId: string, review: Review) => {
-  const payload = {
-    name: review.name,
-    comment: review.comment,
-    stars: review.stars,
-    timestamp: review.timestamp,
-  };
-  const { data } = await apiClient.post(
-    `/api/products/${productId}/review`,
-    payload
-  );
-  return data;
-};
-export const getEngagementForEntity = async (id: string, entityType: string) => {
-  const { data } = await apiClient.get(`/api/engagement/${id}`, {
-    params: { entityType },
+const bumpLike = async (id: string, entityType: string) => {
+  const { data, error } = await supabase.rpc('increment_like', {
+    p_type: entityType,
+    p_id: id,
   });
-  return data;
+  if (error) throw error;
+  return normalizeEngagement(data);
 };
 
-export const likeEntity = async (id: string, entityType: string) => {
-  const { data } = await apiClient.post('/api/likes', { entityId: id, entityType });
-  return data;
+const bumpShare = async (id: string, entityType: string) => {
+  const { data, error } = await supabase.rpc('increment_share', {
+    p_type: entityType,
+    p_id: id,
+  });
+  if (error) throw error;
+  return normalizeEngagement(data);
 };
 
-export const shareEntity = async (id: string, entityType: string) => {
-  const { data } = await apiClient.post('/api/shares', { entityId: id, entityType });
-  return data;
-};
-
-export const addEntityReview = async (
+const submitReview = async (
   id: string,
   entityType: string,
-  review: Review
+  rating: number,
+  userId = 'anon'
 ) => {
-  const payload = {
-    userId: 'anon',
-    entityId: id,
-    entityType,
-    rating: review.stars,
-  };
-  const { data } = await apiClient.post('/api/reviews', payload);
-  return data;
+  const { data, error } = await supabase.rpc('apply_review', {
+    p_user_id: userId,
+    p_entity_type: entityType,
+    p_entity_id: id,
+    p_rating: rating,
+  });
+  if (error) throw error;
+  return normalizeEngagement(data);
 };
+
+// --- product-flavoured API (used by useEngagement.ts) -----------------------
+export const getEngagement = (productId: string) =>
+  fetchSummary(productId, DEFAULT_TYPE);
+export const likeProduct = (productId: string) => bumpLike(productId, DEFAULT_TYPE);
+export const shareProduct = (productId: string) => bumpShare(productId, DEFAULT_TYPE);
+export const addReview = (productId: string, review: Review) =>
+  submitReview(productId, DEFAULT_TYPE, review.stars);
+
+// --- generic entity API (used by useEntityEngagement.ts) --------------------
+export const getEngagementForEntity = (id: string, entityType: string) =>
+  fetchSummary(id, entityType);
+export const likeEntity = (id: string, entityType: string) => bumpLike(id, entityType);
+export const shareEntity = (id: string, entityType: string) => bumpShare(id, entityType);
+export const addEntityReview = (id: string, entityType: string, review: Review) =>
+  submitReview(id, entityType, review.stars);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiClient from '../api/apiClient.js';
+import supabase from '../supabaseClient.js';
 
 function LeadCaptureForm({ productType = 'credit', sourcePage = '' }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
@@ -12,11 +12,14 @@ function LeadCaptureForm({ productType = 'credit', sourcePage = '' }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiClient.post('/api/leads', {
-        ...formData,
-        productType,
-        sourcePage,
+      const { error } = await supabase.from('leads').insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        product_type: productType,
+        source_page: sourcePage,
       });
+      if (error) throw error;
       if (window.gtag) {
         window.gtag('event', 'lead_submitted', {
           product_type: productType,

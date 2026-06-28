@@ -242,20 +242,54 @@ export function getMortgageFeatureTags(mortgage) {
   return Array.from(new Set(tags));
 }
 
+// CDR rates can live under `rateType` (legacy / some banks) or `lendingRateType`
+// (canonical Consumer Data Standards field). Always check both.
+const rateClassifier = (r) => r?.lendingRateType || r?.rateType || '';
+
 export function getPurchaseInterestRate(card) {
   const rates = card.lendingRates || card.feesAndPricing?.interestRates || [];
-  const entry = rates.find(
-    (r) => r.rateType && /purchase/i.test(r.rateType)
-  );
-  return entry?.rate || card.interestRate || null;
+  const entry = rates.find((r) => /purchase/i.test(rateClassifier(r)));
+  // Fall back to the first rate if none is explicitly tagged PURCHASE — most
+  // single-rate cards omit the tag.
+  return entry?.rate || rates[0]?.rate || card.interestRate || null;
 }
 
 export function getCashAdvanceRate(card) {
   const rates = card.lendingRates || card.feesAndPricing?.interestRates || [];
-  const entry = rates.find(
-    (r) => r.rateType && /cash|advance/i.test(r.rateType)
-  );
+  const entry = rates.find((r) => /cash|advance/i.test(rateClassifier(r)));
   return entry?.rate || null;
+}
+
+// Comparison rate: any lending-rate entry that carries one, preferring purchase.
+export function getComparisonRate(card) {
+  const rates = card.lendingRates || card.feesAndPricing?.interestRates || [];
+  const purchase = rates.find(
+    (r) => r.comparisonRate && /purchase/i.test(rateClassifier(r)),
+  );
+  if (purchase) return purchase.comparisonRate;
+  const any = rates.find((r) => r.comparisonRate);
+  return any?.comparisonRate || card.comparisonRate || null;
+}
+
+// Some CDR participants don't expose an interest-free period as a structured
+// field — they only describe it in additionalInformation. Best-effort regex.
+export function getInterestFreeDays(card) {
+  const explicit =
+    card.interestFree || card.feesAndPricing?.interestFreePeriod;
+  if (explicit) return explicit;
+  const text = [
+    card.additionalInformation,
+    card.raw?.additionalInformation,
+    card.description,
+  ]
+    .filter(Boolean)
+    .map((v) => (typeof v === 'string' ? v : JSON.stringify(v)))
+    .join(' ');
+  if (!text) return null;
+  const match = text.match(/up to (\d{2,3})\s*(?:days|day)/i)
+    || text.match(/(\d{2,3})\s*days?\s*interest[- ]?free/i)
+    || text.match(/interest[- ]?free\s*(?:period|days)?\s*(?:of\s*up to)?\s*(\d{2,3})\s*days?/i);
+  return match ? `${match[1]} days` : null;
 }
 
 export function getInternationalFee(card, multi = false) {

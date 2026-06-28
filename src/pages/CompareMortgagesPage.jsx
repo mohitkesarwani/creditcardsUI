@@ -1,30 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import MortgageCompareTable from '../components/MortgageCompareTable.jsx';
-import { useNavigate } from 'react-router-dom';
+import ComparisonRateWarning from '../components/ComparisonRateWarning.jsx';
+import Disclaimers from '../components/Disclaimers.jsx';
 import { formatMoneyWhole } from '../utils.js';
+
+function MoneyInput({ label, value, onChange, disabled }) {
+  const [text, setText] = useState(formatMoneyWhole(value));
+  useEffect(() => { setText(formatMoneyWhole(value)); }, [value]);
+  return (
+    <label className="block">
+      <span className="block text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">{label}</span>
+      <input
+        type="text"
+        value={text}
+        disabled={disabled}
+        onChange={(e) => {
+          const digits = e.target.value.replace(/[^0-9]/g, '');
+          setText(digits === '' ? '' : formatMoneyWhole(parseInt(digits, 10)));
+          if (digits) onChange(parseInt(digits, 10));
+        }}
+        onBlur={() => setText(formatMoneyWhole(value))}
+        onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
+        className="w-full text-sm font-medium tabular-nums"
+        aria-label={label}
+      />
+    </label>
+  );
+}
+
+function TermSelect({ value, onChange }) {
+  return (
+    <label className="block">
+      <span className="block text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">Loan term</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full text-sm font-medium"
+      >
+        {[15, 20, 25, 30].map((y) => (
+          <option key={y} value={y}>{y} years</option>
+        ))}
+      </select>
+    </label>
+  );
+}
 
 function CompareMortgagesPage() {
   const { selected, clearSelected } = useSelectedMortgages();
   const navigate = useNavigate();
 
-  const [propertyPrice, setPropertyPrice] = useState(1000000);
-  const [loanAmount, setLoanAmount] = useState(800000);
+  const [propertyPrice, setPropertyPrice] = useState(1_000_000);
+  const [loanAmount, setLoanAmount] = useState(800_000);
   const [useEighty, setUseEighty] = useState(false);
-  const [propertyPriceInput, setPropertyPriceInput] = useState(
-    formatMoneyWhole(1000000)
-  );
-  const [loanAmountInput, setLoanAmountInput] = useState(
-    formatMoneyWhole(800000)
-  );
-
-  useEffect(() => {
-    setPropertyPriceInput(formatMoneyWhole(propertyPrice));
-  }, [propertyPrice]);
-
-  useEffect(() => {
-    setLoanAmountInput(formatMoneyWhole(loanAmount));
-  }, [loanAmount]);
+  const [loanTerm, setLoanTerm] = useState(30);
 
   useEffect(() => {
     if (useEighty) {
@@ -35,94 +65,66 @@ function CompareMortgagesPage() {
 
   if (!selected.length) {
     return (
-      <div className="p-4">
-        <p>No mortgages selected for comparison.</p>
+      <div className="max-w-2xl mx-auto py-16 px-4 text-center">
+        <p className="text-gray-700 mb-4">No home loans selected for comparison.</p>
         <button
-          className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-5 py-2 transition-all duration-300 ease-in-out"
           onClick={() => navigate('/home-loans')}
+          className="text-blue-600 hover:underline"
         >
-          Back to mortgages
+          Browse home loans →
         </button>
       </div>
     );
   }
 
+  const showRateWarning = selected.some((m) => m.comparisonRate);
+
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 min-h-screen overflow-auto">
-      <button
-        onClick={() => navigate('/home-loans')}
-        className="text-blue-600 underline mb-4 text-sm text-left"
-      >
-        &larr; Go Back
-      </button>
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">Compare Home Loans</h1>
-      <div className="flex justify-end mb-4">
-        <button onClick={clearSelected} className="text-sm text-blue-600 underline">Clear All</button>
+    <div className="min-h-screen bg-gray-50">
+      <div className="sticky top-0 z-10 bg-white shadow-sm px-4 md:px-8 py-3 flex justify-between items-center">
+        <span className="font-semibold text-gray-900">Compare home loans</span>
+        <button onClick={clearSelected} className="text-sm underline text-gray-600 hover:text-gray-800">
+          Clear all
+        </button>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 w-full max-w-3xl mx-auto">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-start">
-          <label className="flex flex-col text-sm w-full sm:w-60">
-            <span className="block font-medium mb-1">Property Price</span>
-            <input
-              type="text"
-              className="w-full text-sm"
-              value={propertyPriceInput}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/[^0-9]/g, '');
-                if (digits === '') {
-                  setPropertyPriceInput('');
-                  return;
-                }
-              const val = parseInt(digits, 10);
-              if (!Number.isNaN(val) && val > 0) {
-                setPropertyPrice(val);
-                setPropertyPriceInput(formatMoneyWhole(val));
-              }
-            }}
-            onBlur={() => setPropertyPriceInput(formatMoneyWhole(propertyPrice))}
-            onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-            aria-label="Property Price"
-            />
-          </label>
-          <div className="flex flex-col w-full sm:w-60">
-            <label className="flex items-center gap-2 text-xs mb-1 self-start">
-              <input
-                type="checkbox"
-                className="rounded text-blue-600 focus:ring-blue-500"
-                checked={useEighty}
-                onChange={(e) => setUseEighty(e.target.checked)}
-              />
-              Use 80% of Property Price
-            </label>
-            <label className="text-sm flex-1">
-              <span className="block font-medium mb-1">Loan Amount</span>
-              <input
-                type="text"
-                className="w-full text-sm"
-                value={loanAmountInput}
+
+      <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+        {/* Loan-amount input panel */}
+        <section className="bg-white rounded-xl border border-gray-200 p-5 md:p-6">
+          <h2 className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-4">
+            Repayment assumptions
+          </h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+            <MoneyInput label="Property price" value={propertyPrice} onChange={setPropertyPrice} />
+            <div className="space-y-1">
+              <label className="flex items-center gap-2 text-xs text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={useEighty}
+                  onChange={(e) => setUseEighty(e.target.checked)}
+                  className="accent-blue-600"
+                />
+                Auto-set to 80% of price
+              </label>
+              <MoneyInput
+                label="Loan amount"
+                value={loanAmount}
+                onChange={setLoanAmount}
                 disabled={useEighty}
-                onChange={(e) => {
-                  if (useEighty) return;
-                  const digits = e.target.value.replace(/[^0-9]/g, '');
-                  if (digits === '') {
-                    setLoanAmountInput('');
-                    return;
-                  }
-                  const val = parseInt(digits, 10);
-                  if (!Number.isNaN(val) && val > 0) {
-                    setLoanAmount(val);
-                    setLoanAmountInput(formatMoneyWhole(val));
-                  }
-                }}
-                onBlur={() => setLoanAmountInput(formatMoneyWhole(loanAmount))}
-                onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-                aria-label="Loan Amount"
               />
-            </label>
+            </div>
+            <TermSelect value={loanTerm} onChange={setLoanTerm} />
+            <div className="text-xs text-gray-500 leading-snug">
+              Repayment columns below recompute against the lowest <strong>owner-occupied variable</strong> rate published by each loan.
+            </div>
           </div>
-        </div>
+        </section>
+
+        <MortgageCompareTable mortgages={selected} loanAmount={loanAmount} loanTerm={loanTerm} />
+
+        {showRateWarning && <ComparisonRateWarning />}
+        <Disclaimers />
       </div>
-      <MortgageCompareTable mortgages={selected} loanAmount={loanAmount} />
     </div>
   );
 }

@@ -21,6 +21,7 @@ import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
 import { ToastProvider } from './hooks/useToast.tsx';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
+import LegalBanner from './components/LegalBanner.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 
 function AppContent() {
@@ -30,6 +31,7 @@ function AppContent() {
   }
   return (
     <>
+      <LegalBanner />
       <NavBar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
