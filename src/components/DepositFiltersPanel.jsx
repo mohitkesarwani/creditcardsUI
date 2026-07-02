@@ -1,19 +1,32 @@
 import React, { useMemo, useState } from 'react';
 
-// Mortgage-specific filter sidebar. Mirrors FiltersPanel for credit cards
-// but with home-loan dimensions: rate type, loan purpose, then three
-// tag-based sections (Best for / Type / Perks).
+// Deposit-specific filter sidebar. Mirrors the home-loan filters but with
+// deposit dimensions:
+//   - Product category (Term / Savings / Transaction) — single select
+//   - Min headline rate slider — coarse 1%-increment buckets
+//   - Term-length bucket (Term deposits only) — single select
+//   - Tag sections: Best for / Perks
 
-const PURPOSE_OPTIONS = [
-  { key: 'any',   label: 'Any' },
-  { key: 'owner', label: 'Owner-occupied' },
-  { key: 'invest', label: 'Investment' },
+const CATEGORY_OPTIONS = [
+  { key: 'any',         label: 'Any' },
+  { key: 'TERM_DEPOSIT', label: 'Term deposit' },
+  { key: 'SAVINGS',     label: 'Savings' },
+  { key: 'TRANSACTION', label: 'Everyday' },
 ];
 
-const RATE_OPTIONS = [
-  { key: 'any',      label: 'Any' },
-  { key: 'variable', label: 'Variable' },
-  { key: 'fixed',    label: 'Fixed' },
+const RATE_BUCKETS = [
+  { key: 'any', label: 'Any',   min: null },
+  { key: '2',   label: '2%+',   min: 0.02 },
+  { key: '3',   label: '3%+',   min: 0.03 },
+  { key: '4',   label: '4%+',   min: 0.04 },
+  { key: '5',   label: '5%+',   min: 0.05 },
+];
+
+const TERM_BUCKETS = [
+  { key: 'any',        label: 'Any',        match: () => true },
+  { key: 'short',      label: '≤ 3 months', match: (d) => Number.isFinite(d?.min_term_days) && d.min_term_days <= 90 },
+  { key: 'medium',     label: '6–12 months', match: (d) => Number.isFinite(d?.max_term_days) && d.max_term_days >= 180 && d.min_term_days <= 365 },
+  { key: 'long',       label: '2 years +',   match: (d) => Number.isFinite(d?.max_term_days) && d.max_term_days >= 365 * 2 },
 ];
 
 function Section({ title, children, action }) {
@@ -77,12 +90,7 @@ function IssuerList({ banks, counts, selected, onToggle }) {
     return (
       <label key={b} className="flex items-center justify-between text-sm py-1 cursor-pointer hover:bg-gray-50 px-1 -mx-1 rounded">
         <span className="flex items-center gap-2 truncate min-w-0">
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={() => onToggle(b)}
-            className="accent-blue-600 shrink-0"
-          />
+          <input type="checkbox" checked={checked} onChange={() => onToggle(b)} className="accent-blue-600 shrink-0" />
           <span className="truncate" title={b}>{b}</span>
         </span>
         <span className="text-xs text-gray-400 tabular-nums shrink-0 pl-2">{count}</span>
@@ -127,13 +135,14 @@ function IssuerList({ banks, counts, selected, onToggle }) {
   );
 }
 
-export default function MortgageFiltersPanel({
+export default function DepositFiltersPanel({
   filters, setFilters,
   availableBanks,
   availableTagObjects = [],
   countsForBanks,
-  countsForRateType,
-  countsForPurpose,
+  countsForCategory,
+  countsForRateBucket,
+  countsForTermBucket,
   countsForTags = {},
   activeFilterCount,
   onClear,
@@ -145,13 +154,10 @@ export default function MortgageFiltersPanel({
     update({ tags: next });
   };
   const toggleBank = (b) => {
-    const banks = filters.banks.includes(b)
-      ? filters.banks.filter((x) => x !== b)
-      : [...filters.banks, b];
+    const banks = filters.banks.includes(b) ? filters.banks.filter((x) => x !== b) : [...filters.banks, b];
     update({ banks });
   };
 
-  // Filter visible tags per category (drop zero-counts unless currently active)
   const tagsFor = (cat) =>
     availableTagObjects
       .filter((t) => t.category === cat)
@@ -169,18 +175,18 @@ export default function MortgageFiltersPanel({
         )}
       </header>
 
-      <Section title="Rate type">
+      <Section title="Product type">
         <div className="space-y-1.5">
-          {RATE_OPTIONS.map((r) => {
-            const count = countsForRateType[r.key] ?? 0;
-            const disabled = r.key !== 'any' && count === 0 && filters.rateType !== r.key;
+          {CATEGORY_OPTIONS.map((c) => {
+            const count = countsForCategory[c.key] ?? 0;
+            const disabled = c.key !== 'any' && count === 0 && filters.category !== c.key;
             return (
-              <label key={r.key} className={`flex items-center justify-between text-sm py-1 cursor-pointer ${disabled ? 'opacity-40' : ''}`}>
+              <label key={c.key} className={`flex items-center justify-between text-sm py-1 cursor-pointer ${disabled ? 'opacity-40' : ''}`}>
                 <span className="flex items-center gap-2">
-                  <input type="radio" name="rateType" value={r.key}
-                    checked={filters.rateType === r.key} disabled={disabled}
-                    onChange={() => update({ rateType: r.key })} className="accent-blue-600" />
-                  {r.label}
+                  <input type="radio" name="category" value={c.key}
+                    checked={filters.category === c.key} disabled={disabled}
+                    onChange={() => update({ category: c.key })} className="accent-blue-600" />
+                  {c.label}
                 </span>
                 <span className="text-xs text-gray-400 tabular-nums">{count}</span>
               </label>
@@ -189,18 +195,18 @@ export default function MortgageFiltersPanel({
         </div>
       </Section>
 
-      <Section title="Loan purpose">
+      <Section title="Min rate">
         <div className="space-y-1.5">
-          {PURPOSE_OPTIONS.map((p) => {
-            const count = countsForPurpose[p.key] ?? 0;
-            const disabled = p.key !== 'any' && count === 0 && filters.purpose !== p.key;
+          {RATE_BUCKETS.map((b) => {
+            const count = countsForRateBucket[b.key] ?? 0;
+            const disabled = b.key !== 'any' && count === 0 && filters.rateBucket !== b.key;
             return (
-              <label key={p.key} className={`flex items-center justify-between text-sm py-1 cursor-pointer ${disabled ? 'opacity-40' : ''}`}>
+              <label key={b.key} className={`flex items-center justify-between text-sm py-1 cursor-pointer ${disabled ? 'opacity-40' : ''}`}>
                 <span className="flex items-center gap-2">
-                  <input type="radio" name="purpose" value={p.key}
-                    checked={filters.purpose === p.key} disabled={disabled}
-                    onChange={() => update({ purpose: p.key })} className="accent-blue-600" />
-                  {p.label}
+                  <input type="radio" name="rateBucket" value={b.key}
+                    checked={filters.rateBucket === b.key} disabled={disabled}
+                    onChange={() => update({ rateBucket: b.key })} className="accent-blue-600" />
+                  {b.label}
                 </span>
                 <span className="text-xs text-gray-400 tabular-nums">{count}</span>
               </label>
@@ -208,6 +214,28 @@ export default function MortgageFiltersPanel({
           })}
         </div>
       </Section>
+
+      {(filters.category === 'TERM_DEPOSIT' || filters.category === 'any') && (
+        <Section title="Term length">
+          <div className="space-y-1.5">
+            {TERM_BUCKETS.map((b) => {
+              const count = countsForTermBucket[b.key] ?? 0;
+              const disabled = b.key !== 'any' && count === 0 && filters.termBucket !== b.key;
+              return (
+                <label key={b.key} className={`flex items-center justify-between text-sm py-1 cursor-pointer ${disabled ? 'opacity-40' : ''}`}>
+                  <span className="flex items-center gap-2">
+                    <input type="radio" name="termBucket" value={b.key}
+                      checked={filters.termBucket === b.key} disabled={disabled}
+                      onChange={() => update({ termBucket: b.key })} className="accent-blue-600" />
+                    {b.label}
+                  </span>
+                  <span className="text-xs text-gray-400 tabular-nums">{count}</span>
+                </label>
+              );
+            })}
+          </div>
+        </Section>
+      )}
 
       <TagSection
         title="Tagged for"
@@ -216,14 +244,6 @@ export default function MortgageFiltersPanel({
         counts={countsForTags}
         onToggle={toggleTag}
         emptyHint="No category tags in current results."
-      />
-      <TagSection
-        title="Loan type"
-        tags={tagsFor('type')}
-        active={filters.tags || []}
-        counts={countsForTags}
-        onToggle={toggleTag}
-        emptyHint="No type tags in current results."
       />
       <TagSection
         title="Perks"
@@ -245,3 +265,5 @@ export default function MortgageFiltersPanel({
     </aside>
   );
 }
+
+export { CATEGORY_OPTIONS, RATE_BUCKETS, TERM_BUCKETS };

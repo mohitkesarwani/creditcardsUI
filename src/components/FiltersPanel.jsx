@@ -208,7 +208,7 @@ function FiltersPanel({
   );
 
   return (
-    <aside className="bg-white rounded-xl border border-gray-200 p-5 space-y-5 text-gray-800">
+    <aside className="surface p-5 space-y-5">
       <header className="flex items-center justify-between">
         <h2 className="text-base font-semibold">Filters</h2>
         {activeFilterCount > 0 && (
@@ -251,7 +251,7 @@ function FiltersPanel({
       {availableTagObjects.length > 0 ? (
         <>
           <TagSection
-            title="Best for"
+            title="Tagged for"
             tags={spendingTags}
             active={filters.features}
             counts={countsForTags}

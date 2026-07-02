@@ -5,7 +5,7 @@ const STEPS = [
   {
     n: 1,
     title: 'Filter',
-    body: 'Narrow 100+ cards by annual fee, purchase rate, rewards program or issuer. Live counts show how many cards match each option.',
+    body: 'Narrow the field by fee, rate, term or feature across credit cards, home loans, savings accounts and term deposits. Live counts show how many products match each option.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
@@ -14,8 +14,8 @@ const STEPS = [
   },
   {
     n: 2,
-    title: 'Select',
-    body: 'Tick up to four cards to compare. They appear in a sticky bar at the bottom of every page — never lose your shortlist.',
+    title: 'Shortlist',
+    body: 'Tick products to compare — up to four cards or deposits, three home loans. Your shortlist follows you around in a sticky bar so it never gets lost.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <polyline points="20 6 9 17 4 12" />
@@ -25,7 +25,7 @@ const STEPS = [
   {
     n: 3,
     title: 'Compare',
-    body: 'See annual fee, interest rates, interest-free days, rewards, insurance and digital wallets side by side. Best-in-row values are highlighted.',
+    body: 'See rates, fees, features and limits side by side. Best-in-row values are highlighted. For loans you also get a repayment estimate; for deposits, an interest-earned calculator.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <line x1="18" y1="20" x2="18" y2="10" />

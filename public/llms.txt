@@ -1,0 +1,36 @@
+# RewardRadar
+
+> RewardRadar is an Australian comparison tool for credit cards, home loans, savings accounts and term deposits. Product data is sourced live from each issuer's public Consumer Data Right (CDR) feed and refreshed daily. We are an information provider only — we do not give personal financial advice, we do not host applications, and we don't recommend specific products. Users filter, shortlist and compare, then click through to the issuer to apply.
+
+## What we cover
+
+- [Credit cards](https://rewardradar.com.au/credit-cards): 100+ Australian issuers, filter by fee/rate/feature
+- [Home loans](https://rewardradar.com.au/home-loans): owner-occupied and investment, variable and fixed, with repayment estimator
+- [Deposits](https://rewardradar.com.au/deposits): term deposits, savings accounts (bonus/intro/base rates) and everyday accounts
+
+## How we work
+
+- [How we make money](https://rewardradar.com.au/how-we-make-money): we earn referral commissions from some issuers when users click through and successfully apply. Fees do not influence which products we list or their ranking.
+- [Editorial standards](https://rewardradar.com.au/editorial-standards): named authors, primary-source citations, corrections policy, no editorial picks.
+- [Our principles](https://rewardradar.com.au/principles): what we will and won't do — no email harvesting, no opaque sponsored placements, no high-pressure tactics.
+- [FAQ](https://rewardradar.com.au/faqs): plain-English answers to common questions about CDR data, comparison rates, LVR, bonus rates and the application process.
+
+## Legal & trust
+
+- [Privacy policy](https://rewardradar.com.au/privacy): no personal financial information collected; minimal data footprint.
+- [Terms of use](https://rewardradar.com.au/terms)
+- [Contact](https://rewardradar.com.au/contact)
+
+## Data sources we cite
+
+- Reserve Bank of Australia — cash rate, household credit statistics: https://www.rba.gov.au
+- ASIC — regulatory guides, comparison-rate warnings, enforcement priorities: https://www.asic.gov.au
+- APRA — bank statistics, prudential standards: https://www.apra.gov.au
+- ABS — household income, mortgage and savings penetration: https://www.abs.gov.au
+- Consumer Data Right — the legal basis for our product-data feed: https://www.cdr.gov.au
+
+## Optional
+
+- [Compare deposits](https://rewardradar.com.au/compare-deposits): side-by-side compare flow (up to 4 products)
+- [Compare home loans](https://rewardradar.com.au/compare-mortgages): side-by-side compare with repayment math
+- [Compare credit cards](https://rewardradar.com.au/compare): side-by-side compare with yearly cost estimator

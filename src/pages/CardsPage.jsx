@@ -5,12 +5,15 @@ import FiltersPanel, { FEE_BUCKETS } from '../components/FiltersPanel.jsx';
 import SortBar from '../components/SortBar.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import CompareStickyButton from '../components/CompareStickyButton.jsx';
+import SpecialtyToggle from '../components/SpecialtyToggle.jsx';
+import DataFreshness from '../components/DataFreshness.jsx';
 import {
   getMinimumAnnualFee,
   parseCurrency,
   formatMoneyWhole,
   formatPercent,
 } from '../utils.js';
+import useScrollReveal from '../hooks/useScrollReveal.js';
 
 const PAGE_SIZE = 20;
 
@@ -68,7 +71,9 @@ function CardsPage() {
   const [sortBy, setSortBy] = useState('featured');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
+  const [showSpecialty, setShowSpecialty] = useState(false);
   const loadMoreRef = useRef(null);
+  const revealRef = useScrollReveal({ staggerMs: 40 });
 
   // Load + tag once
   useEffect(() => {
@@ -88,16 +93,25 @@ function CardsPage() {
     return () => { cancelled = true; };
   }, []);
 
+  // Hide specialty cards (business/corporate/SMSF, no-interest products like
+  // CommBank Neo, 0%-published-rate data errors) by default. SpecialtyToggle
+  // below the list flips this.
+  const consumerOnly = useMemo(
+    () => (showSpecialty ? cards : cards.filter((c) => !c.isSpecialty)),
+    [cards, showSpecialty],
+  );
+  const hiddenSpecialty = cards.length - consumerOnly.length;
+
   // Universe of options. Tags now come in as objects with category info; we
   // expose them grouped so the filter panel can render "Best for" + "Card type"
   // sections instead of one undifferentiated chip pile.
   const allTagObjects = useMemo(() => {
     const seen = new Map();
-    cards.forEach((c) => (c.tagObjects || []).forEach((t) => {
+    consumerOnly.forEach((c) => (c.tagObjects || []).forEach((t) => {
       if (!seen.has(t.id)) seen.set(t.id, t);
     }));
     return Array.from(seen.values());
-  }, [cards]);
+  }, [consumerOnly]);
 
   // Keep the legacy `allTags` for the existing filter-match logic (string-based).
   const allTags = useMemo(
@@ -105,17 +119,17 @@ function CardsPage() {
     [allTagObjects],
   );
   const allBanks = useMemo(
-    () => Array.from(new Set(cards.map((c) => c.brandName || c.brand).filter(Boolean))).sort(),
-    [cards],
+    () => Array.from(new Set(consumerOnly.map((c) => c.brandName || c.brand).filter(Boolean))).sort(),
+    [consumerOnly],
   );
 
   // Live counts (each filter dimension's counts exclude only that dimension)
   const countsForBuckets = useMemo(() => {
-    const base = applyOthers(cards, filters, 'feeBucket');
+    const base = applyOthers(consumerOnly, filters, 'feeBucket');
     return Object.fromEntries(
       FEE_BUCKETS.map((b) => [b.key, base.filter((c) => b.match(annualFeeNumber(c))).length]),
     );
-  }, [cards, filters]);
+  }, [consumerOnly, filters]);
 
   // Tag counts narrow against the active filter set:
   //   - For UNSELECTED tags: "if I added this filter, how many cards would
@@ -129,7 +143,7 @@ function CardsPage() {
   // This matches what users expect from cumulative AND filters (Booking.com,
   // Amazon, Kayak — pick a filter and see the next level narrow).
   const countsForTags = useMemo(() => {
-    const fullBase = applyOthers(cards, filters, null); // apply ALL filters
+    const fullBase = applyOthers(consumerOnly, filters, null); // apply ALL filters
     const map = {};
     allTags.forEach((t) => {
       const tagLower = t.toLowerCase();
@@ -143,20 +157,20 @@ function CardsPage() {
       }
     });
     return map;
-  }, [cards, filters, allTags]);
+  }, [consumerOnly, filters, allTags]);
 
   const countsForBanks = useMemo(() => {
-    const base = applyOthers(cards, filters, 'banks');
+    const base = applyOthers(consumerOnly, filters, 'banks');
     const map = {};
     allBanks.forEach((b) => {
       map[b] = base.filter((c) => (c.brandName || c.brand) === b).length;
     });
     return map;
-  }, [cards, filters, allBanks]);
+  }, [consumerOnly, filters, allBanks]);
 
   // Filter + sort
   const filtered = useMemo(() => {
-    const list = applyOthers(cards, filters, null);
+    const list = applyOthers(consumerOnly, filters, null);
     const arr = [...list];
     switch (sortBy) {
       case 'feeAsc':
@@ -176,7 +190,7 @@ function CardsPage() {
         });
     }
     return arr;
-  }, [cards, filters, sortBy]);
+  }, [consumerOnly, filters, sortBy]);
 
   // Reset pagination when result set changes
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filtered.length, sortBy]);
@@ -228,7 +242,7 @@ function CardsPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-32">
+    <div className="min-h-screen has-sticky-bottom" style={{ background: 'rgb(var(--surface-subtle))' }}>
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
         <header className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Compare credit cards</h1>
@@ -302,6 +316,7 @@ function CardsPage() {
               summary={summary}
               sortBy={sortBy}
               onSortChange={setSortBy}
+              freshness={<DataFreshness items={consumerOnly} />}
             />
 
             {filtered.length === 0 ? (
@@ -312,7 +327,7 @@ function CardsPage() {
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div ref={revealRef} className="space-y-3">
                 {filtered.slice(0, visibleCount).map((c) => (
                   <Card key={c.id} card={c} selectedTags={filters.features} />
                 ))}
@@ -323,6 +338,13 @@ function CardsPage() {
                 )}
               </div>
             )}
+
+            <SpecialtyToggle
+              count={hiddenSpecialty}
+              show={showSpecialty}
+              onToggle={() => setShowSpecialty((s) => !s)}
+              productLabel="card"
+            />
           </div>
         </div>
       </div>

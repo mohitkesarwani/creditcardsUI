@@ -12,6 +12,7 @@ import {
 } from '../utils.js';
 import { extractCardTags } from '../lib/cardTags.js';
 import { extractCardDeal } from '../lib/dealHighlights.js';
+import { classifyCard } from '../lib/specialtyClassifier.js';
 
 const parseRateValue = (raw) => {
   if (raw === null || raw === undefined || raw === '') return null;
@@ -83,6 +84,9 @@ export function normalizeCard(card) {
   out.tagObjects = extractCardTags(out);
   out.tags = out.tagObjects.map((t) => t.label);
   out.deal = extractCardDeal(out);
+  const specialty = classifyCard(out);
+  out.isSpecialty = specialty.isSpecialty;
+  out.specialtyReason = specialty.specialtyReason;
   return out;
 }
 

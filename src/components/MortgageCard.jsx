@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CardKpis from './CardKpis.jsx';
 import DealBadge from './DealBadge.jsx';
 import supabase from '../supabaseClient.js';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
 import { topHomeLoanTags, HOME_LOAN_TAG_STYLES } from '../lib/homeLoanTags.js';
+import useReducedMotion from '../hooks/useReducedMotion.js';
+import MagneticButton from './effects/MagneticButton.jsx';
+import RippleButton from './effects/Ripple.jsx';
 
 const FALLBACK_IMG = '/assets/image-not-available.svg';
 
@@ -15,6 +18,16 @@ function MortgageCard({ mortgage, selectedTags = [] }) {
   const { selected, toggleMortgage } = useSelectedMortgages();
   const isSelected = selected.some((m) => m.id === mortgage.id);
   const reachedLimit = !isSelected && selected.length >= 3;
+  const cardRef = useRef(null);
+  const reduced = useReducedMotion();
+  const onPointerMove = (e) => {
+    if (reduced) return;
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty('--reveal-x', `${e.clientX - rect.left}px`);
+    el.style.setProperty('--reveal-y', `${e.clientY - rect.top}px`);
+  };
   const tagObjects = mortgage.tagObjects || [];
   const topTags = topHomeLoanTags(tagObjects, 4, selectedTags);
   const issuer = mortgage.brandName || mortgage.brand || mortgage.bank_name || 'Unknown';
@@ -61,12 +74,19 @@ function MortgageCard({ mortgage, selectedTags = [] }) {
   ];
 
   return (
-    <article className="result-card p-4 md:p-5" data-selected={isSelected} id={mortgage.id}>
+    <article
+      ref={cardRef}
+      onPointerMove={onPointerMove}
+      className="result-card reveal-card p-4 md:p-5"
+      data-selected={isSelected}
+      id={mortgage.id}
+    >
+      <span aria-hidden="true" className="reveal-card__spotlight" />
       <div className="grid grid-cols-[88px_1fr] md:grid-cols-[112px_1fr_auto] gap-4 items-start">
         <button
           type="button"
           onClick={() => navigate(`/home-loans/${mortgage.id}`)}
-          className="bg-gray-50 rounded-lg p-2 flex items-center justify-center h-20 md:h-24 hover:bg-gray-100 transition-colors"
+          className="product-thumb bg-ink-50 rounded-lg p-2 flex items-center justify-center h-20 md:h-24 hover:bg-ink-100"
         >
           <img
             src={mortgage.productImageUrl || FALLBACK_IMG}
@@ -82,7 +102,11 @@ function MortgageCard({ mortgage, selectedTags = [] }) {
           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
             <span className="text-xs text-gray-500 uppercase tracking-wide truncate">{issuer}</span>
             {mortgage.is_sponsored && (
-              <span className="text-[10px] uppercase tracking-wide text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
+              <span
+                title="This product appears here because the issuer paid for the placement. The data shown is identical to non-sponsored products."
+                className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full"
+              >
+                <svg viewBox="0 0 8 8" className="w-1.5 h-1.5" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
                 Sponsored
               </span>
             )}
@@ -121,23 +145,31 @@ function MortgageCard({ mortgage, selectedTags = [] }) {
         {/* Apply CTA — desktop */}
         <div className="hidden md:flex flex-col items-end gap-2">
           {applyHref && (
-            <a
-              href={applyHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleApply}
-              className="btn btn-primary text-sm whitespace-nowrap"
-            >
-              Apply now
-            </a>
+            <MagneticButton strength={6}>
+              <RippleButton
+                as="a"
+                href={applyHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleApply}
+                title="You'll be taken to the issuer's own application. We may receive a referral fee — see How we make money."
+                className="btn btn-primary text-sm whitespace-nowrap"
+              >
+                Apply now
+              </RippleButton>
+            </MagneticButton>
           )}
           <button
             type="button"
             onClick={() => navigate(`/home-loans/${mortgage.id}`)}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand-700 hover:underline"
           >
             View details →
           </button>
+          <span className="text-[10px] text-ink-500 text-right max-w-[140px] leading-tight">
+            Click-out goes to issuer.{' '}
+            <a href="/how-we-make-money" className="underline hover:text-ink-700">Referral fee disclosure</a>
+          </span>
         </div>
       </div>
 

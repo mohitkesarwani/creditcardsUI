@@ -2,9 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply font-sans bg-background text-text leading-relaxed dark:bg-slate-900 dark:text-slate-100;
+/* ─────────────────────────────────────────────────────────────────────────
+   2026 baseline
+   - Inter as the display + body face (system fallback retained in config)
+   - Smoothed font rendering
+   - Default focus-visible ring brand-coloured + offset
+   ───────────────────────────────────────────────────────────────────────── */
+@import url('https://rsms.me/inter/inter.css');
+
+:root {
+  /* Brand: teal */
+  --brand-700:  15 118 110;     /* primary CTA bg            */
+  --brand-600:  13 148 136;     /* hover                     */
+  --brand-500:  20 184 166;     /* glow / focus              */
+  --brand-300:  94 234 212;     /* dark-mode brand text      */
+  --brand-50:  240 253 250;     /* light brand-tinted bg     */
+  /* Neutrals: stone */
+  --ink-950:   12 10 9;
+  --ink-900:   28 25 23;
+  --ink-700:   68 64 60;
+  --ink-500:  120 113 108;
+  --ink-200:  231 229 228;
+  --ink-100:  245 245 244;
+  /* Semantic surfaces — switched via .dark on <html> */
+  --surface:           255 255 255;
+  --surface-subtle:    250 250 249;
+  --surface-elevated:  255 255 255;
+  --text-strong:       28 25 23;        /* body text */
+  --text-muted:        120 113 108;     /* secondary text */
+  --hairline:          231 229 228;
+  --hairline-strong:   214 211 209;
 }
+
+.dark {
+  --surface:           28 25 23;        /* stone-900 */
+  --surface-subtle:    12 10 9;         /* stone-950 — body bg */
+  --surface-elevated:  41 37 36;        /* stone-800 — cards   */
+  --text-strong:       250 250 249;     /* stone-50 */
+  --text-muted:        168 162 158;     /* stone-400 */
+  --hairline:          41 37 36;        /* stone-800 */
+  --hairline-strong:   68 64 60;        /* stone-700 */
+}
+
+body {
+  @apply font-sans leading-relaxed antialiased;
+  background: rgb(var(--surface-subtle));
+  color: rgb(var(--text-strong));
+  font-feature-settings: 'cv02','cv03','cv04','cv11';
+}
+
+/* Crisper focus state across the whole app */
+*:focus-visible {
+  outline: 2px solid rgb(var(--brand-600));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Custom scrollbars (webkit) — quieter than default */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: rgb(168 162 158 / 0.4);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(120 113 108 / 0.6); background-clip: padding-box; border: 2px solid transparent; }
+::-webkit-scrollbar-track { background: transparent; }
+.dark ::-webkit-scrollbar-thumb { background: rgb(120 113 108 / 0.4); background-clip: padding-box; border: 2px solid transparent; }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgb(168 162 158 / 0.6); background-clip: padding-box; border: 2px solid transparent; }
+
+/* Mobile-friendly bottom padding when a sticky compare bar is present.
+   Sticky bar is ~72px tall — leave room so the last result isn't covered. */
+.has-sticky-bottom { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Dark-mode adoption for legacy hardcoded Tailwind grays.
+   Many components were written against `text-gray-500`, `bg-white`,
+   `border-gray-200` etc. — those don't auto-flip. These rules re-map them
+   to the right shade in dark mode without touching every component file.
+   Scoped to `.dark` so light mode is unchanged.
+   ───────────────────────────────────────────────────────────────────────── */
+.dark .bg-white       { background: rgb(var(--surface-elevated)) !important; }
+.dark .bg-gray-50     { background: rgb(var(--surface-subtle))  !important; }
+.dark .bg-gray-100    { background: rgb(var(--surface-elevated)) !important; }
+
+.dark .text-gray-900  { color: rgb(var(--text-strong))  !important; }
+.dark .text-gray-800  { color: rgb(var(--text-strong))  !important; }
+.dark .text-gray-700  { color: rgb(231 229 228)         !important; } /* stone-200 */
+.dark .text-gray-600  { color: rgb(214 211 209)         !important; } /* stone-300 */
+.dark .text-gray-500  { color: rgb(168 162 158)         !important; } /* stone-400 */
+.dark .text-gray-400  { color: rgb(120 113 108)         !important; }
+.dark .text-gray-300  { color: rgb(120 113 108)         !important; }
+
+.dark .border-gray-100, .dark .border-gray-200 { border-color: rgb(var(--hairline)) !important; }
+.dark .border-gray-300                          { border-color: rgb(var(--hairline-strong)) !important; }
+.dark .divide-gray-100 > * + *                  { border-color: rgb(var(--hairline)) !important; }
+
+/* Brand-coloured links should brighten in dark for readability */
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark .text-brand-600,
+.dark .text-brand-700 { color: rgb(var(--brand-300)) !important; }
+.dark .hover\:text-blue-700:hover,
+.dark .hover\:text-brand-800:hover { color: rgb(var(--brand-200, 153 246 228)) !important; }
+.dark .hover\:text-blue-700:hover  { color: rgb(94 234 212) !important; }
+
+/* Compare-sticky-button row hover */
+.dark .hover\:bg-gray-50:hover  { background: rgb(var(--surface-subtle)) !important; }
+.dark .hover\:bg-gray-100:hover { background: rgb(var(--surface-elevated)) !important; }
+.dark .hover\:bg-gray-200:hover { background: rgb(68 64 60) !important; }
 
 @keyframes orbit {
   from { transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg); }
@@ -26,7 +132,7 @@ body {
 }
 
 .feature-box {
-  @apply bg-gradient-to-r from-accent to-accent/80 p-px rounded-lg transition transform;
+  @apply bg-gradient-to-r from-brand-600 to-brand-700 p-px rounded-lg transition transform;
 }
 .feature-inner {
   @apply bg-white rounded-lg shadow-md flex items-start gap-4 p-6;
@@ -35,7 +141,7 @@ body {
   @apply shadow-xl;
 }
 .icon-wrap {
-  @apply p-3 rounded-full bg-gradient-to-r from-accent to-accent/80 text-white shadow;
+  @apply p-3 rounded-full bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow;
 }
 .feature-box:hover {
   @apply -translate-y-1;
@@ -121,42 +227,96 @@ input[type='text'],
 input[type='password'],
 input[type='number'],
 input[type='email'],
+input[type='tel'],
+input[type='search'],
 select,
 textarea {
-  @apply rounded-lg border border-gray-300 p-2 bg-white;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--hairline-strong));
+  padding: 0.5rem 0.75rem;
+  background: rgb(var(--surface-elevated));
+  color: rgb(var(--text-strong));
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  min-height: 40px; /* touch-friendly */
+}
+input::placeholder, textarea::placeholder { color: rgb(var(--text-muted) / 0.7); }
+input[type='text']:hover,
+input[type='password']:hover,
+input[type='number']:hover,
+input[type='email']:hover,
+input[type='tel']:hover,
+input[type='search']:hover,
+select:hover,
+textarea:hover {
+  border-color: rgb(var(--brand-500));
 }
 input[type='text']:focus,
 input[type='password']:focus,
 input[type='number']:focus,
 input[type='email']:focus,
+input[type='tel']:focus,
+input[type='search']:focus,
 select:focus,
 textarea:focus {
-  @apply outline-none border-blue-500 ring ring-blue-200;
+  outline: none;
+  border-color: rgb(var(--brand-500));
+  box-shadow: 0 0 0 3px rgb(20 184 166 / 0.32);
 }
+/* ─────────────────────────────────────────────────────────────────────────
+   Buttons (2026 polish)
+   - Larger tap target, softer corners
+   - Primary uses brand gradient + subtle hover lift
+   - Tactile press-down via `active:scale-[0.98]`
+   ───────────────────────────────────────────────────────────────────────── */
 .btn {
-  @apply px-5 py-2 rounded font-semibold transition-all duration-300 ease-in-out shadow-sm focus:outline-none;
+  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-semibold
+         text-sm leading-none transition-all duration-200 ease-out-quart
+         focus:outline-none active:scale-[0.98];
 }
 .btn-primary {
-  background-color: #00813E;
-  color: #ffffff;
-  font-size: 16px;
+  @apply text-white shadow-soft;
+  background-image: linear-gradient(180deg, rgb(13 148 136), rgb(15 118 110));
 }
 .btn-primary:hover {
-  background-color: #00692F;
+  @apply shadow-lift -translate-y-px;
+  background-image: linear-gradient(180deg, rgb(20 184 166), rgb(13 148 136));
+}
+.btn-primary:focus-visible {
+  @apply shadow-focus-ring;
 }
 .btn-secondary {
-  @apply border;
-  border-color: #000000;
-  color: #000000;
+  @apply bg-ink-900 text-white shadow-soft;
 }
 .btn-secondary:hover {
-  color: #333333;
+  @apply bg-ink-800 shadow-lift -translate-y-px;
 }
+.dark .btn-secondary {
+  @apply bg-ink-100 text-ink-900;
+}
+.dark .btn-secondary:hover {
+  background: #ffffff;
+}
+
 .btn-outline {
-  @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+  border: 1px solid rgb(var(--hairline-strong));
+  background: rgb(var(--surface-elevated));
+  color: rgb(var(--text-strong));
+}
+.btn-outline:hover {
+  background: rgb(var(--surface-subtle));
+  border-color: rgb(var(--brand-500));
+  color: rgb(var(--brand-700));
+}
+.dark .btn-outline:hover { color: rgb(var(--brand-300)); }
+
+.btn-ghost {
+  color: rgb(var(--text-strong));
+}
+.btn-ghost:hover {
+  background: rgb(var(--surface-subtle));
 }
 .btn-pill {
-  @apply bg-accent text-white rounded-full hover:bg-[#005fa3];
+  @apply bg-brand-700 text-white rounded-full hover:bg-brand-600;
 }
 
 html {
@@ -244,71 +404,314 @@ html {
   @apply text-lg font-bold text-black text-right;
 }
 
-/* ------- Compare-flow design tokens (flight-comparison style) ------- */
+/* ─────────────────────────────────────────────────────────────────────────
+   Result rows + chips (2026 polish)
+   - Hairline borders (slate-200) replacing softer gray
+   - Subtle hover lift (-1px) with shadow grow
+   - Selected state uses brand glow ring
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Surface helpers — reusable on any panel. Auto-flip between light/dark via CSS vars. */
+.surface {
+  background: rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: 1.125rem;
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.04);
+  color: rgb(var(--text-strong));
+}
+.dark .surface {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.30), 0 1px 3px 0 rgb(0 0 0 / 0.20);
+}
+.surface-flat {
+  background: rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: 1.125rem;
+  color: rgb(var(--text-strong));
+}
+.glass {
+  background: rgb(var(--surface) / 0.78);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: rgb(var(--text-strong));
+}
+.glass-dark {
+  background: rgb(12 10 9 / 0.85);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: rgb(250 250 249);
+}
+.hairline { border: 1px solid rgb(var(--hairline)); }
+
+/* Shimmer skeleton — give any block .skeleton + a width/height */
+.skeleton {
+  background: linear-gradient(90deg, rgb(241 245 249) 0%, rgb(226 232 240) 50%, rgb(241 245 249) 100%);
+  background-size: 800px 100%;
+  @apply animate-shimmer rounded-md;
+}
 
 /* Result card — horizontal, data-dense, hover-lifted */
 .result-card {
-  @apply bg-white rounded-xl border border-gray-200 transition-shadow;
+  background: rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: 1.125rem;
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.04);
+  color: rgb(var(--text-strong));
+  transition: all 200ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+.dark .result-card {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.30), 0 1px 3px 0 rgb(0 0 0 / 0.20);
 }
 .result-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: rgb(229 231 235);
+  border-color: rgb(var(--hairline-strong));
+  box-shadow: 0 4px 16px -4px rgb(15 23 42 / 0.08), 0 2px 6px -2px rgb(15 23 42 / 0.04);
+  transform: translateY(-1px);
+}
+.dark .result-card:hover {
+  box-shadow: 0 4px 16px -4px rgb(0 0 0 / 0.50), 0 2px 6px -2px rgb(0 0 0 / 0.30);
 }
 .result-card[data-selected='true'] {
-  border-color: #1556f0;
-  box-shadow: 0 0 0 1px #1556f0;
+  border-color: rgb(var(--brand-500));
+  box-shadow: 0 0 0 1px rgb(var(--brand-500)), 0 4px 16px -4px rgb(20 184 166 / 0.25);
 }
 
 /* KPI tile inside a result card or compare table */
 .kpi-tile {
-  @apply flex flex-col items-start justify-center px-3 py-2 bg-gray-50 rounded-lg;
+  background: rgb(var(--surface-subtle));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
   min-width: 0;
 }
 .kpi-tile__label {
-  @apply text-[11px] uppercase tracking-wide text-gray-500 font-medium leading-tight;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(var(--text-muted));
+  font-weight: 600;
+  line-height: 1.1;
 }
 .kpi-tile__value {
-  @apply text-base font-semibold text-gray-900 leading-tight mt-0.5;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgb(var(--text-strong));
+  line-height: 1.1;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
 }
-.kpi-tile--best {
-  @apply bg-emerald-50;
-}
-.kpi-tile--best .kpi-tile__value {
-  @apply text-emerald-800;
-}
+.kpi-tile--best { @apply bg-accent-50 border-accent-100; }
+.kpi-tile--best .kpi-tile__value { @apply text-accent-700; }
+.dark .kpi-tile--best { background: rgb(4 47 46); border-color: rgb(15 118 110); }
+.dark .kpi-tile--best .kpi-tile__value { color: rgb(94 234 212); }
 
 /* Feature chips */
 .feature-chip {
-  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 9999px;
+  font-size: 0.75rem; font-weight: 500;
+  background: rgb(var(--surface-subtle));
+  color: rgb(var(--text-strong));
+  border: 1px solid rgb(var(--hairline));
 }
 .feature-chip--highlight {
-  @apply bg-amber-100 text-amber-900;
+  @apply bg-amber-100 text-amber-900 border-amber-200;
+}
+.dark .feature-chip--highlight {
+  background: rgb(69 26 3); color: rgb(252 211 77); border-color: rgb(146 64 14);
 }
 
-/* Filter chip (toggleable) */
+/* Filter chip (toggleable) — pill with smooth toggle, subtle press */
 .filter-chip {
-  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border border-gray-300 text-gray-700 cursor-pointer transition-all select-none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 9999px;
+  font-size: 0.875rem; font-weight: 500;
+  border: 1px solid rgb(var(--hairline-strong));
+  color: rgb(var(--text-strong));
+  background: rgb(var(--surface-elevated));
+  cursor: pointer; user-select: none;
+  transition: all 150ms cubic-bezier(0.25, 1, 0.5, 1);
+  min-height: 36px; /* touch-target friendly */
 }
+.filter-chip:active { transform: scale(0.97); }
 .filter-chip:hover {
-  @apply border-gray-400 bg-gray-50;
+  border-color: rgb(var(--brand-500));
+  color: rgb(var(--brand-700));
+  background: rgb(var(--brand-50));
+}
+.dark .filter-chip:hover {
+  color: rgb(var(--brand-300));
+  background: rgb(var(--brand-50) / 0.06);
 }
 .filter-chip[data-active='true'] {
-  background-color: #1556f0;
-  color: #ffffff;
-  border-color: #1556f0;
+  background: rgb(var(--brand-700));
+  color: rgb(250 250 249);
+  border-color: rgb(var(--brand-700));
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.06);
+}
+.filter-chip[data-active='true']:hover {
+  background: rgb(var(--brand-600));
+  border-color: rgb(var(--brand-600));
 }
 
 /* Sort segmented control */
 .sort-pill {
-  @apply text-sm font-medium px-3 py-1.5 rounded-md text-gray-600 cursor-pointer transition-colors;
+  font-size: 0.875rem; font-weight: 500;
+  padding: 6px 12px; border-radius: 0.5rem;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.25, 1, 0.5, 1);
+  min-height: 36px;
 }
+.sort-pill:hover { color: rgb(var(--text-strong)); }
 .sort-pill[data-active='true'] {
-  @apply bg-white text-gray-900 shadow-sm;
+  background: rgb(var(--surface-elevated));
+  color: rgb(var(--text-strong));
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.06);
 }
 
 /* Best-value pill rendered in the compare table */
 .best-pill {
-  @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-700 uppercase tracking-wide;
+  @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-accent-100 text-accent-700 uppercase tracking-[0.05em];
+}
+.dark .best-pill {
+  background: rgb(4 47 46); color: rgb(94 234 212);
+}
+
+/* Tab strip — animated sliding underline */
+.tab-strip {
+  display: flex; align-items: flex-end;
+  border-bottom: 1px solid rgb(var(--hairline));
+  position: relative;
+}
+.tab-item {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem; font-weight: 500;
+  color: rgb(var(--text-muted));
+  transition: color 200ms cubic-bezier(0.25, 1, 0.5, 1);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  min-height: 44px; /* touch-friendly */
+}
+.tab-item:hover { color: rgb(var(--text-strong)); }
+.tab-item[data-active='true'] {
+  color: rgb(var(--brand-700));
+  border-color: rgb(var(--brand-600));
+}
+.dark .tab-item[data-active='true'] { color: rgb(var(--brand-300)); border-color: rgb(var(--brand-400)); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Big-brand interaction effects
+   - Reveal-hover spotlight (Microsoft Fluent)
+   - Material 3 click ripple
+   - Scroll-reveal stagger (Apple-style)
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Reveal-hover spotlight on cards.
+   The wrapper gets `position: relative`; the .reveal-card__spotlight overlay
+   draws a soft radial gradient centred on the cursor (set via CSS vars in
+   RevealCard.jsx). The spotlight only appears on :hover so it doesn't compete
+   with normal browsing. */
+.reveal-card {
+  --reveal-x: -100px;
+  --reveal-y: -100px;
+  isolation: isolate;
+}
+.reveal-card__spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+  background:
+    radial-gradient(
+      280px circle at var(--reveal-x) var(--reveal-y),
+      rgb(20 184 166 / 0.10),
+      transparent 60%
+    );
+  z-index: 0;
+}
+.dark .reveal-card__spotlight {
+  background:
+    radial-gradient(
+      280px circle at var(--reveal-x) var(--reveal-y),
+      rgb(45 212 191 / 0.12),
+      transparent 60%
+    );
+}
+.reveal-card:hover .reveal-card__spotlight { opacity: 1; }
+/* Lift content above the spotlight overlay so it stays interactive */
+.reveal-card > *:not(.reveal-card__spotlight) { position: relative; z-index: 1; }
+
+/* Material 3 ripple — fades in fast, expands, fades out */
+.ripple-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
+}
+.ripple-dot {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.30);
+  transform: scale(0);
+  opacity: 1;
+  animation: ripple-expand 600ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  pointer-events: none;
+}
+@keyframes ripple-expand {
+  0%   { transform: scale(0); opacity: 0.45; }
+  60%  { opacity: 0.30; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* Scroll-reveal stagger — hidden state and revealed state.
+   Wire up by attaching the `useScrollReveal` hook to a container; the hook
+   sets data-reveal=hidden|visible on each direct child. */
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 420ms cubic-bezier(0.25, 1, 0.5, 1),
+              transform 420ms cubic-bezier(0.25, 1, 0.5, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal="visible"] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 420ms cubic-bezier(0.25, 1, 0.5, 1),
+              transform 420ms cubic-bezier(0.25, 1, 0.5, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Image zoom on card hover (Amazon-style) — `.product-thumb img` scales gently */
+.product-thumb {
+  overflow: hidden;
+  transition: background-color 200ms ease-out-quart;
+}
+.product-thumb img {
+  transition: transform 320ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+.result-card:hover .product-thumb img,
+.reveal-card:hover .product-thumb img {
+  transform: scale(1.04);
+}
+
+/* Respect reduced-motion across all decorative effects */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-card__spotlight,
+  .ripple-dot,
+  .product-thumb img {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 0 !important;
+  }
+  [data-reveal="hidden"],
+  [data-reveal="visible"] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 
@@ -336,30 +739,37 @@ html {
 }
 
 .accordion-item {
-  @apply px-5 py-4 border-b border-gray-100;
+  background: rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+  color: rgb(var(--text-strong));
 }
-.accordion-question {
-  @apply flex justify-between items-center font-semibold text-base;
+.accordion-item:hover { box-shadow: 0 1px 3px rgb(15 23 42 / 0.06); }
+.accordion-item[data-open='true'] {
+  box-shadow: 0 4px 16px -4px rgb(15 23 42 / 0.08), 0 2px 6px -2px rgb(15 23 42 / 0.04);
+  border-color: rgb(var(--hairline-strong));
 }
-.accordion-answer {
-  @apply text-[15px] py-2;
-}
+.accordion-question { display: flex; justify-content: space-between; align-items: center;
+  font-weight: 600; font-size: 1rem; color: rgb(var(--text-strong)); }
+.accordion-answer   { padding: 0.5rem 0; font-size: 15px; color: rgb(var(--text-strong) / 0.85); line-height: 1.6; }
 
 
 .app-footer {
-  background-color: #000000;
-  color: #f1f1f1;
+  @apply bg-ink-900 text-ink-100;
   padding: 48px 64px;
 }
 .app-footer a {
-  color: #f1f1f1;
+  color: rgb(203 213 225);
   display: block;
   font-size: 14px;
   line-height: 1.4;
   padding-bottom: 12px;
+  transition: color 150ms ease-out;
 }
 .app-footer a:hover {
-  text-decoration: underline;
+  color: #ffffff;
 }
 
 /* Icon group inside hero selector */

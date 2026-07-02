@@ -58,16 +58,16 @@ export default function Hero3D() {
             className="inline-block text-xs uppercase tracking-widest text-white/60 mb-4"
             variants={fadeUp} initial="hidden" animate="visible" custom={0}
           >
-            Compare 100+ Australian credit cards
+            Compare Australian credit cards, home loans &amp; deposits
           </motion.span>
 
           <motion.h1
             className="text-4xl md:text-6xl font-bold leading-tight tracking-tight mb-5"
             variants={fadeUp} initial="hidden" animate="visible" custom={1}
           >
-            Find a card that<br />
+            Compare cards, loans &amp; deposits<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3ec5b8] to-[#f5c451]">
-              actually fits your wallet.
+              the honest way.
             </span>
           </motion.h1>
 
@@ -75,8 +75,9 @@ export default function Hero3D() {
             className="text-lg text-white/75 max-w-xl mx-auto md:mx-0 mb-8"
             variants={fadeUp} initial="hidden" animate="visible" custom={2}
           >
-            Filter by fee, rate or feature. Compare up to four cards side by side. All data
-            pulled straight from each issuer's public Consumer Data Right feed — refreshed daily.
+            Filter by fee, rate or feature. Compare credit cards, home loans, savings and term
+            deposits side by side. Every number comes from each issuer's public Consumer Data
+            Right feed — refreshed daily.
           </motion.p>
 
           <motion.div
@@ -87,14 +88,20 @@ export default function Hero3D() {
               to="/credit-cards"
               className="btn btn-primary text-base px-6 py-3 rounded-xl shadow-lg hover:scale-[1.02] transition-transform"
             >
-              Browse credit cards →
+              Credit cards
             </Link>
-            <a
-              href="#how-it-works"
-              className="text-base px-6 py-3 rounded-xl border border-white/30 text-white hover:bg-white/10 transition-colors"
+            <Link
+              to="/home-loans"
+              className="text-base px-6 py-3 rounded-xl border border-white/30 text-white hover:bg-white/10 transition-colors text-center"
             >
-              How it works
-            </a>
+              Home loans
+            </Link>
+            <Link
+              to="/deposits"
+              className="text-base px-6 py-3 rounded-xl border border-white/30 text-white hover:bg-white/10 transition-colors text-center"
+            >
+              Deposits
+            </Link>
           </motion.div>
 
           <motion.div

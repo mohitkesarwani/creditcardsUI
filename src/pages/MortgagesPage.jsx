@@ -6,7 +6,10 @@ import SortBar from '../components/SortBar.jsx';
 import LoaderSkeleton from '../components/LoaderSkeleton.jsx';
 import ComparisonRateWarning from '../components/ComparisonRateWarning.jsx';
 import MortgageCompareStickyButton from '../components/MortgageCompareStickyButton.jsx';
+import SpecialtyToggle from '../components/SpecialtyToggle.jsx';
+import DataFreshness from '../components/DataFreshness.jsx';
 import { formatPercent } from '../utils.js';
+import useScrollReveal from '../hooks/useScrollReveal.js';
 
 const PAGE_SIZE = 20;
 const EMPTY_FILTERS = {
@@ -71,7 +74,9 @@ function MortgagesPage() {
   const [sortBy, setSortBy] = useState('rateAsc');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
+  const [showSpecialty, setShowSpecialty] = useState(false);
   const loadMoreRef = useRef(null);
+  const revealRef = useScrollReveal({ staggerMs: 40 });
 
   useEffect(() => {
     let cancelled = false;
@@ -88,43 +93,52 @@ function MortgagesPage() {
     return () => { cancelled = true; };
   }, []);
 
+  // Hide specialty loans (Westpac Sustainable Upgrades top-ups, bridging
+   // loans, anything with a tiny max_loan_amount) by default. SpecialtyToggle
+   // beneath the list flips this.
+  const consumerOnly = useMemo(
+    () => (showSpecialty ? loans : loans.filter((m) => !m.isSpecialty)),
+    [loans, showSpecialty],
+  );
+  const hiddenSpecialty = loans.length - consumerOnly.length;
+
   const allBanks = useMemo(
-    () => Array.from(new Set(loans.map((m) => m.brandName || m.brand || m.bank_name).filter(Boolean))).sort(),
-    [loans],
+    () => Array.from(new Set(consumerOnly.map((m) => m.brandName || m.brand || m.bank_name).filter(Boolean))).sort(),
+    [consumerOnly],
   );
 
   const allTagObjects = useMemo(() => {
     const seen = new Map();
-    loans.forEach((m) => (m.tagObjects || []).forEach((t) => {
+    consumerOnly.forEach((m) => (m.tagObjects || []).forEach((t) => {
       if (!seen.has(t.id)) seen.set(t.id, t);
     }));
     return Array.from(seen.values());
-  }, [loans]);
+  }, [consumerOnly]);
 
   // Live counts
   const countsForRateType = useMemo(() => {
-    const base = applyOthers(loans, filters, 'rateType');
+    const base = applyOthers(consumerOnly, filters, 'rateType');
     return {
       any:      base.length,
       variable: base.filter((m) => headlineForPurpose(m, filters.purpose, 'variable')).length,
       fixed:    base.filter((m) => headlineForPurpose(m, filters.purpose, 'fixed')).length,
     };
-  }, [loans, filters]);
+  }, [consumerOnly, filters]);
 
   const countsForPurpose = useMemo(() => {
-    const base = applyOthers(loans, filters, 'purpose');
+    const base = applyOthers(consumerOnly, filters, 'purpose');
     return {
       any:    base.length,
       owner:  base.filter((m) => m.min_variable_rate_owner !== null || m.min_fixed_rate_owner !== null).length,
       invest: base.filter((m) => m.min_variable_rate_invest !== null || m.min_fixed_rate_invest !== null).length,
     };
-  }, [loans, filters]);
+  }, [consumerOnly, filters]);
 
   // Tag counts narrow as filters accumulate (same pattern as credit cards).
   // Each unselected tag shows how many loans you'd see if you also picked it;
   // selected tags report the current narrowed result count.
   const countsForTags = useMemo(() => {
-    const fullBase = applyOthers(loans, filters, null);
+    const fullBase = applyOthers(consumerOnly, filters, null);
     const activeLower = new Set((filters.tags || []).map((t) => t.toLowerCase()));
     const map = {};
     allTagObjects.forEach((t) => {
@@ -139,19 +153,19 @@ function MortgagesPage() {
       }
     });
     return map;
-  }, [loans, filters, allTagObjects]);
+  }, [consumerOnly, filters, allTagObjects]);
 
   const countsForBanks = useMemo(() => {
-    const base = applyOthers(loans, filters, 'banks');
+    const base = applyOthers(consumerOnly, filters, 'banks');
     const out = {};
     allBanks.forEach((b) => {
       out[b] = base.filter((m) => (m.brandName || m.brand || m.bank_name) === b).length;
     });
     return out;
-  }, [loans, filters, allBanks]);
+  }, [consumerOnly, filters, allBanks]);
 
   const filtered = useMemo(() => {
-    const list = applyOthers(loans, filters, null);
+    const list = applyOthers(consumerOnly, filters, null);
     const arr = [...list];
     const num = (v) => (Number.isFinite(v) ? v : Infinity);
     switch (sortBy) {
@@ -173,7 +187,7 @@ function MortgagesPage() {
         });
     }
     return arr;
-  }, [loans, filters, sortBy]);
+  }, [consumerOnly, filters, sortBy]);
 
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filtered.length, sortBy]);
 
@@ -213,7 +227,7 @@ function MortgagesPage() {
   if (error)   return <p className="text-center py-12 text-red-600">{error}</p>;
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-32">
+    <div className="min-h-screen has-sticky-bottom" style={{ background: 'rgb(var(--surface-subtle))' }}>
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
         <header className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Compare home loans</h1>
@@ -287,6 +301,7 @@ function MortgagesPage() {
               summary={summary}
               sortBy={sortBy}
               onSortChange={setSortBy}
+              freshness={<DataFreshness items={consumerOnly} />}
             />
 
             {filtered.length === 0 ? (
@@ -298,7 +313,7 @@ function MortgagesPage() {
               </div>
             ) : (
               <>
-                <div className="space-y-3">
+                <div ref={revealRef} className="space-y-3">
                   {filtered.slice(0, visibleCount).map((m) => (
                     <MortgageCard key={m.id} mortgage={m} selectedTags={filters.tags} />
                   ))}
@@ -314,6 +329,13 @@ function MortgagesPage() {
                 )}
               </>
             )}
+
+            <SpecialtyToggle
+              count={hiddenSpecialty}
+              show={showSpecialty}
+              onToggle={() => setShowSpecialty((s) => !s)}
+              productLabel="home loan"
+            />
           </div>
         </div>
       </div>

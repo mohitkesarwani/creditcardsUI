@@ -2,6 +2,7 @@ import supabase from '../supabaseClient.js';
 import { formatPercent } from '../utils.js';
 import { extractHomeLoanTags } from '../lib/homeLoanTags.js';
 import { extractLoanDeal } from '../lib/dealHighlights.js';
+import { classifyHomeLoan } from '../lib/specialtyClassifier.js';
 
 // CDR home loans live in the `home_loans` Supabase table (migration 003).
 // The ingest pre-computes structured columns: min_variable_rate_owner,
@@ -52,11 +53,14 @@ const normalizeLoan = (row) => {
 const withTagsAndDeal = (loan) => {
   if (!loan) return loan;
   const tagObjects = extractHomeLoanTags(loan);
+  const specialty = classifyHomeLoan(loan);
   return {
     ...loan,
     tagObjects,
     tags: tagObjects.map((t) => t.label),
     deal: extractLoanDeal(loan),
+    isSpecialty: specialty.isSpecialty,
+    specialtyReason: specialty.specialtyReason,
   };
 };
 

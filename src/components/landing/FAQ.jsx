@@ -3,23 +3,23 @@ import React, { useState } from 'react';
 const QUESTIONS = [
   {
     q: 'Is the information on this site financial advice?',
-    a: 'No. Everything here is general product information, presented for comparison purposes. It does not take into account your personal objectives, financial situation or needs. Before applying for any credit card you should read the issuer\'s Product Disclosure Statement (PDS) and Target Market Determination (TMD), and consider whether the card is right for you. If unsure, speak to a licensed financial adviser.',
+    a: 'No. Everything here is general product information, presented for comparison purposes. It does not take into account your personal objectives, financial situation or needs. Before applying for any product — credit card, home loan or deposit — read the issuer\'s Product Disclosure Statement (PDS) and Target Market Determination (TMD), and consider whether it\'s right for you. If unsure, speak to a licensed financial adviser.',
   },
   {
     q: 'Where do the rates and fees come from?',
-    a: 'Every card we list is pulled from the issuer\'s public Consumer Data Right (CDR) endpoint — the same machine-readable feed banks are required to publish under Australian open-banking regulations. Rates and fees update each time we re-run the ingest (typically daily). The bank\'s own website remains the source of truth at the point of application.',
+    a: 'Every credit card, home loan and deposit we list is pulled from the issuer\'s public Consumer Data Right (CDR) endpoint — the same machine-readable feed banks are required to publish under Australian open-banking regulations. Rates and fees update each time we re-run the ingest (typically daily). The issuer\'s own website remains the source of truth at the point of application.',
   },
   {
     q: 'Why does some information show "—"?',
-    a: 'A dash means the issuer hasn\'t published that field in their CDR feed. Comparison rates, for example, are rarely populated by Australian credit-card issuers. We choose to show "—" rather than guess or scrape from elsewhere — we\'d rather be honest about the gap.',
+    a: 'A dash means the issuer hasn\'t published that field in their CDR feed. Comparison rates on credit cards, bonus-balance caps on savings, max-LVR on some home loans — they\'re sometimes blank. We show "—" rather than guess or scrape from elsewhere; we\'d rather be honest about the gap.',
   },
   {
     q: 'How do you make money?',
-    a: 'Some issuers pay us a referral fee if you apply for a card after clicking through from this site. That fee is the same regardless of which card you pick, and it does not change the comparison data, the ranking, or which cards we show. See "How we make money" for the full detail.',
+    a: 'Some issuers pay us a referral fee if you successfully open an account after clicking through from this site. The fee is the same regardless of which product you pick and doesn\'t change the comparison data, the ranking, or which products we list. See "How we make money" for the full detail.',
   },
   {
     q: 'Do you collect my personal data?',
-    a: 'No sign-up is required to use the comparison tools. We don\'t collect your email or contact details unless you choose to submit them via the contact form. See our Privacy Policy.',
+    a: 'No sign-up is required to use the comparison tools. We don\'t collect your email, income, balances or credit checks unless you choose to submit them via the contact form. See our Privacy Policy.',
   },
 ];
 

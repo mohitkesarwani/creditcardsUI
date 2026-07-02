@@ -49,10 +49,10 @@ export default function TermsPage() {
 
       <H2>4. Commissions and sponsored placements</H2>
       <p className="text-gray-700">
-        RewardRadar may receive a commission from some issuers when you apply for a card
-        through links on this Site. The fee does not change which cards we list, the order
-        in which non-sponsored cards appear, or the data we present. Sponsored cards are
-        clearly labelled. See{' '}
+        RewardRadar may receive a commission from some issuers when you apply for or open a
+        product (credit card, home loan or deposit) through links on this Site. The fee does
+        not change which products we list, the order in which non-sponsored products appear,
+        or the data we present. Sponsored products are clearly labelled. See{' '}
         <Link to="/how-we-make-money" className="text-blue-600 hover:underline">
           How we make money
         </Link>

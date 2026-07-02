@@ -158,6 +158,63 @@ export function extractLoanDeal(loan) {
   return null;
 }
 
+// ── Deposit deal extractor ────────────────────────────────────────────────
+// Three deal kinds for deposits:
+//   1) Intro rate boost — "5.5% for the first 4 months" (INTRODUCTORY rate)
+//   2) Bonus rate — "Earn up to 5.0% bonus" (BONUS rate, headline)
+//   3) Term-deposit special — "0.50% above standard rate for new money" (text)
+export function extractDepositDeal(deposit) {
+  if (!deposit) return null;
+
+  // 1) Intro rate boost (INTRODUCTORY depositRateType)
+  if (deposit.has_intro_rate && Number.isFinite(deposit.intro_rate)) {
+    const ratePct = (deposit.intro_rate * 100).toFixed(2).replace(/\.?0+$/, '');
+    const period = deposit.intro_period_months
+      ? `${deposit.intro_period_months} mo`
+      : 'a limited time';
+    return {
+      kind: 'intro-rate',
+      label: `${ratePct}% intro for ${period}`,
+      amount: deposit.intro_rate,
+      unit: '%',
+      details: 'Promotional rate. Reverts to base rate after the intro period.',
+    };
+  }
+
+  // 2) Bonus rate (BONUS depositRateType + conditions to meet)
+  if (deposit.has_bonus_rate && Number.isFinite(deposit.bonus_rate)) {
+    const ratePct = (deposit.bonus_rate * 100).toFixed(2).replace(/\.?0+$/, '');
+    const cap =
+      Number.isFinite(deposit.bonus_max_balance) && deposit.bonus_max_balance > 0
+        ? ` on first ${formatMoney(deposit.bonus_max_balance)}`
+        : '';
+    return {
+      kind: 'bonus-rate',
+      label: `Up to ${ratePct}% bonus${cap}`,
+      amount: deposit.bonus_rate,
+      unit: '%',
+      details: 'Bonus interest paid when monthly conditions are met.',
+    };
+  }
+
+  // 3) Text-based special on TD descriptions ("special rate for new money" etc.)
+  if (deposit.product_category === 'TERM_DEPOSIT') {
+    const text = lower(deposit.description) + ' ' + lower(deposit.additionalInformation || '');
+    if (/\b(special|promo|new money|boost)\b/.test(text) && Number.isFinite(deposit.max_rate)) {
+      const ratePct = (deposit.max_rate * 100).toFixed(2).replace(/\.?0+$/, '');
+      return {
+        kind: 'intro-rate',
+        label: `Up to ${ratePct}% on selected terms`,
+        amount: deposit.max_rate,
+        unit: '%',
+        details: 'Headline rate available on specific terms or balance bands.',
+      };
+    }
+  }
+
+  return null;
+}
+
 // "P18M" → 18, "P1Y" → 12, etc.
 function parseIsoToMonths(iso) {
   if (!iso) return null;

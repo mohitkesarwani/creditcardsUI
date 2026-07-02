@@ -17,7 +17,7 @@ function CompareStickyButton() {
     <div
       role="region"
       aria-label="Card selection"
-      className="fixed bottom-0 inset-x-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur shadow-[0_-4px_12px_rgba(0,0,0,0.06)]"
+      className="fixed bottom-0 inset-x-0 z-40 border-t border-hairline glass shadow-lift-lg animate-fade-up"
     >
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
         <span className="hidden md:inline text-sm font-medium text-gray-700 whitespace-nowrap">

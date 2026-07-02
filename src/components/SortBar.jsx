@@ -10,15 +10,19 @@ export const SORTS = [
   { key: 'compAsc',   label: 'Lowest comp.',   hint: 'Cheapest comparison rate first' },
 ];
 
-function SortBar({ summary, sortBy, onSortChange, rightSlot }) {
+function SortBar({ summary, sortBy, onSortChange, rightSlot, sorts, freshness }) {
+  const options = sorts && sorts.length ? sorts : SORTS;
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-      <div className="text-sm text-gray-700">{summary}</div>
+      <div className="text-sm text-gray-700 flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
+        <span>{summary}</span>
+        {freshness}
+      </div>
 
       <div className="flex items-center gap-2">
         <span className="text-xs text-gray-500 hidden sm:inline">Sort</span>
         <div role="tablist" className="bg-gray-100 rounded-lg p-1 flex">
-          {SORTS.map((s) => (
+          {options.map((s) => (
             <button
               key={s.key}
               type="button"

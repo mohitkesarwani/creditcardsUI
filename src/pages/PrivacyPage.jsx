@@ -20,10 +20,30 @@ export default function PrivacyPage() {
       <H2>1. What we collect</H2>
       <p className="text-gray-700">
         You can browse the Site without providing any personal information. We collect
-        personal information only when you choose to submit it — for example, when you fill
-        in the contact form or apply for a card via one of our referral links. The
-        information we collect in those cases may include your name, email address,
-        phone number, and the product type you enquired about.
+        personal information only when you choose to submit it through the contact form.
+        The information we collect in those cases is limited to: name, email address,
+        topic, and the message you choose to send.
+      </p>
+      <p className="text-gray-700 mt-2">
+        We <strong>do not</strong> collect income, balances, credit scores, account
+        numbers, or any other financial information from you. We do not request
+        identity documents. We do not run credit checks. Selecting a product, ticking
+        the "compare" box, and filtering results all happen entirely in your browser
+        and are not sent to us.
+      </p>
+
+      <H2>1a. Contact-form data — retention and access</H2>
+      <p className="text-gray-700">
+        Messages submitted via the contact form are emailed to our support inbox and
+        retained for up to <strong>24 months</strong> for support and quality
+        purposes, then deleted. Access is limited to RewardRadar staff handling your
+        enquiry. We do not use contact-form data for marketing, do not add it to any
+        mailing list, and do not share it with third parties (including issuers) unless
+        you explicitly ask us to.
+      </p>
+      <p className="text-gray-700 mt-2">
+        You can request a copy of the personal information we hold about you, or ask us
+        to delete it, by emailing the support inbox. We will respond within 30 days.
       </p>
 
       <H2>2. Anonymous usage data</H2>

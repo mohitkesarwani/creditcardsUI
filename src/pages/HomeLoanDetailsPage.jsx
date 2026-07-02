@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchMortgage } from '../api/residentialMortgages';
 import { useSelectedMortgages } from '../hooks/useSelectedMortgages.jsx';
@@ -13,6 +13,7 @@ import RateFinder from '../components/detail/RateFinder.jsx';
 import DocumentsPanel from '../components/detail/DocumentsPanel.jsx';
 import ComparisonRateWarning from '../components/ComparisonRateWarning.jsx';
 import { formatMoneyWhole, formatPercent } from '../utils.js';
+import { DEFAULT_WIZARD_ANSWERS, findRateMatches } from '../lib/findRateMatches.js';
 
 const FALLBACK_IMG = '/assets/image-not-available.svg';
 
@@ -36,6 +37,12 @@ function HomeLoanDetailsPage() {
   // Finder. When non-null, the Repayment Estimator uses it instead of the
   // loan's default headline rate. Shape: { key, label, rate, comparisonRate }.
   const [pinnedRate, setPinnedRate] = useState(null);
+  // Wizard answers live HERE (not in RateFinder) so they survive tab switches
+  // and we can auto-pin the top match whenever the user adjusts them.
+  const [wizardAnswers, setWizardAnswers] = useState(DEFAULT_WIZARD_ANSWERS);
+  // Tracks whether the user has manually overridden the auto-pin via "Use this
+  // rate". When true, we stop auto-pinning so we don't clobber their pick.
+  const [manualPin, setManualPin] = useState(false);
   const { selected, toggleMortgage } = useSelectedMortgages();
   const isSelected = loan && selected.some((m) => m.id === loan.id);
 
@@ -58,6 +65,19 @@ function HomeLoanDetailsPage() {
     if (!loan) return;
     document.title = `${loan.name} · RewardRadar`;
   }, [loan]);
+
+  // Top match for the current wizard answers. Auto-pinned into the estimator
+  // unless the user has manually picked a different option ("Use this rate").
+  const topMatch = useMemo(() => {
+    if (!loan) return null;
+    const m = findRateMatches(loan, wizardAnswers);
+    return m[0] || null;
+  }, [loan, wizardAnswers]);
+
+  useEffect(() => {
+    if (manualPin) return;          // don't overwrite a manual pick
+    setPinnedRate(topMatch);        // null when no matches → estimator falls back to headline rates
+  }, [topMatch, manualPin]);
 
   const handleApply = async () => {
     if (!loan) return;
@@ -173,7 +193,7 @@ function HomeLoanDetailsPage() {
   };
 
   return (
-    <div className="bg-gray-50 md:h-[calc(100vh-3.5rem)] md:overflow-hidden flex flex-col">
+    <div className="md:h-[calc(100vh-3.5rem)] md:overflow-hidden flex flex-col" style={{ background: 'rgb(var(--surface-subtle))' }}>
       <div className="max-w-7xl mx-auto w-full px-4 md:px-8 py-3 md:py-4 flex flex-col flex-1 min-h-0">
 
         {/* Breadcrumb */}
@@ -244,51 +264,67 @@ function HomeLoanDetailsPage() {
         {/* ─── Body: 2 columns ─── */}
         <div className="grid md:grid-cols-[400px_1fr] gap-4 flex-1 min-h-0">
           {/* Left: switchable interactive panels */}
-          <div className="bg-white rounded-xl border border-gray-200 flex flex-col min-h-0">
-            <div role="tablist" className="flex border-b border-gray-200 px-1 pt-1">
+          <div className="surface flex flex-col min-h-0">
+            <div role="tablist" className="tab-strip px-1 pt-1">
               <button
                 type="button"
                 role="tab"
                 aria-selected={leftTab === 'estimator'}
+                data-active={leftTab === 'estimator'}
                 onClick={() => setLeftTab('estimator')}
-                className={
-                  'flex-1 px-3 py-2 text-sm font-medium transition-colors -mb-px border-b-2 ' +
-                  (leftTab === 'estimator'
-                    ? 'text-blue-700 border-blue-600'
-                    : 'text-gray-500 border-transparent hover:text-gray-800')
-                }
+                className="tab-item flex-1 text-left"
               >
-                Repayment estimate
+                <span className="block">Repayment estimate</span>
+                {pinnedRate && Number.isFinite(pinnedRate.rate) && (
+                  <span className="block text-[10px] font-normal text-brand-600 tabular-nums leading-none mt-0.5">
+                    using {formatPercent(pinnedRate.rate)}{manualPin ? ' (your pick)' : ''}
+                  </span>
+                )}
               </button>
               <button
                 type="button"
                 role="tab"
                 aria-selected={leftTab === 'finder'}
+                data-active={leftTab === 'finder'}
                 onClick={() => setLeftTab('finder')}
-                className={
-                  'flex-1 px-3 py-2 text-sm font-medium transition-colors -mb-px border-b-2 ' +
-                  (leftTab === 'finder'
-                    ? 'text-blue-700 border-blue-600'
-                    : 'text-gray-500 border-transparent hover:text-gray-800')
-                }
+                className="tab-item flex-1 text-left"
               >
-                Find your rate
+                <span className="block">Find your rate</span>
+                {topMatch && (
+                  <span className="block text-[10px] font-normal text-ink-500 tabular-nums leading-none mt-0.5">
+                    top match {formatPercent(topMatch.rate)}
+                  </span>
+                )}
               </button>
             </div>
             <div className="flex-1 min-h-0 overflow-y-auto p-4">
               {leftTab === 'estimator' ? (
                 <RepaymentEstimator
+                  loan={loan}
                   variableRate={loan.min_variable_rate_owner}
                   fixedRate={loan.min_fixed_rate_owner}
                   pinnedRate={pinnedRate}
-                  onClearPinned={() => setPinnedRate(null)}
+                  onClearPinned={() => {
+                    // Clearing the pin also clears manual-override mode so the
+                    // auto-pin from wizard answers resumes.
+                    setPinnedRate(null);
+                    setManualPin(false);
+                  }}
                 />
               ) : (
                 <RateFinder
                   loan={loan}
+                  answers={wizardAnswers}
+                  setAnswers={(updater) => {
+                    setWizardAnswers(updater);
+                    // Any change in the wizard re-enables auto-pin so the new
+                    // top match flows through.
+                    setManualPin(false);
+                  }}
                   pinnedKey={pinnedRate?.key}
                   onPin={(rate) => {
                     setPinnedRate(rate);
+                    setManualPin(true);
                     // Jump to estimator so the user sees the impact immediately.
                     setLeftTab('estimator');
                   }}
@@ -298,7 +334,7 @@ function HomeLoanDetailsPage() {
           </div>
 
           {/* Right: tabbed long-form content */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-5 min-h-0 flex flex-col">
+          <div className="surface p-4 md:p-5 min-h-0 flex flex-col">
             <Tabs
               tabs={[ratesTab, feesTab, featuresTab, limitsTab, docsTab]}
               defaultId="rates"

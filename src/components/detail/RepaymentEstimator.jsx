@@ -17,14 +17,37 @@ function monthlyRepayment(principal, annualRate, years) {
 // rate (from RateFinder) instead of letting the user toggle between the
 // loan's headline variable / fixed numbers. Shape:
 //   { key, label, rate, comparisonRate }
+//
+// `loan` is optional — when present, the loan-amount and term sliders are
+// clamped to its published min_loan_amount / max_loan_amount / max_term_months.
+// Without it the sliders fall back to safe AU defaults ($100k–$2M, 5–30 yrs).
 export default function RepaymentEstimator({
   variableRate,
   fixedRate,
   pinnedRate = null,
   onClearPinned,
+  loan = null,
 }) {
-  const [amount, setAmount] = useState(800_000);
-  const [years, setYears] = useState(30);
+  // Slider bounds — fall back to safe defaults when the loan doesn't publish.
+  const minAmount = Number.isFinite(loan?.min_loan_amount) && loan.min_loan_amount > 0
+    ? Math.round(loan.min_loan_amount / 10_000) * 10_000
+    : 100_000;
+  const maxAmountRaw = Number.isFinite(loan?.max_loan_amount) && loan.max_loan_amount > minAmount
+    ? Math.round(loan.max_loan_amount / 10_000) * 10_000
+    : 2_000_000;
+  // Cap absurd published maxes for slider sanity (some loans say $50M).
+  const maxAmount = Math.min(maxAmountRaw, 5_000_000);
+
+  const maxYearsFromLoan = Number.isFinite(loan?.max_term_months)
+    ? Math.floor(loan.max_term_months / 12)
+    : null;
+  const maxYears = maxYearsFromLoan ? Math.min(40, Math.max(5, maxYearsFromLoan)) : 30;
+
+  const defaultAmount = Math.min(Math.max(800_000, minAmount), maxAmount);
+  const defaultYears = Math.min(30, maxYears);
+
+  const [amount, setAmount] = useState(defaultAmount);
+  const [years, setYears] = useState(defaultYears);
   const [rateKind, setRateKind] = useState(variableRate ? 'variable' : 'fixed');
 
   // Pinned rate wins. Otherwise fall back to the user's variable/fixed toggle.
@@ -108,14 +131,19 @@ export default function RepaymentEstimator({
         <input
           id="loan-amount"
           type="range"
-          min="100000" max="2000000" step="10000"
+          min={minAmount} max={maxAmount} step="10000"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
           className="w-full accent-blue-600"
         />
         <div className="flex justify-between text-[10px] text-gray-400 mt-1 tabular-nums">
-          <span>$100k</span><span>$2M</span>
+          <span>{formatMoneyWhole(minAmount)}</span><span>{formatMoneyWhole(maxAmount)}</span>
         </div>
+        {loan && (Number.isFinite(loan.min_loan_amount) || Number.isFinite(loan.max_loan_amount)) && (
+          <p className="text-[10px] text-gray-500 mt-0.5">
+            Slider range follows this loan's published limits.
+          </p>
+        )}
       </div>
 
       <div>
@@ -126,14 +154,19 @@ export default function RepaymentEstimator({
         <input
           id="loan-term"
           type="range"
-          min="5" max="30" step="1"
+          min="5" max={maxYears} step="1"
           value={years}
           onChange={(e) => setYears(Number(e.target.value))}
           className="w-full accent-blue-600"
         />
         <div className="flex justify-between text-[10px] text-gray-400 mt-1 tabular-nums">
-          <span>5 yrs</span><span>30 yrs</span>
+          <span>5 yrs</span><span>{maxYears} yrs</span>
         </div>
+        {maxYearsFromLoan && maxYears < 30 && (
+          <p className="text-[10px] text-gray-500 mt-0.5">
+            Max term capped at {maxYears} years for this loan.
+          </p>
+        )}
       </div>
 
       {breakdown ? (

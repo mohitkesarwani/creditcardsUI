@@ -127,7 +127,7 @@ function CardDetailPage() {
   // Mobile: stacks, calculator above tabs.
   // Desktop: 2-col body (calculator left, tabs right), each scrolls internally.
   return (
-    <div className="bg-gray-50 md:h-[calc(100vh-3.5rem)] md:overflow-hidden flex flex-col">
+    <div className="md:h-[calc(100vh-3.5rem)] md:overflow-hidden flex flex-col" style={{ background: 'rgb(var(--surface-subtle))' }}>
       <div className="max-w-7xl mx-auto w-full px-4 md:px-8 py-3 md:py-4 flex flex-col flex-1 min-h-0">
 
         {/* Breadcrumb */}

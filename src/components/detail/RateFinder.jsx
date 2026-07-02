@@ -1,51 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { formatPercent } from '../../utils.js';
+import { findRateMatches } from '../../lib/findRateMatches.js';
 
 // Wizard that asks the borrower a few questions and filters this loan's
 // `lendingRates` JSONB to the matching subset, sorted cheapest-first.
 //
-// Inputs the user gives:
-//   purpose     'owner' | 'invest'
-//   repayment   'pi' | 'io'             (Principal-and-Interest vs Interest-only)
-//   rateType    'variable' | 'fixed' | 'either'
-//   lvr         number (50-95)          (loan-to-value ratio %)
-//   firstHomeBuyer  boolean             (informational only — CDR doesn't tag rates as FHB)
-//
-// Then maps to CDR `lendingRates[]` filters:
-//   loanPurpose   ∈ ['OWNER_OCCUPIED' | 'INVESTMENT']
-//   repaymentType ∈ ['PRINCIPAL_AND_INTEREST' | 'INTEREST_ONLY']
-//   lendingRateType matches VARIABLE / FIXED / DISCOUNT etc.
-//   tiers cover the user's LVR (their LVR fits in [minimumValue, maximumValue])
-
-const rateType = (r) => (r?.lendingRateType || r?.rateType || '').toUpperCase();
-const purpose  = (r) => (r?.loanPurpose || '').toUpperCase();
-const repay    = (r) => (r?.repaymentType || '').toUpperCase();
-
-const STEPS = [
-  { id: 'purpose',  label: 'Who is the loan for?' },
-  { id: 'repayment',label: 'How will you repay?' },
-  { id: 'rateType', label: 'Rate type?' },
-  { id: 'lvr',      label: 'How much deposit?' },
-  { id: 'fhb',      label: 'First-home buyer?' },
-];
-
-// LVR tier match: returns true if user LVR fits the tier's range.
-const tierCovers = (tiers, userLvr) => {
-  if (!Array.isArray(tiers) || !tiers.length) return true; // no tiers → applies broadly
-  return tiers.some((t) => {
-    if (!/LVR/i.test(t?.name || '') && !/^PERCENT$/.test(t?.unitOfMeasure || '')) return true;
-    const norm = (n) => {
-      const x = parseFloat(n);
-      if (!Number.isFinite(x)) return null;
-      return x > 1 ? x : x * 100; // 0.9 → 90
-    };
-    const min = norm(t.minimumValue);
-    const max = norm(t.maximumValue);
-    if (min !== null && userLvr < min) return false;
-    if (max !== null && userLvr > max) return false;
-    return true;
-  });
-};
+// Answers state is owned by the parent (HomeLoanDetailsPage) so it survives
+// tab switches AND so the parent can auto-pin the top match into the
+// Repayment Estimator. Match-finding logic lives in `lib/findRateMatches.js`.
 
 function ChoiceRow({ options, value, onChange }) {
   return (
@@ -69,84 +31,16 @@ function ChoiceRow({ options, value, onChange }) {
   );
 }
 
-// Helpers used by both the row and the parent-passed callback.
-function humanType(t) {
-  if (!t) return 'Rate';
-  if (t === 'VARIABLE') return 'Variable rate';
-  if (t === 'FIXED') return 'Fixed rate';
-  if (t === 'DISCOUNT') return 'Discount variable';
-  if (t === 'INTRODUCTORY') return 'Introductory rate';
-  return t.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function labelRepayment(rt) {
-  if (rt === 'PRINCIPAL_AND_INTEREST') return 'P&I';
-  if (rt === 'INTEREST_ONLY') return 'Interest only';
-  return rt || '';
-}
-
-function describeTiers(tiers) {
-  if (!Array.isArray(tiers)) return '';
-  const lvr = tiers.find((t) => /LVR/i.test(t?.name || '') || /^PERCENT$/.test(t?.unitOfMeasure || ''));
-  if (!lvr) return '';
-  const norm = (n) => {
-    const x = parseFloat(n);
-    if (!Number.isFinite(x)) return null;
-    return x > 1 ? x : x * 100;
-  };
-  const a = norm(lvr.minimumValue);
-  const b = norm(lvr.maximumValue);
-  if (a !== null && b !== null) return `LVR ${a}%–${b}%`;
-  if (b !== null) return `LVR ≤${b}%`;
-  if (a !== null) return `LVR ≥${a}%`;
-  return '';
-}
-
-export default function RateFinder({ loan, pinnedKey = null, onPin }) {
-  const [answers, setAnswers] = useState({
-    purpose: 'owner',
-    repayment: 'pi',
-    rateType: 'either',
-    lvr: 80,
-    fhb: false,
-  });
+export default function RateFinder({ loan, answers, setAnswers, pinnedKey = null, onPin }) {
+  // Cap LVR slider at the loan's published max LVR when present — picking
+  // 95% on an 80%-cap loan would otherwise return 0 matches with no hint why.
+  const lvrCap = Number.isFinite(loan?.max_lvr_percent) ? loan.max_lvr_percent : 95;
+  const lvrFloor = 50;
+  const sliderMax = Math.max(lvrFloor + 5, Math.min(95, lvrCap));
 
   const set = (k, v) => setAnswers((s) => ({ ...s, [k]: v }));
 
-  const matches = useMemo(() => {
-    const all = Array.isArray(loan.lendingRates) ? loan.lendingRates : (loan.lending_rates || []);
-    if (!all.length) return [];
-    const wantPurpose = answers.purpose === 'invest' ? /INVEST/ : /OWNER/;
-    const wantRepay = answers.repayment === 'io' ? /INTEREST_ONLY/ : /PRINCIPAL/;
-    const wantRate =
-      answers.rateType === 'fixed'    ? /FIXED/
-      : answers.rateType === 'variable' ? /VARIABLE|DISCOUNT|INTRODUCTORY/
-      : null; // 'either' = any
-
-    return all
-      .filter((r) => wantPurpose.test(purpose(r)))
-      .filter((r) => wantRepay.test(repay(r)))
-      .filter((r) => !wantRate || wantRate.test(rateType(r)))
-      .filter((r) => tierCovers(r.tiers, answers.lvr))
-      .map((r, idx) => {
-        const lvrLabel = describeTiers(r.tiers);
-        const label = `${humanType(rateType(r))}${r.repaymentType ? ` · ${labelRepayment(r.repaymentType)}` : ''}${lvrLabel ? ` · ${lvrLabel}` : ''}${r.additionalValue ? ` · ${r.additionalValue}` : ''}`;
-        return {
-          // Stable key: rate + label so pin survives re-renders.
-          key: `${parseFloat(r.rate)}|${label}`,
-          rateType: rateType(r),
-          rate: parseFloat(r.rate),
-          comparisonRate: parseFloat(r.comparisonRate),
-          term: r.additionalValue || r.term || '',
-          repaymentType: r.repaymentType,
-          additionalInfo: r.additionalInfo,
-          label,
-        };
-      })
-      .filter((r) => Number.isFinite(r.rate))
-      .sort((a, b) => a.rate - b.rate);
-  }, [loan, answers]);
-
+  const matches = useMemo(() => findRateMatches(loan, answers), [loan, answers]);
   const top3 = matches.slice(0, 3);
 
   return (
@@ -190,15 +84,22 @@ export default function RateFinder({ loan, pinnedKey = null, onPin }) {
           />
         </Field>
 
-        <Field label={`Your LVR: ${answers.lvr}%`} hint="Loan ÷ property value. Lower LVR usually unlocks cheaper rates.">
+        <Field
+          label={`Your LVR: ${answers.lvr}%`}
+          hint={
+            sliderMax < 95
+              ? `This loan caps at ${sliderMax}% LVR — slider stops there.`
+              : 'Loan ÷ property value. Lower LVR usually unlocks cheaper rates.'
+          }
+        >
           <input
-            type="range" min="50" max="95" step="5"
+            type="range" min={lvrFloor} max={sliderMax} step="5"
             value={answers.lvr}
             onChange={(e) => set('lvr', Number(e.target.value))}
             className="w-full accent-blue-600"
           />
           <div className="flex justify-between text-[10px] text-gray-400 tabular-nums">
-            <span>50%</span><span>95%</span>
+            <span>{lvrFloor}%</span><span>{sliderMax}%</span>
           </div>
         </Field>
       </div>

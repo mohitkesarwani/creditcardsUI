@@ -21,11 +21,15 @@ function Footer() {
             </nav>
           </div>
           <div>
-            <h4 className="font-semibold uppercase text-sm mb-2">Policies &amp; Terms</h4>
+            <h4 className="font-semibold uppercase text-sm mb-2">Help &amp; Policies</h4>
             <nav className="space-y-1 text-sm">
+              <Link to="/faqs" className="hover:underline">FAQ</Link>
+              <Link to="/contact" className="hover:underline">Contact Us</Link>
+              <Link to="/how-we-make-money" className="hover:underline">How We Make Money</Link>
+              <Link to="/principles" className="hover:underline">Our Principles</Link>
+              <Link to="/editorial-standards" className="hover:underline">Editorial Standards</Link>
               <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
               <Link to="/terms" className="hover:underline">Terms of Use</Link>
-              <a href="mailto:support@rewardradar.com" className="hover:underline">Contact Us</a>
             </nav>
           </div>
           <div>

@@ -11,7 +11,11 @@ export const disclaimers = [
   },
   {
     headline: 'Read the PDS and TMD before applying',
-    body: 'Before applying for any credit card listed here, read the issuer\'s Product Disclosure Statement (PDS), Target Market Determination (TMD) and other product documentation available on the issuer\'s website. If you are unsure whether a product is suitable for you, speak with a licensed financial adviser.',
+    body: 'Before applying for any credit card, home loan or deposit product listed here, read the issuer\'s Product Disclosure Statement (PDS), Target Market Determination (TMD) and other product documentation available on the issuer\'s website. If you are unsure whether a product is suitable for you, speak with a licensed financial adviser.',
+  },
+  {
+    headline: 'Deposit-specific notes',
+    body: 'Rates change frequently — sometimes daily — and bonus / introductory rates have conditions you must meet each month to earn them. Term deposits typically forfeit interest if you withdraw early. Confirm the current rate, terms, fees and conditions directly with the issuer before opening an account.',
   },
   {
     headline: 'We may receive a referral fee',
