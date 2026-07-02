@@ -4,11 +4,12 @@
 
 /* ─────────────────────────────────────────────────────────────────────────
    2026 baseline
-   - Inter as the display + body face (system fallback retained in config)
+   - Inter is loaded via <link> in index.html (avoids Vite/PostCSS trying
+     to fetch it at build time — which stalls Vercel builds).
+   - System-font fallback retained in tailwind.config.cjs.
    - Smoothed font rendering
    - Default focus-visible ring brand-coloured + offset
    ───────────────────────────────────────────────────────────────────────── */
-@import url('https://rsms.me/inter/inter.css');
 
 :root {
   /* Brand: teal */
