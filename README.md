@@ -45,8 +45,13 @@ Create a `.env` file (see `.env.example`) with:
 | `VITE_ADSENSE_CLIENT` | Google AdSense client ID. |
 | `VITE_ADSENSE_SLOT` | AdSense slot ID for banner ads. |
 | `VITE_AD_FREQUENCY` | Number of cards between AdSense units. |
+| `SITE_USER` | *(Vercel only)* Username for the Basic Auth wall in `middleware.js`. Unset to disable. |
+| `SITE_PASS` | *(Vercel only)* Password for the Basic Auth wall. Unset to disable. |
 
-The `.env` file is gitignored.
+The `.env` file is gitignored. `SITE_USER` / `SITE_PASS` are runtime env vars
+(not `VITE_*` build-time), so set them in the Vercel dashboard rather than
+`.env` — they're read by the Edge Middleware at request time to gate the
+whole site while it's in legal review.
 
 ## Database
 
